@@ -1,8 +1,8 @@
 package client
 
 import (
-	"lastfm-proxy/pkg/lfm_api"
-	"lastfm-proxy/pkg/lfm_types"
+	"github.com/dozro/tawny/pkg/lfm_api"
+	"github.com/dozro/tawny/pkg/lfm_types"
 
 	log "github.com/sirupsen/logrus"
 )

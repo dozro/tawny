@@ -1,8 +1,9 @@
 package server
 
 import (
-	"lastfm-proxy/internal/pkg/client"
 	"strconv"
+
+	"github.com/dozro/tawny/internal/pkg/client"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

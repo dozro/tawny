@@ -1,7 +1,7 @@
 package main
 
 import (
-	"lastfm-proxy/internal/pkg/server"
+	"github.com/dozro/tawny/internal/pkg/server"
 
 	log "github.com/sirupsen/logrus"
 )

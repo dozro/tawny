@@ -4,8 +4,9 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"lastfm-proxy/pkg/lfm_types"
 	"net/http"
+
+	"github.com/dozro/tawny/pkg/lfm_types"
 
 	log "github.com/sirupsen/logrus"
 )
