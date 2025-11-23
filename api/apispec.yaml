@@ -3,40 +3,47 @@ info:
   title: Tawny
   description: A lastfm Api Proxy
   version: 0.1.0
+  summary: ''
 servers:
-  - url: 'https'
-  - url: 'http'
+  - url: https
+  - url: http
 paths:
-  /user/:username/:
+  '/user/:username/':
     get:
-      description: Get User Info
+      description: |-
+        Get User Info
+
+        Lastfm Docu: https://www.last.fm/api/show/user.getInfo
       security:
         - defaultApiKey: []
       parameters:
-      - name: username
-        in: path
-        required: true
-        content:
-          description: the username
+        - name: username
+          in: path
+          required: true
+          content:
+            description: the username
       responses:
-        200:
+        '200':
           description: The fetched User Info
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/userinfo"
-        500:
+                $ref: '#/components/schemas/userinfo'
+        '500':
           description: internal server error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/internalError"
-
-  /user/:username/tracks/loved:
+                $ref: '#/components/schemas/internalError'
+      x-stoplight:
+        id: 9ei95tyh8q0j8
+      summary: Get User Info
+      operationId: user.getInfo
+  '/user/:username/tracks/loved':
     get:
-      description: "Get loved tracks of specified User"
+      description: Get loved tracks of specified User
       security:
-        - defaultApiKey: [ ]
+        - defaultApiKey: []
       parameters:
         - name: limit
           in: query
@@ -55,19 +62,75 @@ paths:
           content:
             description: the username
       responses:
-        200:
+        '200':
           description: the fetched list of loved songs
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/lovedTracks"
-        500:
+                $ref: '#/components/schemas/UserLovedTracks'
+        '500':
           description: internal server error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/internalError"
-
+                $ref: '#/components/schemas/internalError'
+      x-stoplight:
+        id: zvsb8k7ludcjm
+      summary: Get Users Loved Tracks
+      operationId: user.getLovedTracks
+  '/user/:username/tracks/recent':
+    get:
+      summary: get recent tracks
+      tags:
+        - user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRecentTracks'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalError'
+      operationId: 'get-user-:username-tracks-recent'
+      x-stoplight:
+        id: hxzn5dp9xaxte
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: limit
+          description: The limit
+        - schema:
+            type: number
+          in: query
+          name: page
+          description: The page
+  '/user/:username/tracks/current':
+    get:
+      summary: get current track
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRecentTracks'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalError'
+      operationId: 'get-user-:username-tracks-current'
+      x-stoplight:
+        id: r4nu8mvgwcbbf
+      description: equivalent to calling recent with limit of 1
 security:
   - defaultApiKey: []
 components:
@@ -107,6 +170,8 @@ components:
           type: number
         registered:
           type: date
+      x-stoplight:
+        id: cm8wxhqhlcyu8
     internalError:
       description: internal server error
       properties:
@@ -126,19 +191,66 @@ components:
                   type: string
                 method:
                   type: string
-    tr1:
+      x-stoplight:
+        id: 8izaqp46xka2w
+    UserLovedTracks:
+      type: object
+      x-stoplight:
+        id: dca295db69d50
       properties:
-        name:
-          type: string
-        mbid:
-          type: string
-        url:
-          type: url
-        date:
-          type: date
-        image:
-          type: url
-    lovedTracks:
+        LovedTracks:
+          type: array
+          items:
+            type: object
+            properties:
+              Name:
+                type: string
+              Mbid:
+                type: string
+              Url:
+                type: string
+              Date:
+                type: string
+              Image:
+                type: string
+              Artist:
+                type: object
+                properties:
+                  Name:
+                    type: string
+                  Mbid:
+                    type: string
+                  Url:
+                    type: string
+              Streamable:
+                type: integer
+      description: The tracks a user loves
+    UserRecentTracks:
+      type: object
       properties:
-        track:
-          $ref: "#/components/schemas/internalError"
+        Track:
+          type: array
+          items:
+            type: object
+            properties:
+              NowPlaying:
+                type: boolean
+              Name:
+                type: string
+              TrackMbid:
+                type: string
+              Url:
+                type: string
+              Date:
+                type: string
+              Timestamp:
+                type: string
+              Image:
+                type: string
+              Artist:
+                type: string
+              ArtistMbid:
+                type: string
+              Streamable:
+                type: integer
+      description: The Tracks a user listened to recently

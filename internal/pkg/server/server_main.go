@@ -10,5 +10,6 @@ func StartServer() {
 	router.GET("/user/:username", getUserInfo)
 	router.GET("/user/:username/tracks/loved", getUserLovedTracks)
 	router.GET("/user/:username/tracks/recent", getUserRecentTracks)
+	router.GET("/user/:username/tracks/current", getUserCurrentTrack)
 	router.Run() // listens on 0.0.0.0:8080 by default
 }

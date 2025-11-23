@@ -69,3 +69,16 @@ func getUserRecentTracks(c *gin.Context) {
 	}
 	c.JSON(200, lt)
 }
+
+func getUserCurrentTrack(c *gin.Context) {
+	apikey := c.Request.Header.Get("Authorization")
+	username := c.Param("username")
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	ct, err := client.GetUserCurrentTrack(username, apikey)
+	if handleError(err, c) {
+		return
+	}
+	c.JSON(200, ct)
+}
