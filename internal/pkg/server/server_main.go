@@ -2,14 +2,20 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func StartServer() {
 	router := gin.Default()
 	router.Use(gin.Recovery())
-	router.GET("/user/:username", getUserInfo)
-	router.GET("/user/:username/tracks/loved", getUserLovedTracks)
-	router.GET("/user/:username/tracks/recent", getUserRecentTracks)
-	router.GET("/user/:username/tracks/current", getUserCurrentTrack)
+	router.GET("/api/v1/user/:username", getUserInfo)
+	router.GET("/api/v1/user/:username/tracks/loved", getUserLovedTracks)
+	router.GET("/api/v1/user/:username/tracks/recent", getUserRecentTracks)
+	router.GET("/api/v1/user/:username/tracks/current", getUserCurrentTrack)
+
+	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
+
 	router.Run() // listens on 0.0.0.0:8080 by default
 }

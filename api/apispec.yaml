@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   title: Tawny
   description: A lastfm Api Proxy
@@ -8,7 +8,7 @@ servers:
   - url: https
   - url: http
 paths:
-  '/user/:username/':
+  '/api/v1/user/:username/':
     get:
       description: |-
         Get User Info
@@ -35,11 +35,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
-      x-stoplight:
-        id: 9ei95tyh8q0j8
       summary: Get User Info
       operationId: user.getInfo
-  '/user/:username/tracks/loved':
+      tags:
+        - user
+  '/api/v1/user/:username/tracks/loved':
     get:
       description: Get loved tracks of specified User
       security:
@@ -78,7 +78,9 @@ paths:
         id: zvsb8k7ludcjm
       summary: Get Users Loved Tracks
       operationId: user.getLovedTracks
-  '/user/:username/tracks/recent':
+      tags:
+        - user
+  '/api/v1/user/:username/tracks/recent':
     get:
       summary: get recent tracks
       tags:
@@ -110,7 +112,7 @@ paths:
           in: query
           name: page
           description: The page
-  '/user/:username/tracks/current':
+  '/api/v1/user/:username/tracks/current':
     get:
       summary: get current track
       tags: []
