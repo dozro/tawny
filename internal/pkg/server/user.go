@@ -23,3 +23,19 @@ func getUserInfo(c *gin.Context) {
 		"data": userinfo,
 	})
 }
+
+func getUserLovedTracks(c *gin.Context) {
+	apikey := c.Request.Header.Get("Authorization")
+	username := c.Param("username")
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	lt, err := client.GetUserLovedTracks(username, apikey)
+	if handleError(err, c) {
+		return
+	}
+	c.JSON(200, gin.H{
+		"code": 200,
+		"data": lt,
+	})
+}
