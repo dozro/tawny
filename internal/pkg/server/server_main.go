@@ -17,5 +17,9 @@ func StartServer() {
 	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
 
+	router.GET("/api/v1/hmac/sign", signRequest)
+	router.HEAD("/api/v1/hmac/verify", verifyRequest)
+	router.GET("/api/v1/hmac/verify", verifyRequest)
+	router.GET("/api/v1/hmac/execute", signRequest)
 	router.Run() // listens on 0.0.0.0:8080 by default
 }

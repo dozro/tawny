@@ -1,14 +1,16 @@
 openapi: 3.0.0
 info:
   title: Tawny
-  description: A lastfm Api Proxy
+  description: |-
+    A lastfm Api Proxy
+
+    https://github.com/dozro/tawny/tree/main
   version: 0.1.0
   summary: ''
 servers:
-  - url: https
-  - url: http
+  - url: /api/v1
 paths:
-  '/api/v1/user/:username/':
+  '/user/{username}/':
     get:
       description: |-
         Get User Info
@@ -29,6 +31,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/userinfo'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
         '500':
           description: internal server error
           content:
@@ -39,7 +47,7 @@ paths:
       operationId: user.getInfo
       tags:
         - user
-  '/api/v1/user/:username/tracks/loved':
+  '/user/{username}/tracks/loved':
     get:
       description: Get loved tracks of specified User
       security:
@@ -68,6 +76,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserLovedTracks'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
         '500':
           description: internal server error
           content:
@@ -80,7 +94,7 @@ paths:
       operationId: user.getLovedTracks
       tags:
         - user
-  '/api/v1/user/:username/tracks/recent':
+  '/user/{username}/tracks/recent':
     get:
       summary: get recent tracks
       tags:
@@ -92,6 +106,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserRecentTracks'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
         '500':
           description: Internal Server Error
           content:
@@ -112,10 +132,15 @@ paths:
           in: query
           name: page
           description: The page
-  '/api/v1/user/:username/tracks/current':
+  '/user/{username}/tracks/current':
     get:
       summary: get current track
-      tags: []
+      tags:
+        - user
+      parameters:
+        - name: username
+          in: path
+          required: true
       responses:
         '200':
           description: OK
@@ -123,6 +148,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserRecentTracks'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
         '500':
           description: Internal Server Error
           content:
@@ -133,6 +164,52 @@ paths:
       x-stoplight:
         id: r4nu8mvgwcbbf
       description: equivalent to calling recent with limit of 1
+  /hmac/sign:
+    get:
+      summary: sign a request
+      tags:
+        - hmac
+      responses: {}
+      operationId: post-hmac-sign
+      x-stoplight:
+        id: 1hthsq5tpk5xi
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: HMAC-PSK
+          description: HMAC Pre-Shared-Key
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: request
+          required: true
+  /hmac/verify:
+    head:
+      summary: verify a hmac signed method
+      tags:
+        - hmac
+      responses: {}
+      operationId: get-hmac-verify
+      x-stoplight:
+        id: rrb5zs04683wq
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: HMAC-PSK
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: signature
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: request
+          required: true
 security:
   - defaultApiKey: []
 components:
@@ -140,7 +217,7 @@ components:
     defaultApiKey:
       description: The Api Key you obtained from lastfm
       type: apiKey
-      name: authentication
+      name: Authorization
       in: header
   schemas:
     userinfo:
@@ -256,3 +333,11 @@ components:
               Streamable:
                 type: integer
       description: The Tracks a user listened to recently
+    UnauthorizedResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        error:
+          type: string
+x-internal: true
