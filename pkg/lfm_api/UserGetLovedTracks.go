@@ -10,10 +10,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (User) GetLovedTracks(apiKey string, userName string) (*lfm_types.UserGetLovedTracks, error) {
-	apiUrl := fmt.Sprintf("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=%s&api_key=%s", userName, apiKey)
+func (User) GetLovedTracks(apiKey string, userName string, limit int, page int) (*lfm_types.UserGetLovedTracks, error) {
+	var apiUrl string
+	if -1 != limit && -1 != page {
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&limit=%d&page=%d", baseUrl, userName, apiKey, limit, page)
+	} else if -1 != limit {
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&limit=%d", baseUrl, userName, apiKey, limit)
+	} else if -1 != page {
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&page=%d", baseUrl, userName, apiKey, page)
+	} else {
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s", baseUrl, userName, apiKey)
+	}
 	log.Debugf("apiUrl: %s", apiUrl)
-	resp, err := http.Get(apiUrl)
+	resp, err := doHttpGetRequest(apiUrl)
 	log.Debugf("Response from API: %v", resp)
 	if err != nil {
 		log.Errorf("Error getting user info: %v", err)

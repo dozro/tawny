@@ -5,8 +5,8 @@ import (
 	"lastfm-proxy/pkg/lfm_types"
 )
 
-func GetUserLovedTracks(username string, apikey string) (*lfm_types.UserGetLovedTracks, error) {
-	lt, err := lfm_api.User{}.GetLovedTracks(apikey, username)
+func GetUserLovedTracks(username string, apikey string, limit int, page int) (*lfm_types.UserGetLovedTracks, error) {
+	lt, err := lfm_api.User{}.GetLovedTracks(apikey, username, limit, page)
 	if err != nil {
 		return nil, err
 	}
