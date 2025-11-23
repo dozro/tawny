@@ -10,16 +10,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (User) GetLovedTracks(apiKey string, userName string, limit int, page int) (*lfm_types.UserGetLovedTracks, error) {
+type UserGetLovedTracksArgs struct {
+	ApiKey   string
+	UserName string
+	Limit    int
+	Page     int
+}
+
+func (User) GetLovedTracks(args UserGetLovedTracksArgs) (*lfm_types.UserGetLovedTracks, error) {
 	var apiUrl string
-	if -1 != limit && -1 != page {
-		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&limit=%d&page=%d", baseUrl, userName, apiKey, limit, page)
-	} else if -1 != limit {
-		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&limit=%d", baseUrl, userName, apiKey, limit)
-	} else if -1 != page {
-		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&page=%d", baseUrl, userName, apiKey, page)
+	if -1 != args.Limit && -1 != args.Page {
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&limit=%d&page=%d", baseUrl, args.UserName, args.ApiKey, args.Limit, args.Page)
+	} else if -1 != args.Limit {
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&limit=%d", baseUrl, args.UserName, args.ApiKey, args.Limit)
+	} else if -1 != args.Page {
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s&page=%d", baseUrl, args.UserName, args.ApiKey, args.Page)
 	} else {
-		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s", baseUrl, userName, apiKey)
+		apiUrl = fmt.Sprintf("%s?method=user.getlovedtracks&user=%s&api_key=%s", baseUrl, args.UserName, args.ApiKey)
 	}
 	log.Debugf("apiUrl: %s", apiUrl)
 	resp, err := doHttpGetRequest(apiUrl)

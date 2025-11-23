@@ -10,8 +10,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (User) GetInfo(apiKey string, userName string) (*lfm_types.UserGetInfo, error) {
-	apiUrl := fmt.Sprintf("%s?method=user.getinfo&user=%s&api_key=%s", baseUrl, userName, apiKey)
+type UserGetInfoArgs struct {
+	ApiKey   string
+	UserName string
+}
+
+func (User) GetInfo(args UserGetInfoArgs) (*lfm_types.UserGetInfo, error) {
+	apiUrl := fmt.Sprintf("%s?method=user.getinfo&user=%s&api_key=%s", baseUrl, args.UserName, args.ApiKey)
 	log.Debugf("apiUrl: %s", apiUrl)
 	resp, err := doHttpGetRequest(apiUrl)
 	log.Debugf("Response from API: %v", resp)
