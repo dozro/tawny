@@ -1,4 +1,4 @@
-FROM alpine:latest AS buildenv
+FROM alpine:3.0 AS buildenv
 
 RUN apk add go
 WORKDIR /build
@@ -10,6 +10,7 @@ FROM scratch
 EXPOSE 8080
 
 WORKDIR /app
+COPY --from=buildenv /build/api /app/api
 COPY --from=buildenv /build/tawnyfm /app/tawnyfm
 
 ENTRYPOINT ["/app/tawnyfm"]
