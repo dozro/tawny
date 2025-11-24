@@ -3,7 +3,7 @@ FROM alpine:3.22.2 AS buildenv
 RUN apk add go
 WORKDIR /build
 COPY . .
-RUN go build -o tawnyfm ./cmd/fm-proxy/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o tawnyfm ./cmd/fm-proxy/main.go
 
 FROM scratch
 
