@@ -69,3 +69,24 @@ func getUserCurrentTrack(c *gin.Context) {
 	}
 	c.JSON(200, ct)
 }
+
+func getUserFriends(c *gin.Context) {
+	apikey, username, page, limit := pageLimitAuthReq(c)
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	recentTracks := c.Query("get_recent_tracks")
+	var getRT bool = false
+	if recentTracks == "true" {
+		getRT = true
+	}
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	uf, err := client.GetUserFriends(username, apikey, limit, page, getRT)
+	if handleError(err, c) {
+		return
+	}
+	c.JSON(200, uf)
+
+}

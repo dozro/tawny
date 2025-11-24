@@ -1,11 +1,6 @@
 package lfm_api
 
 import (
-	"encoding/xml"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/dozro/tawny/pkg/lfm_types"
 
 	log "github.com/sirupsen/logrus"
@@ -21,25 +16,8 @@ type UserGetArgsWithLimitPage struct {
 func (User) GetLovedTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetLovedTracks, error) {
 	apiUrl := pageLimitAK(baseUrl, "user.getLovedTracks", args.UserName, args.ApiKey, args.Limit, args.Page)
 	log.Debugf("apiUrl: %s", apiUrl)
-	resp, err := doHttpGetRequest(apiUrl)
-	log.Debugf("Response from API: %v", resp)
-	if err != nil {
-		log.Errorf("Error getting user info: %v", err)
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(resp.Status)
-	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
 
-	var data lfm_types.WrappedUserGetLovedTracks
-	err = xml.Unmarshal(body, &data)
-	if err != nil {
-		return nil, err
-	}
-	return &data.LovedTracks, nil
+	data, err := fetchXML[lfm_types.WrappedUserGetLovedTracks](apiUrl)
+
+	return &data.LovedTracks, err
 }

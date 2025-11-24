@@ -17,5 +17,5 @@ type UserGetInfo struct {
 	Playcount  int32  `xml:"playcount"`
 	Playlists  int16  `xml:"playlists"`
 	Bootstrap  int16  `xml:"bootstrap"`
-	Registered int64  `xml:"registered"`
+	Registered string `xml:"registered"`
 }
