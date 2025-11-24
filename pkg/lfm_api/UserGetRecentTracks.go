@@ -11,17 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (User) GetRecentTracks(args UserGetLovedTracksArgs) (*lfm_types.UserGetRecentTracks, error) {
-	var apiUrl string
-	if -1 != args.Limit && -1 != args.Page {
-		apiUrl = fmt.Sprintf("%s?method=user.getrecenttracks&user=%s&api_key=%s&limit=%d&page=%d", baseUrl, args.UserName, args.ApiKey, args.Limit, args.Page)
-	} else if -1 != args.Limit {
-		apiUrl = fmt.Sprintf("%s?method=user.getrecenttracks&user=%s&api_key=%s&limit=%d", baseUrl, args.UserName, args.ApiKey, args.Limit)
-	} else if -1 != args.Page {
-		apiUrl = fmt.Sprintf("%s?method=user.getrecenttracks&user=%s&api_key=%s&page=%d", baseUrl, args.UserName, args.ApiKey, args.Page)
-	} else {
-		apiUrl = fmt.Sprintf("%s?method=user.getrecenttracks&user=%s&api_key=%s", baseUrl, args.UserName, args.ApiKey)
-	}
+func (User) GetRecentTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetRecentTracks, error) {
+	apiUrl := pageLimitAK(baseUrl, "user.getRecentTracks", args.UserName, args.ApiKey, args.Limit, args.Page)
 	log.Debugf("apiUrl: %s", apiUrl)
 	resp, err := doHttpGetRequest(apiUrl)
 	log.Debugf("Response from API: %v", resp)
@@ -43,5 +34,10 @@ func (User) GetRecentTracks(args UserGetLovedTracksArgs) (*lfm_types.UserGetRece
 	if err != nil {
 		return nil, err
 	}
+
+	for i := range data.RecentTracks.Track {
+		data.RecentTracks.Track[i].Brainz()
+	}
+
 	return &data.RecentTracks, nil
 }

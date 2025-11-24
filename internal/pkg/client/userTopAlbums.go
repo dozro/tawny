@@ -5,8 +5,8 @@ import (
 	"github.com/dozro/tawny/pkg/lfm_types"
 )
 
-func GetUserLovedTracks(username string, apikey string, limit int, page int) (*lfm_types.UserGetLovedTracks, error) {
-	lt, err := lfm_api.User{}.GetLovedTracks(lfm_api.UserGetArgsWithLimitPage{
+func GetUserTopAlbum(username string, apikey string, limit int, page int) (*lfm_types.UserGetTopAlbums, error) {
+	lt, err := lfm_api.User{}.GetTopAlbums(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,
 		UserName: username,
 		Limit:    limit,

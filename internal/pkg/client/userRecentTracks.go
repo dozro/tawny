@@ -6,7 +6,7 @@ import (
 )
 
 func GetUserRecentTracks(username string, apikey string, limit int, page int) (*lfm_types.UserGetRecentTracks, error) {
-	lt, err := lfm_api.User{}.GetRecentTracks(lfm_api.UserGetLovedTracksArgs{
+	lt, err := lfm_api.User{}.GetRecentTracks(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,
 		UserName: username,
 		Limit:    limit,

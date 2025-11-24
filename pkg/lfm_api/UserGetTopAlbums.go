@@ -7,19 +7,11 @@ import (
 	"net/http"
 
 	"github.com/dozro/tawny/pkg/lfm_types"
-
 	log "github.com/sirupsen/logrus"
 )
 
-type UserGetArgsWithLimitPage struct {
-	ApiKey   string
-	UserName string
-	Limit    int
-	Page     int
-}
-
-func (User) GetLovedTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetLovedTracks, error) {
-	apiUrl := pageLimitAK(baseUrl, "user.getLovedTracks", args.UserName, args.ApiKey, args.Limit, args.Page)
+func (User) GetTopAlbums(args UserGetArgsWithLimitPage) (*lfm_types.UserGetTopAlbums, error) {
+	apiUrl := pageLimitAK(baseUrl, "user.getTopAlbums", args.UserName, args.ApiKey, args.Limit, args.Page)
 	log.Debugf("apiUrl: %s", apiUrl)
 	resp, err := doHttpGetRequest(apiUrl)
 	log.Debugf("Response from API: %v", resp)
@@ -36,10 +28,11 @@ func (User) GetLovedTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetLov
 		return nil, err
 	}
 
-	var data lfm_types.WrappedUserGetLovedTracks
+	var data lfm_types.WrappedUserGetTopAlbums
 	err = xml.Unmarshal(body, &data)
 	if err != nil {
 		return nil, err
 	}
-	return &data.LovedTracks, nil
+
+	return &data.UserTopAlbums, nil
 }

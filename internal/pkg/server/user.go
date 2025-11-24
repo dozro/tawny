@@ -1,8 +1,6 @@
 package server
 
 import (
-	"strconv"
-
 	"github.com/dozro/tawny/internal/pkg/client"
 
 	"github.com/gin-gonic/gin"
@@ -23,22 +21,22 @@ func getUserInfo(c *gin.Context) {
 	c.JSON(200, userinfo)
 }
 
-func getUserLovedTracks(c *gin.Context) {
-	apikey := c.Request.Header.Get("Authorization")
-	username := c.Param("username")
+func getUserTopAlbums(c *gin.Context) {
+	apikey, username, page, limit := pageLimitAuthReq(c)
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	var limit, page int
-	if c.Query("page") != "" {
-		page, _ = strconv.Atoi(c.Query("page"))
-	} else {
-		page = -1
+	ta, err := client.GetUserTopAlbum(username, apikey, limit, page)
+	if handleError(err, c) {
+		return
 	}
-	if c.Query("limit") != "" {
-		limit, _ = strconv.Atoi(c.Query("limit"))
-	} else {
-		limit = -1
+	c.JSON(200, ta)
+}
+
+func getUserLovedTracks(c *gin.Context) {
+	apikey, username, page, limit := pageLimitAuthReq(c)
+	if apikeyUndefined(apikey, c) {
+		return
 	}
 	lt, err := client.GetUserLovedTracks(username, apikey, limit, page)
 	if handleError(err, c) {
@@ -48,21 +46,9 @@ func getUserLovedTracks(c *gin.Context) {
 }
 
 func getUserRecentTracks(c *gin.Context) {
-	apikey := c.Request.Header.Get("Authorization")
-	username := c.Param("username")
+	apikey, username, page, limit := pageLimitAuthReq(c)
 	if apikeyUndefined(apikey, c) {
 		return
-	}
-	var limit, page int
-	if c.Query("page") != "" {
-		page, _ = strconv.Atoi(c.Query("page"))
-	} else {
-		page = -1
-	}
-	if c.Query("limit") != "" {
-		limit, _ = strconv.Atoi(c.Query("limit"))
-	} else {
-		limit = -1
 	}
 	lt, err := client.GetUserRecentTracks(username, apikey, limit, page)
 	if handleError(err, c) {

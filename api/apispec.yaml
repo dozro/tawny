@@ -49,7 +49,7 @@ paths:
         - user
   '/user/{username}/tracks/loved':
     get:
-      description: Get loved tracks of specified User
+      description: Get loved tracks of specified User - https://www.last.fm/api/show/user.getLovedTracks
       security:
         - defaultApiKey: []
       parameters:

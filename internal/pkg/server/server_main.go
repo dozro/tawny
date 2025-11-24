@@ -13,6 +13,7 @@ func StartServer() {
 	router.GET("/api/v1/user/:username/tracks/loved", getUserLovedTracks)
 	router.GET("/api/v1/user/:username/tracks/recent", getUserRecentTracks)
 	router.GET("/api/v1/user/:username/tracks/current", getUserCurrentTrack)
+	router.GET("/api/v1/user/:username/top/albums", getUserTopAlbums)
 
 	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))

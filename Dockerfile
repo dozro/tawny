@@ -1,4 +1,4 @@
-FROM alpine:3.0 AS buildenv
+FROM alpine:3.22.2 AS buildenv
 
 RUN apk add go
 WORKDIR /build
