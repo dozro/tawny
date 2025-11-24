@@ -20,6 +20,10 @@ type UserTrackArtist struct {
 	Url            string `xml:"url"`
 }
 
+func (ut *UserTrack) String() string {
+	return fmt.Sprintf("%s - %s", ut.Name, ut.Artist.Name)
+}
+
 func (ut *UserTrack) Brainz() {
 	ut.MusicBrainzUrl = fmt.Sprintf("https://example.org/%s", ut.Mbid)
 }
