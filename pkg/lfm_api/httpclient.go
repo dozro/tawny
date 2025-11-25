@@ -2,7 +2,7 @@ package lfm_api
 
 import "net/http"
 
-const userAgent = "Project Tawny (github.com/dozro/tawny)"
+const userAgent = "Tawny/0.0.1 (linux;github.com/dozro/tawny;+abuse@itsrye.dev)"
 
 var httpClient = &http.Client{}
 

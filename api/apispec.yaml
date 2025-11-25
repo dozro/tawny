@@ -188,6 +188,33 @@ paths:
       x-stoplight:
         id: r4nu8mvgwcbbf
       description: equivalent to calling recent with limit of 1
+  '/user/{username}/tracks/current/embed':
+    get:
+      summary: get current track
+      tags:
+        - user
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: The username
+          schema:
+            type: string
+        - name: signature
+          in: query
+          required: false
+          description: the HMAC Signature for this OP
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            image/png:
+      operationId: 'get-user-:username-tracks-current-embed'
+      x-stoplight:
+        id: r4nu8mvgwcbbf
+      description: equivalent to calling recent with limit of 1
   /hmac/sign/base64:
     post:
       summary: sign a request

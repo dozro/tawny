@@ -6,6 +6,7 @@ import "fmt"
 type UserRTrack struct {
 	NowPlaying           bool             `xml:"nowplaying,attr,omitempty"`
 	Name                 string           `xml:"name"`
+	Album                string           `xml:"album"`
 	TrackMbid            string           `xml:"mbid"`
 	TrackMusicBrainzUrl  string           `xml:"track_music_brainz_url,attr"`
 	Url                  string           `xml:"url"`

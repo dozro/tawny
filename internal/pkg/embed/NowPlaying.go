@@ -1,0 +1,94 @@
+package embed
+
+import (
+	"bytes"
+	"fmt"
+	"image"
+	"image/color"
+	"image/png"
+
+	"github.com/disintegration/imaging"
+	"github.com/fogleman/gg"
+)
+
+const pathToFont = "assets/fonts/RubikMarker/RubikMarkerHatch-Regular.ttf"
+
+func EmbedNowPlaying(track_title string, track_artist string, track_album string, track_album_cover string) (*bytes.Buffer, error) {
+	// Albumcover herunterladen
+	albumCoverResp, err := doHttpGetRequest(track_album_cover)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download album cover: %w", err)
+	}
+	defer albumCoverResp.Body.Close()
+
+	albumCover, _, err := image.Decode(albumCoverResp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode album cover: %w", err)
+	}
+
+	// Hintergrundbild laden
+	bgImage, err := gg.LoadImage("assets/images/NowPlaying_Background.png")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load background image: %w", err)
+	}
+
+	imgWidth := bgImage.Bounds().Dx()
+	imgHeight := bgImage.Bounds().Dy()
+
+	dc := gg.NewContext(imgWidth, imgHeight)
+	dc.DrawImage(bgImage, 0, 0)
+
+	// Schrift laden
+	if err := dc.LoadFontFace(pathToFont, 50); err != nil {
+		return nil, fmt.Errorf("failed to load font: %w", err)
+	}
+
+	dc.SetColor(color.White)
+
+	const coverSize = 350
+	albumCover = resizeImage(albumCover, coverSize, coverSize)
+	dc.DrawImage(albumCover, 50, imgHeight/2-coverSize/2)
+
+	textX := float64(50 + coverSize + 200)
+	textWidth := float64(imgWidth) - textX - 60
+	textY := float64(imgHeight/2 - 60)
+
+	dc.SetColor(color.White)
+	drawTextWithGlow(dc, track_title, textX, textY-100, 300, 50, color.White)
+
+	dc.LoadFontFace(pathToFont, 28)
+	dc.SetColor(color.RGBA{220, 220, 220, 255})
+	dc.DrawStringWrapped(track_artist, textX, textY+60, 0, 0, textWidth, 1.3, gg.AlignLeft)
+
+	dc.LoadFontFace(pathToFont, 24)
+	dc.SetColor(color.RGBA{180, 180, 180, 255})
+	dc.DrawStringWrapped(track_album, textX, textY+110, 0, 0, textWidth, 1.3, gg.AlignLeft)
+
+	outputImage := dc.Image()
+	buf := new(bytes.Buffer)
+	if err := png.Encode(buf, outputImage); err != nil {
+		return nil, fmt.Errorf("failed to encode PNG: %w", err)
+	}
+
+	return buf, nil
+}
+
+// Hilfsfunktion fürs Resizing
+func resizeImage(img image.Image, width, height int) image.Image {
+	return imaging.Resize(img, width, height, imaging.Lanczos)
+}
+
+// drawTextWithGlow zeichnet Text mit Glow / Neon-Effekt
+func drawTextWithGlow(dc *gg.Context, text string, x, y float64, maxWidth float64, fontSize float64, glowColor color.Color) {
+	r, g, b, _ := glowColor.RGBA()
+	baseColor := color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 255}
+
+	for i := 10; i >= 2; i -= 2 {
+		alpha := uint8(10 + (10-i)*3) // leicht wachsender alpha
+		dc.SetColor(color.RGBA{baseColor.R, baseColor.G, baseColor.B, alpha})
+		dc.DrawStringWrapped(text, x, y, 0, 0, maxWidth, 1.3, gg.AlignLeft)
+	}
+
+	dc.SetColor(color.White)
+	dc.DrawStringWrapped(text, x, y, 0, 0, maxWidth, 1.3, gg.AlignLeft)
+}

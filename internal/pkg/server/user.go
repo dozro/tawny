@@ -1,7 +1,10 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/dozro/tawny/internal/pkg/client"
+	"github.com/dozro/tawny/internal/pkg/embed"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -77,6 +80,23 @@ func getUserCurrentTrack(c *gin.Context) {
 		return
 	}
 	c.JSON(200, ct)
+}
+
+func getUserCurrentTrackEmbed(c *gin.Context) {
+	apikey := c.Request.Header.Get("Authorization")
+	username := c.Param("username")
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	ct, err := client.GetUserCurrentTrack(username, apikey)
+	if handleError(err, c) {
+		return
+	}
+	img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image)
+	if handleError(err, c) {
+		return
+	}
+	c.Data(http.StatusOK, "image/png", img.Bytes())
 }
 
 func getUserFriends(c *gin.Context) {
