@@ -32,6 +32,11 @@ func EmbedNowPlaying(track_title string, track_artist string, track_album string
 		return nil, fmt.Errorf("failed to load background image: %w", err)
 	}
 
+	//artistSymbole, err := gg.LoadImage("assets/images/singer.png")
+	//if err != nil {
+	//	return nil, fmt.Errorf("failed to load artist symbole image: %w", err)
+	//}
+
 	imgWidth := bgImage.Bounds().Dx()
 	imgHeight := bgImage.Bounds().Dy()
 
@@ -53,15 +58,18 @@ func EmbedNowPlaying(track_title string, track_artist string, track_album string
 	textY := float64(imgHeight/2 - 60)
 
 	dc.SetColor(color.White)
-	drawTextWithGlow(dc, track_title, textX, textY-100, 300, 50, color.White)
+	drawTextWithGlow(dc, truncateString(track_title, 40), textX-50, textY-100, 450, 50, color.White)
 
 	dc.LoadFontFace(pathToFont, 28)
 	dc.SetColor(color.RGBA{220, 220, 220, 255})
-	dc.DrawStringWrapped(track_artist, textX, textY+60, 0, 0, textWidth, 1.3, gg.AlignLeft)
+	dc.DrawStringWrapped(truncateString(track_album, 35), textX, textY+60, 0, 0, textWidth, 1.3, gg.AlignLeft)
 
 	dc.LoadFontFace(pathToFont, 24)
 	dc.SetColor(color.RGBA{180, 180, 180, 255})
-	dc.DrawStringWrapped(track_album, textX, textY+110, 0, 0, textWidth, 1.3, gg.AlignLeft)
+	dc.DrawStringWrapped(truncateString(track_artist, 40), textX, textY+110, 0, 0, textWidth, 1.3, gg.AlignLeft)
+
+	//artistSymbole = resizeImage(artistSymbole, 30, 30)
+	//dc.DrawImage(artistSymbole, int(textX-30), int(textY+105))
 
 	dc.LoadFontFace(pathToFont, 18)
 	dc.SetColor(color.RGBA{220, 161, 161, 233})
