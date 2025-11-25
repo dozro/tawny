@@ -38,7 +38,6 @@ func EmbedNowPlaying(track_title string, track_artist string, track_album string
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(bgImage, 0, 0)
 
-	// Schrift laden
 	if err := dc.LoadFontFace(pathToFont, 50); err != nil {
 		return nil, fmt.Errorf("failed to load font: %w", err)
 	}
@@ -63,6 +62,10 @@ func EmbedNowPlaying(track_title string, track_artist string, track_album string
 	dc.LoadFontFace(pathToFont, 24)
 	dc.SetColor(color.RGBA{180, 180, 180, 255})
 	dc.DrawStringWrapped(track_album, textX, textY+110, 0, 0, textWidth, 1.3, gg.AlignLeft)
+
+	dc.LoadFontFace(pathToFont, 18)
+	dc.SetColor(color.RGBA{220, 161, 161, 233})
+	dc.DrawStringWrapped("Generated with Tawny based on last.fm data", 10, 390, 0, 0, textWidth+100, 1.3, gg.AlignLeft)
 
 	outputImage := dc.Image()
 	buf := new(bytes.Buffer)
