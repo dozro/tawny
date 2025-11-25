@@ -30,12 +30,19 @@ func HmacSignedRequestToBase64(request HmacSignedRequest) HmacBase64SignedReques
 func Base64ToHmacSignedRequest(b64 HmacBase64SignedRequest) (HmacSignedRequest, error) {
 	log.Debugf("decoding base64 signed request: %s", b64)
 
-	// Base64 decode the JSON request payload
-	decoded, err := base64.StdEncoding.DecodeString(string(b64.Request))
-	if err != nil {
-		e := fmt.Errorf("failed to decode base64 request: %w", err)
-		log.Error(e)
-		return HmacSignedRequest{}, e
+	var decoded []byte
+	if json.Valid(b64.Request) {
+		log.Debugf("data is already decoded, will skip base64 decoding")
+		decoded = b64.Request
+	} else {
+		// Base64 decode the JSON request payload
+		var err error
+		decoded, err = base64.StdEncoding.DecodeString(string(b64.Request))
+		if err != nil {
+			e := fmt.Errorf("failed to decode base64 request: %w", err)
+			log.Error(e)
+			return HmacSignedRequest{}, e
+		}
 	}
 
 	if !json.Valid(decoded) {

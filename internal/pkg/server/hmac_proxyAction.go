@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/dozro/tawny/internal/pkg/apiError"
@@ -49,6 +50,12 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 		{
 			log.Debug("proxy action: user.NowPlayingEmbed")
 			ct, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			if ct == nil || err != nil {
+				e := fmt.Errorf("Unexpected or error", err)
+				log.Error(e)
+				c.AbortWithError(http.StatusInternalServerError, e)
+				return
+			}
 			img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image)
 			if handleError(err, c) {
 				return
