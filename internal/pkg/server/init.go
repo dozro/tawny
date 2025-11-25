@@ -2,8 +2,10 @@ package server
 
 import "regexp"
 
-var userRegex *regexp.Regexp
+var userInfoRegex *regexp.Regexp
+var userNowPlayingRegex *regexp.Regexp
 
 func init() {
-	userRegex = regexp.MustCompile(`^/user/?$`)
+	userInfoRegex = regexp.MustCompile(`^/user/?$`)
+	userNowPlayingRegex = regexp.MustCompile(`^/user/tracks/current/?$`)
 }
