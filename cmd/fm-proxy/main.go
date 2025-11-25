@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dozro/tawny/internal/pkg/proxy_config"
 	"github.com/dozro/tawny/internal/pkg/server"
 
 	log "github.com/sirupsen/logrus"
@@ -9,5 +10,6 @@ import (
 func main() {
 	log.Info("starting fm-proxy")
 	log.SetLevel(log.DebugLevel)
-	server.StartServer()
+	config := proxy_config.GetProxyConfig()
+	server.StartServer(config)
 }
