@@ -10,7 +10,8 @@ FROM scratch
 EXPOSE 8080
 
 WORKDIR /app
-COPY --from=buildenv /build/api /app/api
+COPY ./assets /app/assets
+COPY ./api /app/api
 COPY --from=buildenv /build/tawnyfm /app/tawnyfm
 
 ENTRYPOINT ["/app/tawnyfm"]

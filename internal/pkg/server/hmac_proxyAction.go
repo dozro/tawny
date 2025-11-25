@@ -5,6 +5,7 @@ import (
 
 	"github.com/dozro/tawny/internal/pkg/apiError"
 	"github.com/dozro/tawny/internal/pkg/client"
+	"github.com/dozro/tawny/internal/pkg/embed"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -35,11 +36,24 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 			return
 		}
 	case userNowPlayingRegex.MatchString(request.ApiIdentifier):
-		log.Debug("proxy action: user.GetInfo")
-		usernowplaying, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
-		if handleError(err, c) {
+		{
+			log.Debug("proxy action: user.NowPlaying")
+			usernowplaying, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			if handleError(err, c) {
+				return
+			}
+			c.JSON(200, usernowplaying)
 			return
 		}
-		c.JSON(200, usernowplaying)
+	case userNowPlayingEmbed.MatchString(request.ApiIdentifier):
+		{
+			log.Debug("proxy action: user.NowPlayingEmbed")
+			ct, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image)
+			if handleError(err, c) {
+				return
+			}
+			c.Data(http.StatusOK, "image/png", img.Bytes())
+		}
 	}
 }
