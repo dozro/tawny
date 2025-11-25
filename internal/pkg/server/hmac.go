@@ -148,7 +148,6 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overr
 		var signedReqBase64 HmacBase64SignedRequest
 		if overridenReqCont != nil {
 			signedReqBase64 = *overridenReqCont
-			return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
 		} else {
 			if err := c.ShouldBindJSON(&signedReqBase64); err != nil {
 				return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
