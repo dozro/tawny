@@ -93,7 +93,7 @@ func getUserCurrentTrackEmbed(c *gin.Context) {
 	if handleError(err, c) {
 		return
 	}
-	img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image)
+	img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image, username, ct.Track[0].NowPlaying)
 	if handleError(err, c) {
 		return
 	}
