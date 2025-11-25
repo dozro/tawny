@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/dozro/tawny/pkg/lfm_types"
-	log "github.com/sirupsen/logrus"
 )
 
 type UserGetFriendsArgs struct {
@@ -21,7 +20,6 @@ func (User) GetFriends(args UserGetFriendsArgs) (*lfm_types.UserGetFriends, erro
 		getRt = "true"
 	}
 	apiUrl := fmt.Sprintf("%s&recenttracks=%s", pageLimitAK(baseUrl, "user.getFriends", args.UserName, args.ApiKey, args.Limit, args.Page), getRt)
-	log.Debugf("apiUrl: %s", apiUrl)
 
 	data, err := fetchXML[lfm_types.UserGetFriends](apiUrl)
 

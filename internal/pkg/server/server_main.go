@@ -1,12 +1,18 @@
 package server
 
 import (
+	"github.com/dozro/tawny/internal/pkg/proxy_config"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func StartServer() {
+var proxyConfig *proxy_config.ProxyConfig
+
+func StartServer(config *proxy_config.ProxyConfig) {
+
+	proxyConfig = config
+
 	router := gin.Default()
 	router.Use(gin.Recovery())
 
@@ -25,9 +31,10 @@ func StartServer() {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
 
 	hmacapi := v1.Group("/hmac")
-	hmacapi.GET("sign", signRequest)
-	hmacapi.HEAD("verify", verifyRequest)
-	hmacapi.GET("verify", verifyRequest)
-	hmacapi.GET("execute", signRequest)
-	router.Run() // listens on 0.0.0.0:8080 by default
+	hmacapi.POST("sign", signRequest)
+	hmacapi.POST("sign/base64", signBase64Request)
+	hmacapi.POST("verify", verifyRequest)
+	hmacapi.POST("verify/againstServer", verifyAgainstServerSecret)
+	hmacapi.POST("execute", executeSignedRequest)
+	router.Run()
 }

@@ -49,7 +49,7 @@ paths:
         - user
   '/user/{username}/tracks/loved':
     get:
-      description: Get loved tracks of specified User - https://www.last.fm/api/show/user.getLovedTracks
+      description: 'Get loved tracks of specified User - https://www.last.fm/api/show/user.getLovedTracks'
       security:
         - defaultApiKey: []
       parameters:
@@ -164,12 +164,40 @@ paths:
       x-stoplight:
         id: r4nu8mvgwcbbf
       description: equivalent to calling recent with limit of 1
-  /hmac/sign:
-    get:
+  /hmac/sign/base64:
+    post:
       summary: sign a request
       tags:
         - hmac
-      responses: {}
+        - hmac_base64
+      responses:
+        200:
+          description: "successfully signed"
+      operationId: post-hmac-sign
+      x-stoplight:
+        id: 1hthsq5tpk5xi
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: HMAC-PSK
+          description: HMAC Pre-Shared-Key
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HmacProxyRequest'
+      security: [ ]
+  /hmac/sign:
+    post:
+      summary: sign a request
+      tags:
+        - hmac
+      responses:
+        200:
+          description: "successfully signed"
       operationId: post-hmac-sign
       x-stoplight:
         id: 1hthsq5tpk5xi
@@ -181,12 +209,19 @@ paths:
           description: HMAC Pre-Shared-Key
           required: true
         - schema:
-            type: string
+            type: boolean
           in: query
-          name: request
-          required: true
+          name: isBase64
+          required: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HmacProxyRequest'
+      security: []
   /hmac/verify:
-    head:
+    post:
       summary: verify a hmac signed method
       tags:
         - hmac
@@ -194,22 +229,119 @@ paths:
       operationId: get-hmac-verify
       x-stoplight:
         id: rrb5zs04683wq
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignedRequest'
       parameters:
         - schema:
             type: string
           in: header
           name: HMAC-PSK
           required: true
-        - schema:
-            type: string
+        - name: isBase64
+          description: if the request is base64 encoded
+          required: false
           in: query
-          name: signature
-          required: true
-        - schema:
-            type: string
+          schema:
+            type: boolean
+      security: []
+  /hmac/verify/againstServer:
+    post:
+      summary: Execute a signed HMAC proxy request
+      tags:
+        - hmac
+      parameters:
+        - name: isBase64
+          description: if the request is base64 encoded
+          required: false
           in: query
-          name: request
-          required: true
+          schema:
+            type: string
+            enum:
+              - false
+              - true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignedRequest'
+      responses:
+        '200':
+          description: Proxy request succeeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProxyResponse'
+        '400':
+          description: Bad input or invalid JSON
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Invalid signature or not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security: []
+  /hmac/execute:
+    post:
+      summary: Execute a signed HMAC proxy request
+      tags:
+        - hmac
+      parameters:
+        - name: isBase64
+          description: if the request is base64 encoded
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - true
+              - false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignedRequest'
+      responses:
+        '200':
+          description: Proxy request succeeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HmacProxyResponse'
+        '400':
+          description: Bad input or invalid JSON
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Invalid signature or not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security: []
 security:
   - defaultApiKey: []
 components:
@@ -220,6 +352,76 @@ components:
       name: Authorization
       in: header
   schemas:
+    ApiErrorCode:
+      type: number
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+    ApiError:
+      type: object
+      properties:
+        http_code:
+          type: number
+          example: 403
+        internal_error_code:
+          type: number
+          example: 1
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Invalid HMAC signature
+      required:
+        - success
+        - message
+    HmacProxyResponse:
+      type: object
+    HmacProxyRequest:
+      type: object
+      properties:
+        method:
+          type: string
+          example: GET
+        api_identifier:
+          type: string
+          example: /user/
+        api_parameters:
+          type: object
+          properties:
+            username:
+              type: string
+              example: alice
+        body:
+          type: string
+          nullable: true
+      required:
+        - method
+        - url
+    SignedRequest:
+      type: object
+      properties:
+        signature:
+          type: string
+          example: 4acfb7f8b2...
+        request:
+          $ref: '#/components/schemas/HmacProxyRequest'
+      required:
+        - signature
+        - request
+    SignedBase64Request:
+      type: object
+      properties:
+        signature:
+          type: string
+          example: 4acfb7f8b2...
+        request:
+          type: string
+      required:
+        - signature
+        - request
     userinfo:
       description: the User Info
       properties:

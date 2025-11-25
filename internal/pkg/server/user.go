@@ -76,7 +76,7 @@ func getUserFriends(c *gin.Context) {
 		return
 	}
 	recentTracks := c.Query("get_recent_tracks")
-	var getRT bool = false
+	var getRT = false
 	if recentTracks == "true" {
 		getRT = true
 	}
