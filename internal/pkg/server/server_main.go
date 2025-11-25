@@ -36,5 +36,7 @@ func StartServer(config *proxy_config.ProxyConfig) {
 	hmacapi.POST("verify", verifyRequest)
 	hmacapi.POST("verify/againstServer", verifyAgainstServerSecret)
 	hmacapi.POST("execute", executeSignedRequest)
+	hmacapi.GET("execute", executeSignedRequest)
+
 	router.Run()
 }

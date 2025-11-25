@@ -35,6 +35,9 @@ func getUserTopAlbums(c *gin.Context) {
 
 func getUserLovedTracks(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
+	if redirectToHMACEndpoint(c, "/user/tracks/loved", HmacProxyRequestApiParameters{Username: username}) {
+		return
+	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}
@@ -47,6 +50,9 @@ func getUserLovedTracks(c *gin.Context) {
 
 func getUserRecentTracks(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
+	if redirectToHMACEndpoint(c, "/user/tracks/recent", HmacProxyRequestApiParameters{Username: username}) {
+		return
+	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}
@@ -60,6 +66,9 @@ func getUserRecentTracks(c *gin.Context) {
 func getUserCurrentTrack(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
+	if redirectToHMACEndpoint(c, "/user/tracks/current", HmacProxyRequestApiParameters{Username: username}) {
+		return
+	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}

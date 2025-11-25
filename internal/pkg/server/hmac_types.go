@@ -15,13 +15,19 @@ type HmacBase64SignedRequest struct {
 	Request   []byte `json:"request"`
 }
 
-func Base64ToHmacSignedRequest(b64 HmacBase64SignedRequest) (HmacSignedRequest, error) {
+func HmacSignedRequestToBase64(request HmacSignedRequest) HmacBase64SignedRequest {
+	signedRequest := HmacBase64SignedRequest{
+		Signature: request.Signature,
+		Request:   request.Request,
+	}
+	return signedRequest
+}
 
+func Base64ToHmacSignedRequest(b64 HmacBase64SignedRequest) (HmacSignedRequest, error) {
 	signedReq := HmacSignedRequest{
 		Signature: b64.Signature,
 		Request:   json.RawMessage(b64.Request),
 	}
-
 	return signedReq, nil
 }
 

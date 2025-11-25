@@ -8,6 +8,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/dozro/tawny/internal/pkg/apiError"
 	"github.com/gin-gonic/gin"
@@ -87,7 +88,7 @@ func signRequest(c *gin.Context) {
 
 func verifyRequest(c *gin.Context) {
 	psk := c.Request.Header.Get("HMAC-PSK") // For Testing purposes TO-DO
-	isValid, _, err, code := verifyRequestInternal(c, psk, determineIfBase64(c))
+	isValid, _, err, code := verifyRequestInternal(c, psk, determineIfBase64(c), nil)
 	if err != nil {
 		c.JSON(code, apiError.ApiError{
 			HttpCode: code,
@@ -114,7 +115,7 @@ func verifyRequest(c *gin.Context) {
 }
 
 func verifyAgainstServerSecret(c *gin.Context) {
-	isValid, _, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c))
+	isValid, _, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c), nil)
 	if err != nil {
 		c.JSON(code, apiError.ApiError{
 			HttpCode: code,
@@ -139,14 +140,19 @@ func verifyAgainstServerSecret(c *gin.Context) {
 }
 
 // verifyRequestInternal internal code for hmac request verification
-func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool) (bool, *HmacProxyRequest, error, int) {
+func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overridenReqCont *HmacBase64SignedRequest) (bool, *HmacProxyRequest, error, int) {
 	var signedReq HmacSignedRequest
 	var isValid bool
 
 	if base64 {
 		var signedReqBase64 HmacBase64SignedRequest
-		if err := c.ShouldBindJSON(&signedReqBase64); err != nil {
+		if overridenReqCont != nil {
+			signedReqBase64 = *overridenReqCont
 			return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
+		} else {
+			if err := c.ShouldBindJSON(&signedReqBase64); err != nil {
+				return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
+			}
 		}
 		log.Debug("verifying signature")
 		log.Debugf("Received message bytes: %s", signedReqBase64.Request)
@@ -187,8 +193,20 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool) (bool
 }
 
 func executeSignedRequest(c *gin.Context) {
+	var overridenCont *HmacBase64SignedRequest
+	if c.Request.Method == "GET" {
+		request, err := url.QueryUnescape(c.Query("request"))
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		overridenCont = &HmacBase64SignedRequest{
+			Signature: c.Query("signature"),
+			Request:   []byte(request),
+		}
+	}
 	log.Debug("verifying signature")
-	isValid, req, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c))
+	isValid, req, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c), overridenCont)
 	if err != nil {
 		c.JSON(code, apiError.ApiError{
 			HttpCode: code,
