@@ -13,7 +13,7 @@ import (
 
 const pathToFont = "assets/fonts/RubikMarker/RubikMarkerHatch-Regular.ttf"
 
-func EmbedNowPlaying(track_title string, track_artist string, track_album string, track_album_cover string) (*bytes.Buffer, error) {
+func EmbedNowPlaying(track_title string, track_artist string, track_album string, track_album_cover string, username string, now bool) (*bytes.Buffer, error) {
 	// Albumcover herunterladen
 	albumCoverResp, err := doHttpGetRequest(track_album_cover)
 	if err != nil {
@@ -74,6 +74,11 @@ func EmbedNowPlaying(track_title string, track_artist string, track_album string
 	dc.LoadFontFace(pathToFont, 18)
 	dc.SetColor(color.RGBA{220, 161, 161, 233})
 	dc.DrawStringWrapped("Generated with Tawny based on last.fm data", 10, 390, 0, 0, textWidth+100, 1.3, gg.AlignLeft)
+	if now {
+		dc.DrawStringWrapped(fmt.Sprintf("%s is currently listening", username), 75, 15, 0, 0, textWidth+100, 1.3, gg.AlignLeft)
+	} else {
+		dc.DrawStringWrapped(fmt.Sprintf("%s was recently listening", username), 75, 15, 0, 0, textWidth+100, 1.3, gg.AlignLeft)
+	}
 
 	outputImage := dc.Image()
 	buf := new(bytes.Buffer)
