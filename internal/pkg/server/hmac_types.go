@@ -15,6 +15,16 @@ type HmacBase64SignedRequest struct {
 	Request   []byte `json:"request"`
 }
 
+func Base64ToHmacSignedRequest(b64 HmacBase64SignedRequest) (HmacSignedRequest, error) {
+
+	signedReq := HmacSignedRequest{
+		Signature: b64.Signature,
+		Request:   json.RawMessage(b64.Request),
+	}
+
+	return signedReq, nil
+}
+
 type HmacProxyRequest struct {
 	Method        string                        `json:"method"`
 	ApiIdentifier string                        `json:"api_identifier"`

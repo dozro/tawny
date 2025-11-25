@@ -87,7 +87,7 @@ func signRequest(c *gin.Context) {
 
 func verifyRequest(c *gin.Context) {
 	psk := c.Request.Header.Get("HMAC-PSK") // For Testing purposes TO-DO
-	isValid, _, err, code := verifyRequestInternal(c, psk)
+	isValid, _, err, code := verifyRequestInternal(c, psk, determineIfBase64(c))
 	if err != nil {
 		c.JSON(code, apiError.ApiError{
 			HttpCode: code,
@@ -113,44 +113,8 @@ func verifyRequest(c *gin.Context) {
 	}
 }
 
-func verifybase64Request(c *gin.Context) {
-	psk := c.Request.Header.Get("HMAC-PSK") // For Testing purposes TO-DO
-	var signedReq HmacBase64SignedRequest
-
-	if err := c.ShouldBindJSON(&signedReq); err != nil {
-		return
-	}
-
-	log.Debug("verifying signature")
-	log.Debugf("Received message bytes: %s", signedReq.Request)
-	log.Debugf("Received signature: %s", signedReq.Signature)
-
-	isValid := verifyHMAC(psk, string(signedReq.Request), signedReq.Signature)
-
-	if !isValid {
-		log.Debug("invalid signature")
-		log.Debugf("Signature: %s", signedReq.Signature)
-		log.Debugf("Signature should be: %s", generateHMAC(psk, string(signedReq.Request)))
-		c.JSON(403, apiError.ApiError{
-			HttpCode:          403,
-			Message:           "Invalid HMAC signature",
-			Data:              signedReq.Signature,
-			Success:           false,
-			InternalErrorCode: apiError.InvalidHMAC,
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Valid HMAC signature",
-		"success": true,
-	})
-	return
-}
-
 func verifyAgainstServerSecret(c *gin.Context) {
-
-	isValid, _, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret)
+	isValid, _, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c))
 	if err != nil {
 		c.JSON(code, apiError.ApiError{
 			HttpCode: code,
@@ -175,18 +139,37 @@ func verifyAgainstServerSecret(c *gin.Context) {
 }
 
 // verifyRequestInternal internal code for hmac request verification
-func verifyRequestInternal(c *gin.Context, hmacSecret string) (bool, *HmacProxyRequest, error, int) {
+func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool) (bool, *HmacProxyRequest, error, int) {
 	var signedReq HmacSignedRequest
+	var isValid bool
 
-	if err := c.ShouldBindJSON(&signedReq); err != nil {
-		return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
+	if base64 {
+		var signedReqBase64 HmacBase64SignedRequest
+		if err := c.ShouldBindJSON(&signedReqBase64); err != nil {
+			return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
+		}
+		log.Debug("verifying signature")
+		log.Debugf("Received message bytes: %s", signedReqBase64.Request)
+		log.Debugf("Received signature: %s", signedReqBase64.Signature)
+
+		var err error
+		signedReq, err = Base64ToHmacSignedRequest(signedReqBase64)
+		if err != nil {
+			return false, nil, err, http.StatusBadRequest
+		}
+
+	} else {
+		if err := c.ShouldBindJSON(&signedReq); err != nil {
+			return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
+		}
+
+		log.Debug("verifying signature")
+		log.Debugf("Received message bytes: %s", signedReq.Request)
+		log.Debugf("Received signature: %s", signedReq.Signature)
+
 	}
 
-	log.Debug("verifying signature")
-	log.Debugf("Received message bytes: %s", signedReq.Request)
-	log.Debugf("Received signature: %s", signedReq.Signature)
-
-	isValid := verifyHMAC(hmacSecret, string(signedReq.Request), signedReq.Signature)
+	isValid = verifyHMAC(hmacSecret, string(signedReq.Request), signedReq.Signature)
 
 	if !isValid {
 		log.Debug("invalid signature")
@@ -204,7 +187,8 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string) (bool, *HmacProxyR
 }
 
 func executeSignedRequest(c *gin.Context) {
-	isValid, req, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret)
+	log.Debug("verifying signature")
+	isValid, req, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c))
 	if err != nil {
 		c.JSON(code, apiError.ApiError{
 			HttpCode: code,
@@ -218,7 +202,18 @@ func executeSignedRequest(c *gin.Context) {
 			Message:  "Invalid HMAC signature",
 			Success:  false,
 		})
+		return
 	}
-
 	performProxyAction(req, c)
+}
+
+func determineIfBase64(c *gin.Context) bool {
+	log.Debug("determineIfBase64")
+	isBase64R := c.Query("isBase64")
+	isBase64 := false
+	if isBase64R == "true" {
+		isBase64 = true
+		log.Debug("determineIfBase64 is true")
+	}
+	return isBase64
 }

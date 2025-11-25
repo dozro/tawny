@@ -169,6 +169,7 @@ paths:
       summary: sign a request
       tags:
         - hmac
+        - hmac_base64
       responses:
         200:
           description: "successfully signed"
@@ -207,6 +208,11 @@ paths:
           name: HMAC-PSK
           description: HMAC Pre-Shared-Key
           required: true
+        - schema:
+            type: boolean
+          in: query
+          name: isBase64
+          required: false
       requestBody:
         required: true
         content:
@@ -235,34 +241,28 @@ paths:
           in: header
           name: HMAC-PSK
           required: true
+        - name: isBase64
+          description: if the request is base64 encoded
+          required: false
+          in: query
+          schema:
+            type: boolean
       security: []
-  /hmac/verify/base64:
-    post:
-      summary: verify a hmac signed method
-      tags:
-        - hmac
-      responses: { }
-      operationId: get-hmac-verify
-      x-stoplight:
-        id: rrb5zs04683wq
-      parameters:
-        - schema:
-            type: string
-          in: header
-          name: HMAC-PSK
-          required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignedBase64Request'
-      security: [ ]
   /hmac/verify/againstServer:
     post:
       summary: Execute a signed HMAC proxy request
       tags:
         - hmac
+      parameters:
+        - name: isBase64
+          description: if the request is base64 encoded
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - false
+              - true
       requestBody:
         required: true
         content:
@@ -300,6 +300,16 @@ paths:
       summary: Execute a signed HMAC proxy request
       tags:
         - hmac
+      parameters:
+        - name: isBase64
+          description: if the request is base64 encoded
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - true
+              - false
       requestBody:
         required: true
         content:
