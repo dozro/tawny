@@ -13,5 +13,6 @@ WORKDIR /app
 COPY ./assets /app/assets
 COPY ./api /app/api
 COPY --from=buildenv /build/tawnyfm /app/tawnyfm
+COPY --from=buildenv /etc/ssl /etc/ssl
 
 ENTRYPOINT ["/app/tawnyfm"]

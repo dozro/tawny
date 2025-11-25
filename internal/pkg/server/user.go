@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/dozro/tawny/internal/pkg/client"
@@ -94,6 +95,12 @@ func getUserCurrentTrackEmbed(c *gin.Context) {
 	}
 	img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image)
 	if handleError(err, c) {
+		return
+	}
+	if img == nil {
+		e := fmt.Errorf("image not found")
+		log.Error("no valid image data found")
+		c.AbortWithError(http.StatusInternalServerError, e)
 		return
 	}
 	c.Data(http.StatusOK, "image/png", img.Bytes())
