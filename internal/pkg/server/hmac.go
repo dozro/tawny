@@ -24,6 +24,7 @@ func generateHMAC(secret, message string) string {
 }
 
 func verifyHMAC(secret, message, receivedSig string) bool {
+	log.Debugf("verifyHMAC receivedSig: %s", receivedSig)
 	key := []byte(secret)
 	mac := hmac.New(sha256.New, key)
 	mac.Write([]byte(message))
@@ -31,6 +32,7 @@ func verifyHMAC(secret, message, receivedSig string) bool {
 
 	receivedMAC, err := hex.DecodeString(receivedSig)
 	if err != nil {
+		log.Errorf("verifyHMAC failed to decode signature: %s", err)
 		return false
 	}
 
@@ -46,6 +48,7 @@ func signBase64Request(c *gin.Context) {
 			Message:           "invalid request body",
 			Success:           false,
 		})
+		return
 	}
 
 	signature := generateHMAC(psk, string(raw))
@@ -147,14 +150,15 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overr
 	if base64 {
 		var signedReqBase64 HmacBase64SignedRequest
 		if overridenReqCont != nil {
-			signedReqBase64 = *overridenReqCont
-			return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
+			log.Debug("overriding request body")
+			signedReqBase64.Request = overridenReqCont.Request
+			signedReqBase64.Signature = overridenReqCont.Signature
 		} else {
 			if err := c.ShouldBindJSON(&signedReqBase64); err != nil {
 				return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
 			}
 		}
-		log.Debug("verifying signature")
+		log.Debug("verifying signature (base64)...")
 		log.Debugf("Received message bytes: %s", signedReqBase64.Request)
 		log.Debugf("Received signature: %s", signedReqBase64.Signature)
 
@@ -169,7 +173,7 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overr
 			return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
 		}
 
-		log.Debug("verifying signature")
+		log.Debug("verifying signature (not base64)...")
 		log.Debugf("Received message bytes: %s", signedReq.Request)
 		log.Debugf("Received signature: %s", signedReq.Signature)
 
@@ -184,8 +188,12 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overr
 		return false, nil, errors.New("invalid HMAC signature"), http.StatusForbidden
 	}
 
+	log.Debug("successfully verified request")
+	log.Debug("parsing request...")
+
 	var req HmacProxyRequest
 	if err := json.Unmarshal(signedReq.Request, &req); err != nil {
+		log.Errorf("failed to unmarshal request: %s", err)
 		return false, nil, err, http.StatusBadRequest
 	}
 
@@ -196,6 +204,7 @@ func executeSignedRequest(c *gin.Context) {
 	var overridenCont *HmacBase64SignedRequest
 	if c.Request.Method == "GET" {
 		request, err := url.QueryUnescape(c.Query("request"))
+		log.Debugf("Request: %s, %s", request, c.Query("request"))
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -213,6 +222,7 @@ func executeSignedRequest(c *gin.Context) {
 			Message:  err.Error(),
 			Success:  false,
 		})
+		return
 	}
 	if !isValid {
 		c.JSON(403, apiError.ApiError{

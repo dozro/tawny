@@ -1,7 +1,11 @@
 package server
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type HmacSignedRequest struct {
@@ -24,10 +28,28 @@ func HmacSignedRequestToBase64(request HmacSignedRequest) HmacBase64SignedReques
 }
 
 func Base64ToHmacSignedRequest(b64 HmacBase64SignedRequest) (HmacSignedRequest, error) {
+	log.Debugf("decoding base64 signed request: %s", b64)
+
+	// Base64 decode the JSON request payload
+	decoded, err := base64.StdEncoding.DecodeString(string(b64.Request))
+	if err != nil {
+		e := fmt.Errorf("failed to decode base64 request: %w", err)
+		log.Error(e)
+		return HmacSignedRequest{}, e
+	}
+
+	if !json.Valid(decoded) {
+		e := fmt.Errorf("decoded request is not valid JSON: %s", decoded)
+		log.Error(e)
+		return HmacSignedRequest{}, e
+	}
+
 	signedReq := HmacSignedRequest{
 		Signature: b64.Signature,
-		Request:   json.RawMessage(b64.Request),
+		Request:   json.RawMessage(decoded),
 	}
+
+	log.Debugf("decoded base64 request: %s, %s", signedReq.Signature, signedReq.Request)
 	return signedReq, nil
 }
 
