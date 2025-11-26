@@ -1,0 +1,6 @@
+extends: '@ibm-cloud/openapi-ruleset'
+rules:
+  ibm-accept-and-return-models: info
+  ibm-integer-attributes: false
+  ibm-required-array-properties-in-response: false
+  ibm-property-casing-convention: false

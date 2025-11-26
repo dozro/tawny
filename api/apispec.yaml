@@ -6,7 +6,6 @@ info:
 
     https://github.com/dozro/tawny/tree/main
   version: 0.1.0
-  summary: ''
 servers:
   - url: /api/v1
 paths:
@@ -23,6 +22,8 @@ paths:
           in: path
           required: true
           description: the username
+          schema:
+            type: string
       responses:
         '200':
           description: The fetched User Info
@@ -289,7 +290,13 @@ paths:
       summary: verify a hmac signed method
       tags:
         - hmac
-      responses: {}
+      responses:
+        200:
+          description: request success
+          content:
+            application/json:
+              schema:
+                type: object
       operationId: get-hmac-verify
       x-stoplight:
         id: rrb5zs04683wq
@@ -339,7 +346,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProxyResponse'
+                type: object
         '400':
           description: Bad input or invalid JSON
           content:
@@ -471,7 +478,13 @@ paths:
       summary: get a user's topalbums
       tags: 
         - user
-      responses: {}
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTopAlbums'
       operationId: get-user-username-top-albums
       x-stoplight:
         id: thto4eee1rct0
@@ -483,7 +496,6 @@ paths:
         in: path
         required: true
     get:
-
       summary: lookup artist details by mbid
       operationId: mb-lookup-artist-mbid
       tags:
@@ -637,7 +649,7 @@ components:
         bootstrap:
           type: number
         registered:
-          type: date
+          type: string
       x-stoplight:
         id: cm8wxhqhlcyu8
     internalError:
@@ -739,6 +751,29 @@ components:
           type: integer
         error:
           type: string
+    UserTopAlbums:
+      title: UserTopAlbums
+      type: object
+      properties:
+        album:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAlbums'
+    UserAlbums:
+      type: object
+      properties:
+        rank:
+          type: integer
+        name:
+          type: string
+        playcount:
+          type: integer
+        mbid:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: false
     UserTopTracks:
       title: UserTopTracks
       x-stoplight:
