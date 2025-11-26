@@ -42,3 +42,14 @@ func redirectToHMACEndpoint(c *gin.Context, apiId string, apipara HmacProxyReque
 	}
 	return false
 }
+
+func render(c *gin.Context, status int, payload interface{}) {
+	switch c.GetHeader("Accept") {
+	case "application/xml":
+		c.XML(status, payload)
+	case "application/yaml":
+		c.YAML(status, payload)
+	default:
+		c.JSON(status, payload)
+	}
+}

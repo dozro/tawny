@@ -69,6 +69,8 @@ type HmacProxyRequest struct {
 
 type HmacProxyRequestApiParameters struct {
 	Username string `json:"username"`
+	Limit    int    `json:"limit"`
+	Page     int    `json:"page"`
 }
 
 type HmacProxyResponseWrapper struct {

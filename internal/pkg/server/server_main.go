@@ -28,6 +28,7 @@ func StartServer(config *proxy_config.ProxyConfig) {
 	user.GET(":username/tracks/current", getUserCurrentTrack)
 	user.GET(":username/tracks/current/embed", getUserCurrentTrackEmbed)
 	user.GET(":username/top/albums", getUserTopAlbums)
+	user.GET(":username/top/tracks", getUserTopTracks)
 
 	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
@@ -39,6 +40,11 @@ func StartServer(config *proxy_config.ProxyConfig) {
 	hmacapi.POST("verify/againstServer", verifyAgainstServerSecret)
 	hmacapi.POST("execute", executeSignedRequest)
 	hmacapi.GET("execute", executeSignedRequest)
+
+	musicbrainz := v1.Group("/musicbrainz")
+	musicbrainz.GET("lookup/artist/by-mbid/:artistMbid", lookUpArtistByMbid)
+
+	addHealthChecks(router)
 
 	router.Run()
 }

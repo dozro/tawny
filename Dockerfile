@@ -15,4 +15,6 @@ COPY ./api /app/api
 COPY --from=buildenv /build/tawnyfm /app/tawnyfm
 COPY --from=buildenv /etc/ssl /etc/ssl
 
+HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost:3030/healthz || exit 1
+
 ENTRYPOINT ["/app/tawnyfm"]

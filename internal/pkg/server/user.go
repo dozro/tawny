@@ -54,13 +54,18 @@ func getUserLovedTracks(c *gin.Context) {
 
 func getUserRecentTracks(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
+	embedMusicBrainz := c.Query("fetch_musicbrainz")
+	embedMusicBrainzB := false
+	if embedMusicBrainz == "true" {
+		embedMusicBrainzB = true
+	}
 	if redirectToHMACEndpoint(c, "/user/tracks/recent", HmacProxyRequestApiParameters{Username: username}) {
 		return
 	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	lt, err := client.GetUserRecentTracks(username, apikey, limit, page)
+	lt, err := client.GetUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB)
 	if handleError(err, c) {
 		return
 	}
@@ -123,6 +128,17 @@ func getUserFriends(c *gin.Context) {
 	if handleError(err, c) {
 		return
 	}
-	c.JSON(200, uf)
+	render(c, http.StatusOK, uf)
+}
 
+func getUserTopTracks(c *gin.Context) {
+	apikey, username, page, limit := pageLimitAuthReq(c)
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	tt, err := client.GetUserTopTracks(username, apikey, limit, page)
+	if handleError(err, c) {
+		return
+	}
+	render(c, http.StatusOK, tt)
 }

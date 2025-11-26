@@ -1,0 +1,17 @@
+package musicbrainz_api
+
+import "net/http"
+
+const userAgent = "Tawny/0.0.1 (linux;github.com/dozro/tawny;+abuse@itsrye.dev)"
+
+var httpClient = &http.Client{}
+
+func doHttpGetRequest(url string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("Accept", "application/xml")
+	return httpClient.Do(req)
+}
