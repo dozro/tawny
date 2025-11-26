@@ -44,7 +44,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internalError'
       summary: Get User Info
-      operationId: user_get_info
+      operationId: get_user
       tags:
         - user
   '/user/{username}/tracks/loved':
@@ -534,7 +534,7 @@ paths:
         required: true
     get:
       summary: lookup artist details by mbid
-      operationId: mb-lookup-artist-mbid
+      operationId: get_musicbrainz_lookup_artist_by_mbid
       tags:
         - musicbrainz
       responses:
