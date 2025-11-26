@@ -751,8 +751,6 @@ components:
       properties:
         loved_tracks:
           type: array
-          required:
-            - items
           items:
             type: object
             properties:
