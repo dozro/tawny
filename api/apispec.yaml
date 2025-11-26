@@ -51,7 +51,7 @@ paths:
       summary: Get User Info
       operationId: get_user
       tags:
-        - us
+        - user
   '/user/{username}/tracks/loved':
     get:
       description: 'Get loved tracks of specified User - https://www.last.fm/api/show/user.getLovedTracks'
