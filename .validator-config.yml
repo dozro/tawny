@@ -1,0 +1,16 @@
+errorsOnly: false
+colorizeOutput: true
+limits:
+  warnings: 25
+outputFormat: 'text'
+summaryOnly: false
+files:
+  - ./api/apispec.yaml
+ignoreFiles:
+  - validator-config.yml
+logLevels:
+  root: debug
+  ibm-schema-description-exists: debug
+ruleset: ./.validator-rules.yml
+produceImpactScore: true
+markdownReport: true
