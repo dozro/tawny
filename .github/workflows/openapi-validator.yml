@@ -32,12 +32,18 @@ jobs:
       - name: Validate OpenAPI spec (./api/apispec.yaml)
         id: validation
         run: |
-          if lint-openapi -c ./.validator-config.yml ./api/apispec.yaml --no-colors | tee validation_result.txt 2>&1; then
+          if lint-openapi -c ./.validator-config.yml ./api/apispec.yaml --no-colors -m | tee validation_result.txt 2>&1; then
             echo "validation_status=success" >> $GITHUB_OUTPUT
           else
             echo "validation_status=failed" >> $GITHUB_OUTPUT
           fi
         continue-on-error: true
+
+      - name: Upload Validation Results to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation_result
+          path: validation_result.txt
 
       - name: Comment PR with validation output
         if: github.event_name == 'pull_request'
