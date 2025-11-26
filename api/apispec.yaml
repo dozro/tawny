@@ -31,11 +31,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/userinfo'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+          $ref: '#/components/responses/ApiErrorReturn401'
         '500':
           description: internal server error
           content:
@@ -86,11 +82,7 @@ paths:
         '307':
           description: a redirect
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+          $ref: '#/components/responses/ApiErrorReturn401'
         '500':
           description: internal server error
           content:
@@ -116,11 +108,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserRecentTracks'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+          $ref: '#/components/responses/ApiErrorReturn401'
         '500':
           description: Internal Server Error
           content:
@@ -260,6 +248,15 @@ paths:
       responses:
         '200':
           description: successfully signed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HmacProxyRequest'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/HmacProxyRequest'
+        '401':
+          $ref: '#/components/responses/ApiErrorReturn401'
       operationId: post-hmac-sign
       x-stoplight:
         id: 1hthsq5tpk5xi
@@ -345,11 +342,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
         '403':
-          description: Invalid signature or not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ApiErrorReturn403'
         '500':
           description: Internal server error
           content:
@@ -451,6 +444,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserRecentTracks'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserRecentTracks'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/UserRecentTracks'
+        '401':
+          description: Unauthorized
       operationId: get-user-username-top-tracks
       x-stoplight:
         id: l3tqqqu7any10
@@ -485,18 +486,30 @@ components:
         - 1
         - 2
         - 3
+    Success:
+      type: boolean
+      description: If the operation was successfull
+      example: false
     ApiError:
       type: object
       properties:
         http_code:
           type: number
+          description: The HTTP Error Code
           example: 403
         internal_error_code:
           type: number
+          description: The internal Error Code
           example: 1
+        internal_error_msg:
+          type: string
+          nullable: true
+          description: Internal Error message
         success:
-          type: boolean
-          example: false
+          $ref: '#/components/schemas/Success'
+        data:
+          type: object
+          nullable: true
         message:
           type: string
           example: Invalid HMAC signature
@@ -511,23 +524,46 @@ components:
         method:
           type: string
           example: GET
+          enum:
+            - "GET"
+            - "POST"
+            - "HEAD"
         api_identifier:
           type: string
           example: /user/
+          enum:
+            - "/user/"
+            - "/user/tracks/current/"
+            - "/user/tracks/current/embed"
+            - "/user/tracks/recent/"
         api_parameters:
+          description: The Api Parameters you want to provide
           type: object
+          required:
+            - username
           properties:
             username:
               type: string
               example: alice
+              description: The Username you want to specify
+            page:
+              type: number
+              example: 1
+              description: The page of the result you want to get
+            limit:
+              type: number
+              example: 15
+              description: The limit of a page
         body:
           type: string
           nullable: true
+          default: null
       required:
         - method
-        - url
+        - api_identifier
     SignedRequest:
       type: object
+      title: "The signed Request (not encoded)"
       properties:
         signature:
           type: string
@@ -539,12 +575,14 @@ components:
         - request
     SignedBase64Request:
       type: object
+      title: "A signed Request Base64 encoded"
       properties:
         signature:
           type: string
           example: 4acfb7f8b2...
         request:
           type: string
+
       required:
         - signature
         - request
@@ -751,4 +789,29 @@ components:
             id: u5uiuw3abgcr2
           format: uri
           description: The URL of the artist's entry on last.fm
+  responses:
+    ApiErrorReturn401:
+      description: Api Error 401
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    ApiErrorReturn403:
+      description: Api Error 401
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
 x-internal: true

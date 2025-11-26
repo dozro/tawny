@@ -7,7 +7,7 @@ import (
 
 func apikeyUndefined(apikey string, c *gin.Context) bool {
 	if apikey == "" {
-		c.JSON(401, apiError.ApiError{
+		render(c, 401, apiError.ApiError{
 			HttpCode:          401,
 			InternalErrorCode: apiError.MissingApiKeyInRequest,
 			Message:           "apikey is required",

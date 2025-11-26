@@ -123,8 +123,7 @@ func getUserFriends(c *gin.Context) {
 	if handleError(err, c) {
 		return
 	}
-	c.JSON(200, uf)
-
+	render(c, http.StatusOK, uf)
 }
 
 func getUserTopTracks(c *gin.Context) {
@@ -136,5 +135,5 @@ func getUserTopTracks(c *gin.Context) {
 	if handleError(err, c) {
 		return
 	}
-	c.JSON(200, tt)
+	render(c, http.StatusOK, tt)
 }

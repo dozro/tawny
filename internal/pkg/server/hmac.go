@@ -67,12 +67,13 @@ func signRequest(c *gin.Context) {
 
 	raw, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, apiError.ApiError{
+		render(c, http.StatusBadRequest, apiError.ApiError{
 			HttpCode:          403,
 			InternalErrorCode: apiError.InvalidBody,
 			Message:           "invalid request body",
 			Success:           false,
 		})
+		return
 	}
 
 	signature := generateHMAC(psk, string(raw))
@@ -86,14 +87,14 @@ func signRequest(c *gin.Context) {
 		Signature: signature,
 	}
 
-	c.JSON(200, signedRequest)
+	render(c, 200, signedRequest)
 }
 
 func verifyRequest(c *gin.Context) {
 	psk := c.Request.Header.Get("HMAC-PSK") // For Testing purposes TO-DO
 	isValid, _, err, code := verifyRequestInternal(c, psk, determineIfBase64(c), nil)
 	if err != nil {
-		c.JSON(code, apiError.ApiError{
+		render(c, code, apiError.ApiError{
 			HttpCode: code,
 			Message:  err.Error(),
 			Success:  false,
@@ -101,7 +102,7 @@ func verifyRequest(c *gin.Context) {
 		return
 	}
 	if !isValid {
-		c.JSON(403, apiError.ApiError{
+		render(c, 403, apiError.ApiError{
 			HttpCode: 403,
 			Message:  "Invalid HMAC signature",
 			Data:     c.Request.Body,
@@ -109,7 +110,7 @@ func verifyRequest(c *gin.Context) {
 		})
 		return
 	} else {
-		c.JSON(200, gin.H{
+		render(c, 200, gin.H{
 			"message": "Valid HMAC signature",
 			"success": true,
 		})
@@ -120,21 +121,21 @@ func verifyRequest(c *gin.Context) {
 func verifyAgainstServerSecret(c *gin.Context) {
 	isValid, _, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c), nil)
 	if err != nil {
-		c.JSON(code, apiError.ApiError{
+		render(c, code, apiError.ApiError{
 			HttpCode: code,
 			Message:  err.Error(),
 			Success:  false,
 		})
 	}
 	if !isValid {
-		c.JSON(403, apiError.ApiError{
+		render(c, 403, apiError.ApiError{
 			HttpCode: 403,
 			Message:  "Invalid HMAC signature",
 			Success:  false,
 		})
 		return
 	} else {
-		c.JSON(200, gin.H{
+		render(c, 200, gin.H{
 			"message": "Valid HMAC signature",
 			"success": true,
 		})

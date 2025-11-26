@@ -62,5 +62,15 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 			}
 			c.Data(http.StatusOK, "image/png", img.Bytes())
 		}
+	case userRecentlyPlayedRegex.MatchString(request.ApiIdentifier):
+		{
+			log.Debug("proxy action: user.RecentlyPlayed")
+			rp, err := client.GetUserRecentTracks(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, request.ApiParameters.Limit, request.ApiParameters.Page)
+			if handleError(err, c) {
+				return
+			}
+			c.JSON(200, rp)
+			return
+		}
 	}
 }
