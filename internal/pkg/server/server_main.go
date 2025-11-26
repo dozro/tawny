@@ -41,5 +41,7 @@ func StartServer(config *proxy_config.ProxyConfig) {
 	hmacapi.POST("execute", executeSignedRequest)
 	hmacapi.GET("execute", executeSignedRequest)
 
+	addHealthChecks(router)
+
 	router.Run()
 }
