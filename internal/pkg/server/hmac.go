@@ -239,8 +239,9 @@ func executeSignedRequest(c *gin.Context) {
 func determineIfBase64(c *gin.Context) bool {
 	log.Debug("determineIfBase64")
 	isBase64R := c.Query("isBase64")
+	isBase64L := c.Query("is_base64")
 	isBase64 := false
-	if isBase64R == "true" {
+	if isBase64R == "true" || isBase64L == "true" {
 		isBase64 = true
 		log.Debug("determineIfBase64 is true")
 	}

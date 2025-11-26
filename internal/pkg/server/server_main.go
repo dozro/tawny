@@ -38,11 +38,12 @@ func StartServer(config *proxy_config.ProxyConfig) {
 	hmacapi.POST("sign/base64", signBase64Request)
 	hmacapi.POST("verify", verifyRequest)
 	hmacapi.POST("verify/againstServer", verifyAgainstServerSecret)
+	hmacapi.POST("verify/against_server", verifyAgainstServerSecret)
 	hmacapi.POST("execute", executeSignedRequest)
 	hmacapi.GET("execute", executeSignedRequest)
 
 	musicbrainz := v1.Group("/musicbrainz")
-	musicbrainz.GET("lookup/artist/by-mbid/:artistMbid", lookUpArtistByMbid)
+	musicbrainz.GET("lookup/artist/by_mbid/:artist_mbid", lookUpArtistByMbid)
 
 	addHealthChecks(router)
 
