@@ -6,11 +6,15 @@ info:
 
     https://github.com/dozro/tawny/tree/main
   version: 0.1.0
-  summary: ''
 servers:
   - url: /api/v1
+tags:
+  - name: user
+    description: Operations related to users
+  - name: hmac
+    description: Operations related to hmac
 paths:
-  '/user/{username}/':
+  '/user/{username}':
     get:
       description: |-
         Get User Info
@@ -23,6 +27,12 @@ paths:
           in: path
           required: true
           description: the username
+          schema:
+            type: string
+            example: alice
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
       responses:
         '200':
           description: The fetched User Info
@@ -31,11 +41,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/userinfo'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+          $ref: '#/components/responses/ApiErrorReturn401'
         '500':
           description: internal server error
           content:
@@ -43,7 +49,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internalError'
       summary: Get User Info
-      operationId: user.getInfo
+      operationId: get_user
       tags:
         - user
   '/user/{username}/tracks/loved':
@@ -70,12 +76,18 @@ paths:
           description: the username
           schema:
             type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
         - name: signature
           in: query
           required: false
           description: the HMAC Signature for this OP
           schema:
             type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            maxLength: 64
+            minLength: 64
       responses:
         '200':
           description: the fetched list of loved songs
@@ -86,21 +98,15 @@ paths:
         '307':
           description: a redirect
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+          $ref: '#/components/responses/ApiErrorReturn401'
         '500':
           description: internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
-      x-stoplight:
-        id: zvsb8k7ludcjm
       summary: Get Users Loved Tracks
-      operationId: user.getLovedTracks
+      operationId: user_get_loved_tracks
       tags:
         - user
   '/user/{username}/tracks/recent':
@@ -116,28 +122,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserRecentTracks'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+          $ref: '#/components/responses/ApiErrorReturn401'
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
-      operationId: 'get-user-:username-tracks-recent'
-      x-stoplight:
-        id: hxzn5dp9xaxte
+      operationId: 'get_user_username_tracks_recent'
       parameters:
         - schema:
-            type: number
+            type: integer
+            format: int32
+            default: 25
+            minimum: 1
+            maximum: 250
           in: query
           name: limit
           description: The limit
         - schema:
-            type: number
+            type: integer
+            format: int64
+            default: 1
+            minimum: 1
+            maximum: 32000
           in: query
           name: page
           description: The page
@@ -147,6 +155,24 @@ paths:
           description: the HMAC Signature for this OP
           schema:
             type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            minLength: 64
+            maxLength: 64
+        - name: fetch_musicbrainz
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: username
+          in: path
+          required: true
+          description: The username
+          schema:
+            type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
   '/user/{username}/tracks/current':
     get:
       summary: get current track
@@ -159,12 +185,18 @@ paths:
           description: The username
           schema:
             type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
         - name: signature
           in: query
           required: false
           description: the HMAC Signature for this OP
           schema:
             type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            minLength: 64
+            maxLength: 64
       responses:
         '200':
           description: OK
@@ -184,9 +216,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
-      operationId: 'get-user-:username-tracks-current'
-      x-stoplight:
-        id: r4nu8mvgwcbbf
+      operationId: 'get_user_username_tracks_current'
       description: equivalent to calling recent with limit of 1
   '/user/{username}/tracks/current/embed':
     get:
@@ -208,9 +238,14 @@ paths:
             type: string
       responses:
         '200':
-          description: OK
+          description: The operation was successful
+          content: {}
+        '500':
+          description: Internal Server Error
           content:
-            image/png:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
       operationId: 'get-user-:username-tracks-current-embed'
       x-stoplight:
         id: r4nu8mvgwcbbf
@@ -222,9 +257,9 @@ paths:
         - hmac
         - hmac_base64
       responses:
-        200:
-          description: "successfully signed"
-      operationId: post-hmac-sign
+        '200':
+          description: successfully signed
+      operationId: post-hmac-sign-base64
       x-stoplight:
         id: 1hthsq5tpk5xi
       parameters:
@@ -240,15 +275,24 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/HmacProxyRequest'
-      security: [ ]
+      security: []
   /hmac/sign:
     post:
       summary: sign a request
       tags:
         - hmac
       responses:
-        200:
-          description: "successfully signed"
+        '200':
+          description: successfully signed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HmacProxyRequest'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/HmacProxyRequest'
+        '401':
+          $ref: '#/components/responses/ApiErrorReturn401'
       operationId: post-hmac-sign
       x-stoplight:
         id: 1hthsq5tpk5xi
@@ -262,7 +306,7 @@ paths:
         - schema:
             type: boolean
           in: query
-          name: isBase64
+          name: is_base64
           required: false
       requestBody:
         required: true
@@ -276,7 +320,13 @@ paths:
       summary: verify a hmac signed method
       tags:
         - hmac
-      responses: {}
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verification'
       operationId: get-hmac-verify
       x-stoplight:
         id: rrb5zs04683wq
@@ -295,17 +345,25 @@ paths:
         - name: isBase64
           description: if the request is base64 encoded
           required: false
+          deprecated: true
+          in: query
+          schema:
+            type: boolean
+        - name: is_base64
+          description: if the request is base64 encoded
+          required: false
+          deprecated: true
           in: query
           schema:
             type: boolean
       security: []
-  /hmac/verify/againstServer:
+  /hmac/verify/against_server:
     post:
       summary: Execute a signed HMAC proxy request
       tags:
         - hmac
       parameters:
-        - name: isBase64
+        - name: is_base64
           description: if the request is base64 encoded
           required: false
           in: query
@@ -326,7 +384,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProxyResponse'
+                $ref: '#/components/schemas/Verification'
         '400':
           description: Bad input or invalid JSON
           content:
@@ -334,33 +392,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
         '403':
-          description: Invalid signature or not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ApiErrorReturn403'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-      security: []
+      security: [ ]
   /hmac/execute:
     post:
       summary: Execute a signed HMAC proxy request
       tags:
         - hmac
       parameters:
-        - name: isBase64
+        - name: is_base64
           description: if the request is base64 encoded
           required: false
           in: query
           schema:
-            type: string
-            enum:
-              - true
-              - false
+            type: boolean
       requestBody:
         required: true
         content:
@@ -402,11 +453,18 @@ paths:
         - name: isBase64
           description: if the request is base64 encoded
           required: true
+          deprecated: true
           in: query
           schema:
             type: boolean
-            enum:
-              - true
+            default: true
+        - name: is_base64
+          description: if the request is base64 encoded
+          required: true
+          in: query
+          schema:
+            type: boolean
+            default: true
         - name: request
           description: base64 encoded request
           in: query
@@ -420,9 +478,74 @@ paths:
           schema:
             type: string
       responses:
-        200:
-          description: "successful request"
-
+        '200':
+          description: successful request
+  '/user/{username}/top/tracks':
+    parameters:
+      - schema:
+          type: string
+        name: username
+        in: path
+        required: true
+    get:
+      summary: get the top tracks
+      tags:
+        - user
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTopTracks'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserTopTracks'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/UserTopTracks'
+        '401':
+          description: Unauthorized
+      operationId: get-user-username-top-tracks
+      x-stoplight:
+        id: l3tqqqu7any10
+  '/user/{username}/top/albums':
+    parameters:
+      - schema:
+          type: string
+        name: username
+        in: path
+        required: true
+    get:
+      summary: get a user's topalbums
+      tags: 
+        - user
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTopAlbums'
+      operationId: get-user-username-top-albums
+      x-stoplight:
+        id: thto4eee1rct0
+  /musicbrainz/lookup/artist/by_mbid/{artist_mbid}:
+    parameters:
+      - schema:
+          type: string
+        name: artist_mbid
+        in: path
+        required: true
+    get:
+      summary: lookup artist details by mbid
+      tags:
+        - musicbrainz
+      operationId: get_musicbrainz_lookup_artist_by_mbid
+      responses:
+        '200':
+          description: Request successful
+      
 security:
   - defaultApiKey: []
 components:
@@ -440,18 +563,38 @@ components:
         - 1
         - 2
         - 3
+    Success:
+      type: boolean
+      description: If the operation was successful
+      example: false
+    Verification:
+      type: object
+      description: whether the verification was successful
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
     ApiError:
       type: object
       properties:
         http_code:
           type: number
+          description: The HTTP Error Code
           example: 403
         internal_error_code:
           type: number
+          description: The internal Error Code
           example: 1
+        internal_error_msg:
+          type: string
+          nullable: true
+          description: Internal Error message
         success:
-          type: boolean
-          example: false
+          $ref: '#/components/schemas/Success'
+        data:
+          type: object
+          nullable: true
         message:
           type: string
           example: Invalid HMAC signature
@@ -460,33 +603,63 @@ components:
         - message
     HmacProxyResponse:
       type: object
+      properties:
+        signature:
+          type: string
     HmacProxyRequest:
       type: object
       properties:
         method:
           type: string
-          example: GET
+          example: get
+          description: lowercase http method
+          enum:
+            - "get"
+            - "post"
+            - "head"
         api_identifier:
           type: string
           example: /user/
+          enum:
+            - "/user/"
+            - "/user/tracks/current/"
+            - "/user/tracks/current/embed"
+            - "/user/tracks/recent/"
         api_parameters:
+          description: The Api Parameters you want to provide
           type: object
+          required:
+            - username
           properties:
             username:
               type: string
               example: alice
+              description: The Username you want to specify
+            page:
+              type: number
+              example: 1
+              description: The page of the result you want to get
+            limit:
+              type: number
+              example: 15
+              description: The limit of a page
         body:
           type: string
           nullable: true
+          default: null
       required:
         - method
-        - url
+        - api_identifier
     SignedRequest:
       type: object
+      title: "The signed Request (not encoded)"
       properties:
         signature:
           type: string
           example: 4acfb7f8b2...
+          pattern: "^[A-Fa-f0-9]{64}$"
+          minLength: 64
+          maxLength: 64
         request:
           $ref: '#/components/schemas/HmacProxyRequest'
       required:
@@ -494,10 +667,14 @@ components:
         - request
     SignedBase64Request:
       type: object
+      title: "A signed Request Base64 encoded"
       properties:
         signature:
           type: string
           example: 4acfb7f8b2...
+          pattern: "^[A-Fa-f0-9]{64}$"
+          minLength: 64
+          maxLength: 64
         request:
           type: string
       required:
@@ -510,12 +687,17 @@ components:
           type: number
         name:
           type: string
+          pattern: "^[a-zA-Z0-9_-]{3,20}$"
+          minLength: 3
+          maxLength: 20
         realname:
           type: string
         url:
           type: string
+          format: url
         imageurl:
           type: string
+          format: url
         country:
           type: string
         age:
@@ -531,9 +713,8 @@ components:
         bootstrap:
           type: number
         registered:
-          type: date
-      x-stoplight:
-        id: cm8wxhqhlcyu8
+          type: string
+          format: date
     internalError:
       description: internal server error
       properties:
@@ -553,74 +734,257 @@ components:
                   type: string
                 method:
                   type: string
-      x-stoplight:
-        id: 8izaqp46xka2w
+    LFMArtistSimple:
+      type: object
+      nullable: true
+      properties:
+        name:
+          type: string
+        mbid:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: url
     UserLovedTracks:
       type: object
-      x-stoplight:
-        id: dca295db69d50
       properties:
-        LovedTracks:
+        loved_tracks:
           type: array
           items:
             type: object
             properties:
-              Name:
+              name:
                 type: string
-              Mbid:
+                maxLength: 100
+                minLength: 1
+                description: Track Name
+              mbid:
                 type: string
-              Url:
+                format: uuid
+                nullable: true
+                description: The musicbrainz id of the track
+              url:
                 type: string
-              Date:
+                format: url
+                description: The url to the lastfm entry of the track
+              date:
                 type: string
-              Image:
+                format: date
+              image:
                 type: string
-              Artist:
-                type: object
-                properties:
-                  Name:
-                    type: string
-                  Mbid:
-                    type: string
-                  Url:
-                    type: string
-              Streamable:
+                format: url
+                description: album cover image
+              artist:
+                $ref: '#/components/schemas/LFMArtistSimple'
+              streamable:
                 type: integer
+                format: int32
+                minimum: 0
+                maximum: 255
       description: The tracks a user loves
     UserRecentTracks:
       type: object
+      description: The Tracks a user listened to recently
       properties:
-        Track:
+        track:
           type: array
           items:
             type: object
+            required:
+              - items
             properties:
-              NowPlaying:
+              now_playing:
                 type: boolean
-              Name:
+                description: If the track is currently playing
+                nullable: false
+              name:
                 type: string
-              TrackMbid:
+                description: The Trackname
+              track_mbid:
                 type: string
-              Url:
+                format: uuid
+                description: The MusicBrainz identifier for the track
+              url:
                 type: string
-              Date:
+                format: url
+                description: The url to the lastfm entry
+              date:
                 type: string
-              Timestamp:
+                format: date
+                description: The date of the scrobble
+              timestamp:
                 type: string
-              Image:
+                format: date-time
+              image:
                 type: string
-              Artist:
+                format: url
+              artist:
+                $ref: '#/components/schemas/Artist'
+              artist_mbid:
                 type: string
-              ArtistMbid:
-                type: string
-              Streamable:
-                type: integer
-      description: The Tracks a user listened to recently
+                format: uuid
+              streamable:
+                type: number
+              track_musicbrainz:
+                $ref: '#/components/schemas/MusicbrainzRecording'
     UnauthorizedResponse:
       type: object
       properties:
         code:
           type: integer
+          format: int64
+          example: 403
+          minimum: 100
+          maximum: 599
         error:
           type: string
+    UserTopAlbums:
+      title: UserTopAlbums
+      type: object
+      properties:
+        album:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAlbums'
+    UserAlbums:
+      type: object
+      properties:
+        rank:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 255
+        name:
+          type: string
+        playcount:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 32000
+        mbid:
+          type: string
+          format: uuid
+          nullable: true
+        url:
+          type: string
+          format: url
+          nullable: false
+    UserTopTracks:
+      title: UserTopTracks
+      type: object
+      properties:
+        track:
+          type: array
+          items:
+            type: object
+            required:
+              - items
+            properties:
+              name:
+                type: string
+              rank:
+                type: integer
+                description: The ranking
+                format: int32
+                minimum: 1
+                maximum: 16000
+              mbid:
+                type: string
+                format: uuid
+                description: The musicbrainz identifier of the track
+              url:
+                type: string
+                format: url
+                description: the url of the lastfm entry
+              date:
+                type: string
+                format: date
+                description: the date of the scrobble
+                nullable: true
+              image:
+                type: string
+                format: url
+                description: Link to the tracks image
+              artist:
+                $ref: '#/components/schemas/Artist'
+    Artist:
+      title: Artist
+      type: object
+      properties:
+        name:
+          type: string
+          example: Linkin Park
+          description: The name of the artist
+        mbid:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: url
+          example: 'https://www.last.fm/music/Linkin+Park'
+          description: The URL of the artist's entry on last.fm
+    MusicbrainzRecording:
+      type: object
+      nullable: true
+      properties:
+        recording:
+          type: object
+          properties:
+            text:
+              type: string
+            id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            length:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 2147483647
+            artist_credit:
+              type: object
+              properties:
+                name_credit:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                      joinphrase:
+                        type: string
+                        example: "feat."
+                      artist:
+                        $ref: '#/components/schemas/Artist'
+            release_list:
+              type: object
+            isrc_list:
+              type: object
+  responses:
+    ApiErrorReturn401:
+      description: Api Error 401
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    ApiErrorReturn403:
+      description: Api Error 401
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
 x-internal: true

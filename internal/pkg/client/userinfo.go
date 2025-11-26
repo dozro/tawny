@@ -8,7 +8,7 @@ import (
 )
 
 func GetUserInfo(username string, apikey string) (*lfm_types.UserGetInfo, error) {
-	log.Info("getUserInfo: ", username, apikey)
+	log.Debugf("getting User info for %s ...", username)
 	userinfo, err := lfm_api.User{}.GetInfo(lfm_api.UserGetInfoArgs{
 		UserName: username,
 		ApiKey:   apikey,

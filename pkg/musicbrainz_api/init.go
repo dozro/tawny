@@ -1,4 +1,4 @@
-package lfm_api
+package musicbrainz_api
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/dozro/tawny/pkg/api_commons"
 )
 
-const baseUrl = "http://ws.audioscrobbler.com/2.0/"
+const baseUrl = "https://musicbrainz.org/ws/2"
 
 func init() {
 	httpClient = http.DefaultClient

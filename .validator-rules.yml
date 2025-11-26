@@ -1,0 +1,10 @@
+extends: '@ibm-cloud/openapi-ruleset'
+
+rules:
+  ibm-required-array-properties-in-response: off
+  ibm-enum-casing-convention: off
+  ibm-property-casing-convention: info
+  ibm-accept-and-return-models: info
+  ibm-integer-attributes: info
+  ibm-array-attributes: off
+  ibm-avoid-inline-schemas: error
