@@ -15,7 +15,7 @@ func GetUserRecentTracks(username string, apikey string, limit int, page int, em
 		Page:     page,
 	})
 	if embedMB {
-		for i, _ := range lt.Track {
+		for i := range lt.Track {
 			lt.Track[i].EmbedMusicBrainz()
 		}
 	}
