@@ -3,6 +3,7 @@ package lfm_api
 import (
 	"fmt"
 
+	"github.com/dozro/tawny/pkg/api_commons"
 	"github.com/dozro/tawny/pkg/lfm_types"
 )
 
@@ -21,7 +22,7 @@ func (User) GetFriends(args UserGetFriendsArgs) (*lfm_types.UserGetFriends, erro
 	}
 	apiUrl := fmt.Sprintf("%s&recenttracks=%s", pageLimitAK(baseUrl, "user.getFriends", args.UserName, args.ApiKey, args.Limit, args.Page), getRt)
 
-	data, err := fetchXML[lfm_types.UserGetFriends](apiUrl)
+	data, err := api_commons.FetchXML[lfm_types.UserGetFriends](apiUrl)
 
 	return &data, err
 }
