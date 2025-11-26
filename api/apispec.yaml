@@ -147,6 +147,12 @@ paths:
           description: the HMAC Signature for this OP
           schema:
             type: string
+        - name: username
+          in: path
+          required: true
+          description: The username
+          schema:
+            type: string
   '/user/{username}/tracks/current':
     get:
       summary: get current track
@@ -427,6 +433,41 @@ paths:
       responses:
         '200':
           description: successful request
+  '/user/{username}/top/tracks':
+    parameters:
+      - schema:
+          type: string
+        name: username
+        in: path
+        required: true
+    get:
+      summary: get the top tracks
+      tags:
+        - user
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRecentTracks'
+      operationId: get-user-username-top-tracks
+      x-stoplight:
+        id: l3tqqqu7any10
+  '/(user/{username}/top/albums':
+    parameters:
+      - schema:
+          type: string
+        name: username
+        in: path
+        required: true
+    get:
+      summary: get a user's topalbums
+      tags: []
+      responses: {}
+      operationId: get-(user-username-top-albums
+      x-stoplight:
+        id: thto4eee1rct0
 security:
   - defaultApiKey: []
 components:
@@ -593,33 +634,41 @@ components:
       description: The tracks a user loves
     UserRecentTracks:
       type: object
+      description: The Tracks a user listened to recently
       properties:
         Track:
           type: array
           items:
             type: object
+            required:
+              - Name
+              - Url
             properties:
               NowPlaying:
                 type: boolean
+                description: If the track is currently playing
               Name:
                 type: string
               TrackMbid:
                 type: string
               Url:
                 type: string
+                format: uri
               Date:
                 type: string
+                format: date
               Timestamp:
                 type: string
+                format: date-time
               Image:
                 type: string
+                format: uri
               Artist:
-                type: string
+                $ref: '#/components/schemas/Artist'
               ArtistMbid:
                 type: string
               Streamable:
                 type: integer
-      description: The Tracks a user listened to recently
     UnauthorizedResponse:
       type: object
       properties:
@@ -627,4 +676,79 @@ components:
           type: integer
         error:
           type: string
+    UserTopTracks:
+      title: UserTopTracks
+      x-stoplight:
+        id: cyb8t04ime6kc
+      x-tags:
+        - user
+      type: object
+      properties:
+        Track:
+          type: array
+          x-stoplight:
+            id: f9mb6zc4qafqt
+          items:
+            x-stoplight:
+              id: auk88nvcz8l0p
+            type: object
+            properties:
+              Name:
+                type: string
+                x-stoplight:
+                  id: q4nrczbqn00ny
+              Rank:
+                type: number
+                x-stoplight:
+                  id: bammx335ho12b
+                description: The ranking
+              Mbid:
+                type: string
+                x-stoplight:
+                  id: jpaxv0skte5sm
+              Url:
+                type: string
+                x-stoplight:
+                  id: 5diri1bnp8y8s
+                format: uri
+              Date:
+                type: string
+                x-stoplight:
+                  id: zaevkmn4p58w9
+                format: date
+              Image:
+                type: string
+                x-stoplight:
+                  id: d2qjiz3ujigd7
+                format: uri
+                description: Link to the tracks image
+              Artist:
+                $ref: '#/components/schemas/Artist'
+    Artist:
+      title: Artist
+      x-stoplight:
+        id: t62jmolbbtatt
+      type: object
+      x-examples:
+        Example 1:
+          Name: Linkin Park
+          Url: 'https://www.last.fm/music/Linkin+Park'
+      required:
+        - Name
+      properties:
+        Name:
+          type: string
+          x-stoplight:
+            id: ebyksbo3zwigh
+          description: The name of the artist
+        Mbid:
+          type: string
+          x-stoplight:
+            id: k4myih064khsb
+        Url:
+          type: string
+          x-stoplight:
+            id: u5uiuw3abgcr2
+          format: uri
+          description: The URL of the artist's entry on last.fm
 x-internal: true
