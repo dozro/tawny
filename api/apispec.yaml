@@ -565,11 +565,11 @@ components:
         - 3
     Success:
       type: boolean
-      description: If the operation was successfull
+      description: If the operation was successful
       example: false
     Verification:
       type: object
-      description: wheather the verification was successfull
+      description: whether the verification was successful
       properties:
         message:
           type: string
