@@ -10,9 +10,5 @@ func (User) GetRecentTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetRe
 
 	data, err := api_commons.FetchXML[lfm_types.WrappedUserGetRecentTracks](apiUrl)
 
-	for i := range data.RecentTracks.Track {
-		data.RecentTracks.Track[i].Brainz()
-	}
-
 	return &data.RecentTracks, err
 }

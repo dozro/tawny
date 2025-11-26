@@ -65,7 +65,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	case userRecentlyPlayedRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.RecentlyPlayed")
-			rp, err := client.GetUserRecentTracks(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, request.ApiParameters.Limit, request.ApiParameters.Page)
+			rp, err := client.GetUserRecentTracks(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, request.ApiParameters.Limit, request.ApiParameters.Page, false)
 			if handleError(err, c) {
 				return
 			}

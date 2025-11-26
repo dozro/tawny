@@ -135,6 +135,11 @@ paths:
           description: the HMAC Signature for this OP
           schema:
             type: string
+        - name: fetch_musicbrainz
+          in: query
+          required: false
+          schema:
+            type: boolean
         - name: username
           in: path
           required: true
@@ -478,7 +483,7 @@ paths:
         in: path
         required: true
     get:
-      security: []
+
       summary: lookup artist details by mbid
       operationId: mb-lookup-artist-mbid
       tags:
@@ -725,6 +730,8 @@ components:
                 type: string
               Streamable:
                 type: integer
+              track_musicbrainz:
+                $ref: '#/components/schemas/MusicbrainzRecording'
     UnauthorizedResponse:
       type: object
       properties:
@@ -807,6 +814,52 @@ components:
             id: u5uiuw3abgcr2
           format: uri
           description: The URL of the artist's entry on last.fm
+    MusicbrainzRecording:
+      type: object
+      nullable: true
+      properties:
+        Recording:
+          type: object
+          properties:
+            text:
+              type: string
+            id:
+              type: string
+            title:
+              type: string
+            length:
+              type: integer
+            artist_credit:
+              type: object
+              properties:
+                name_credit:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                      joinphrase:
+                        type: string
+                      artist:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          id:
+                            type: string
+                          'type':
+                            type: string
+                          type_id:
+                            type: string
+                          name:
+                            type: string
+                          sort_name:
+                            type: string
+            release_list:
+              type: object
+            isrc_list:
+              type: object
   responses:
     ApiErrorReturn401:
       description: Api Error 401
