@@ -464,11 +464,29 @@ paths:
         required: true
     get:
       summary: get a user's topalbums
-      tags: []
+      tags: 
+        - user
       responses: {}
       operationId: get-(user-username-top-albums
       x-stoplight:
         id: thto4eee1rct0
+  /musicbrainz/lookup/artist/by-mbid/{artistMbid}:
+    parameters:
+      - schema:
+          type: string
+        name: artistMbid
+        in: path
+        required: true
+    get:
+      security: []
+      summary: lookup artist details by mbid
+      operationId: mb-lookup-artist-mbid
+      tags:
+        - musicbainz
+      responses:
+        200:
+          description: Request successful
+      
 security:
   - defaultApiKey: []
 components:
