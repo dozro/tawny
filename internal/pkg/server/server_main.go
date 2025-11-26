@@ -28,6 +28,7 @@ func StartServer(config *proxy_config.ProxyConfig) {
 	user.GET(":username/tracks/current", getUserCurrentTrack)
 	user.GET(":username/tracks/current/embed", getUserCurrentTrackEmbed)
 	user.GET(":username/top/albums", getUserTopAlbums)
+	user.GET(":username/top/tracks", getUserTopTracks)
 
 	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))

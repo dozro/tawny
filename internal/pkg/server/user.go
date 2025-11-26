@@ -126,3 +126,15 @@ func getUserFriends(c *gin.Context) {
 	c.JSON(200, uf)
 
 }
+
+func getUserTopTracks(c *gin.Context) {
+	apikey, username, page, limit := pageLimitAuthReq(c)
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	tt, err := client.GetUserTopTracks(username, apikey, limit, page)
+	if handleError(err, c) {
+		return
+	}
+	c.JSON(200, tt)
+}
