@@ -7,7 +7,7 @@ import (
 )
 
 func GetUserTopTracks(username string, apikey string, limit int, page int) (*lfm_types.UserGetTopTracks, error) {
-	log.Debugf("getting top tracls for %s ...", username)
+	log.Debugf("getting top tracks for %s ...", username)
 	lt, err := lfm_api.User{}.GetTopTracks(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,
 		UserName: username,
