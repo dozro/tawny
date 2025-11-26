@@ -472,7 +472,7 @@ paths:
       tags: 
         - user
       responses: {}
-      operationId: get-(user-username-top-albums
+      operationId: get-user-username-top-albums
       x-stoplight:
         id: thto4eee1rct0
   /musicbrainz/lookup/artist/by-mbid/{artistMbid}:
