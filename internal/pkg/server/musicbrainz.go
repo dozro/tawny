@@ -6,7 +6,7 @@ import (
 )
 
 func lookUpArtistByMbid(c *gin.Context) {
-	artistMbid := c.Param("artistMbid")
+	artistMbid := c.Param("artist_mbid")
 	data, err := musicbrainz_api.ArtistLookupByMbid(artistMbid, true)
 	if handleError(err, c) {
 		return

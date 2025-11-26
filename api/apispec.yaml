@@ -9,7 +9,7 @@ info:
 servers:
   - url: /api/v1
 paths:
-  '/user/{username}/':
+  '/user/{username}':
     get:
       description: |-
         Get User Info
@@ -24,6 +24,10 @@ paths:
           description: the username
           schema:
             type: string
+            example: alice
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
       responses:
         '200':
           description: The fetched User Info
@@ -40,7 +44,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internalError'
       summary: Get User Info
-      operationId: user.getInfo
+      operationId: user_get_info
       tags:
         - user
   '/user/{username}/tracks/loved':
@@ -67,12 +71,18 @@ paths:
           description: the username
           schema:
             type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
         - name: signature
           in: query
           required: false
           description: the HMAC Signature for this OP
           schema:
             type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            maxLength: 64
+            minLength: 64
       responses:
         '200':
           description: the fetched list of loved songs
@@ -90,10 +100,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
-      x-stoplight:
-        id: zvsb8k7ludcjm
       summary: Get Users Loved Tracks
-      operationId: user.getLovedTracks
+      operationId: user_get_loved_tracks
       tags:
         - user
   '/user/{username}/tracks/recent':
@@ -116,17 +124,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
-      operationId: 'get-user-:username-tracks-recent'
-      x-stoplight:
-        id: hxzn5dp9xaxte
+      operationId: 'get_user_username_tracks_recent'
       parameters:
         - schema:
-            type: number
+            type: integer
+            format: int32
+            default: 25
+            minimum: 1
+            maximum: 250
           in: query
           name: limit
           description: The limit
         - schema:
-            type: number
+            type: integer
+            format: int64
+            default: 1
+            minimum: 1
+            maximum: 32000
           in: query
           name: page
           description: The page
@@ -136,17 +150,24 @@ paths:
           description: the HMAC Signature for this OP
           schema:
             type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            minLength: 64
+            maxLength: 64
         - name: fetch_musicbrainz
           in: query
           required: false
           schema:
             type: boolean
+            default: false
         - name: username
           in: path
           required: true
           description: The username
           schema:
             type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 2
+            maxLength: 20
   '/user/{username}/tracks/current':
     get:
       summary: get current track
@@ -159,12 +180,18 @@ paths:
           description: The username
           schema:
             type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
         - name: signature
           in: query
           required: false
           description: the HMAC Signature for this OP
           schema:
             type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            minLength: 64
+            maxLength: 64
       responses:
         '200':
           description: OK
@@ -184,9 +211,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
-      operationId: 'get-user-:username-tracks-current'
-      x-stoplight:
-        id: r4nu8mvgwcbbf
+      operationId: 'get_user_username_tracks_current'
       description: equivalent to calling recent with limit of 1
   '/user/{username}/tracks/current/embed':
     get:
@@ -229,7 +254,7 @@ paths:
       responses:
         '200':
           description: successfully signed
-      operationId: post-hmac-sign
+      operationId: post-hmac-sign-base64
       x-stoplight:
         id: 1hthsq5tpk5xi
       parameters:
@@ -276,7 +301,7 @@ paths:
         - schema:
             type: boolean
           in: query
-          name: isBase64
+          name: is_base64
           required: false
       requestBody:
         required: true
@@ -291,12 +316,12 @@ paths:
       tags:
         - hmac
       responses:
-        200:
+        '200':
           description: request success
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Verification'
       operationId: get-hmac-verify
       x-stoplight:
         id: rrb5zs04683wq
@@ -315,17 +340,25 @@ paths:
         - name: isBase64
           description: if the request is base64 encoded
           required: false
+          deprecated: true
+          in: query
+          schema:
+            type: boolean
+        - name: is_base64
+          description: if the request is base64 encoded
+          required: false
+          deprecated: true
           in: query
           schema:
             type: boolean
       security: []
-  /hmac/verify/againstServer:
+  /hmac/verify/against_server:
     post:
       summary: Execute a signed HMAC proxy request
       tags:
         - hmac
       parameters:
-        - name: isBase64
+        - name: is_base64
           description: if the request is base64 encoded
           required: false
           in: query
@@ -346,7 +379,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Verification'
         '400':
           description: Bad input or invalid JSON
           content:
@@ -361,22 +394,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-      security: []
+      security: [ ]
   /hmac/execute:
     post:
       summary: Execute a signed HMAC proxy request
       tags:
         - hmac
       parameters:
-        - name: isBase64
+        - name: is_base64
           description: if the request is base64 encoded
           required: false
           in: query
           schema:
-            type: string
-            enum:
-              - true
-              - false
+            type: boolean
       requestBody:
         required: true
         content:
@@ -418,11 +448,18 @@ paths:
         - name: isBase64
           description: if the request is base64 encoded
           required: true
+          deprecated: true
           in: query
           schema:
             type: boolean
-            enum:
-              - true
+            default: true
+        - name: is_base64
+          description: if the request is base64 encoded
+          required: true
+          in: query
+          schema:
+            type: boolean
+            default: true
         - name: request
           description: base64 encoded request
           in: query
@@ -479,7 +516,7 @@ paths:
       tags: 
         - user
       responses:
-        200:
+        '200':
           description: success
           content:
             application/json:
@@ -488,11 +525,11 @@ paths:
       operationId: get-user-username-top-albums
       x-stoplight:
         id: thto4eee1rct0
-  /musicbrainz/lookup/artist/by-mbid/{artistMbid}:
+  /musicbrainz/lookup/artist/by_mbid/{artist_mbid}:
     parameters:
       - schema:
           type: string
-        name: artistMbid
+        name: artist_mbid
         in: path
         required: true
     get:
@@ -501,7 +538,7 @@ paths:
       tags:
         - musicbrainz
       responses:
-        200:
+        '200':
           description: Request successful
       
 security:
@@ -525,6 +562,14 @@ components:
       type: boolean
       description: If the operation was successfull
       example: false
+    Verification:
+      type: object
+      description: wheather the verification was successfull
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
     ApiError:
       type: object
       properties:
@@ -553,16 +598,20 @@ components:
         - message
     HmacProxyResponse:
       type: object
+      properties:
+        signature:
+          type: string
     HmacProxyRequest:
       type: object
       properties:
         method:
           type: string
-          example: GET
+          example: get
+          description: lowercase http method
           enum:
-            - "GET"
-            - "POST"
-            - "HEAD"
+            - "get"
+            - "post"
+            - "head"
         api_identifier:
           type: string
           example: /user/
@@ -574,12 +623,11 @@ components:
         api_parameters:
           description: The Api Parameters you want to provide
           type: object
-          required:
-            - username
           properties:
             username:
               type: string
               example: alice
+              required: true
               description: The Username you want to specify
             page:
               type: number
@@ -603,6 +651,9 @@ components:
         signature:
           type: string
           example: 4acfb7f8b2...
+          pattern: "^[A-Fa-f0-9]{64}$"
+          minLength: 64
+          maxLength: 64
         request:
           $ref: '#/components/schemas/HmacProxyRequest'
       required:
@@ -615,6 +666,9 @@ components:
         signature:
           type: string
           example: 4acfb7f8b2...
+          pattern: "^[A-Fa-f0-9]{64}$"
+          minLength: 64
+          maxLength: 64
         request:
           type: string
 
@@ -628,12 +682,17 @@ components:
           type: number
         name:
           type: string
+          pattern: "^[a-zA-Z0-9_-]{3,20}$"
+          minLength: 3
+          maxLength: 20
         realname:
           type: string
         url:
           type: string
+          format: url
         imageurl:
           type: string
+          format: url
         country:
           type: string
         age:
@@ -650,8 +709,7 @@ components:
           type: number
         registered:
           type: string
-      x-stoplight:
-        id: cm8wxhqhlcyu8
+          format: date
     internalError:
       description: internal server error
       properties:
@@ -675,73 +733,82 @@ components:
         id: 8izaqp46xka2w
     UserLovedTracks:
       type: object
-      x-stoplight:
-        id: dca295db69d50
       properties:
-        LovedTracks:
+        loved_tracks:
           type: array
           items:
             type: object
             properties:
-              Name:
+              name:
                 type: string
-              Mbid:
+              mbid:
                 type: string
-              Url:
+                nullable: true
+              url:
                 type: string
-              Date:
+              date:
                 type: string
-              Image:
+              image:
                 type: string
-              Artist:
+              artist:
                 type: object
+                nullable: true
                 properties:
-                  Name:
+                  name:
                     type: string
-                  Mbid:
+                  mbid:
                     type: string
-                  Url:
+                    format: uuid
+                  url:
                     type: string
-              Streamable:
+                    format: url
+              streamable:
                 type: integer
+                format: int32
+                minimum: 0
+                maximum: 255
       description: The tracks a user loves
     UserRecentTracks:
       type: object
       description: The Tracks a user listened to recently
       properties:
-        Track:
+        track:
           type: array
           items:
             type: object
-            required:
-              - Name
-              - Url
             properties:
-              NowPlaying:
+              now_playing:
                 type: boolean
                 description: If the track is currently playing
-              Name:
+                nullable: false
+              name:
                 type: string
-              TrackMbid:
+                description: The Trackname
+              track_mbid:
                 type: string
-              Url:
+                format: uuid
+                description: The MusicBrainz identifier for the track
+              url:
                 type: string
-                format: uri
-              Date:
+                format: url
+                description: The url to the lastfm entry
+              date:
                 type: string
                 format: date
-              Timestamp:
+                description: The date of the scrobble
+              timestamp:
                 type: string
                 format: date-time
-              Image:
+              image:
                 type: string
-                format: uri
-              Artist:
+                format: url
+              artist:
                 $ref: '#/components/schemas/Artist'
-              ArtistMbid:
+              artist_mbid:
                 type: string
-              Streamable:
-                type: integer
+                format: uuid
+              streamable:
+                type: number
               track_musicbrainz:
                 $ref: '#/components/schemas/MusicbrainzRecording'
     UnauthorizedResponse:
@@ -749,6 +816,10 @@ components:
       properties:
         code:
           type: integer
+          format: int64
+          example: 403
+          minimum: 100
+          maximum: 599
         error:
           type: string
     UserTopAlbums:
@@ -764,106 +835,97 @@ components:
       properties:
         rank:
           type: integer
+          format: int32
+          minimum: 1
+          maximum: 255
         name:
           type: string
         playcount:
           type: integer
+          format: int64
+          minimum: 0
+          maximum: 32000
         mbid:
           type: string
+          format: uuid
           nullable: true
         url:
           type: string
+          format: url
           nullable: false
     UserTopTracks:
       title: UserTopTracks
-      x-stoplight:
-        id: cyb8t04ime6kc
       x-tags:
         - user
       type: object
       properties:
-        Track:
+        track:
           type: array
-          x-stoplight:
-            id: f9mb6zc4qafqt
           items:
-            x-stoplight:
-              id: auk88nvcz8l0p
             type: object
             properties:
-              Name:
+              name:
                 type: string
-                x-stoplight:
-                  id: q4nrczbqn00ny
-              Rank:
-                type: number
-                x-stoplight:
-                  id: bammx335ho12b
+              rank:
+                type: integer
                 description: The ranking
-              Mbid:
+                format: int32
+                minimum: 1
+                maximum: 16000
+              mbid:
                 type: string
-                x-stoplight:
-                  id: jpaxv0skte5sm
-              Url:
+                format: uuid
+                description: The musicbrainz identifier of the track
+              url:
                 type: string
-                x-stoplight:
-                  id: 5diri1bnp8y8s
-                format: uri
-              Date:
+                format: url
+                description: the url of the lastfm entry
+              date:
                 type: string
-                x-stoplight:
-                  id: zaevkmn4p58w9
                 format: date
-              Image:
+                description: the date of the scrobble
+                nullable: true
+              image:
                 type: string
-                x-stoplight:
-                  id: d2qjiz3ujigd7
-                format: uri
+                format: url
                 description: Link to the tracks image
-              Artist:
+              artist:
                 $ref: '#/components/schemas/Artist'
     Artist:
       title: Artist
-      x-stoplight:
-        id: t62jmolbbtatt
       type: object
-      x-examples:
-        Example 1:
-          Name: Linkin Park
-          Url: 'https://www.last.fm/music/Linkin+Park'
-      required:
-        - Name
       properties:
-        Name:
+        name:
           type: string
-          x-stoplight:
-            id: ebyksbo3zwigh
+          example: Linkin Park
           description: The name of the artist
-        Mbid:
+        mbid:
           type: string
-          x-stoplight:
-            id: k4myih064khsb
-        Url:
+          format: uuid
+        url:
           type: string
-          x-stoplight:
-            id: u5uiuw3abgcr2
-          format: uri
+          format: url
+          example: 'https://www.last.fm/music/Linkin+Park'
           description: The URL of the artist's entry on last.fm
     MusicbrainzRecording:
       type: object
       nullable: true
       properties:
-        Recording:
+        recording:
           type: object
           properties:
             text:
               type: string
             id:
               type: string
+              format: uuid
             title:
               type: string
             length:
               type: integer
+              format: int32
+              minimum: 0
+              maximum: 2147483647
             artist_credit:
               type: object
               properties:
@@ -876,21 +938,9 @@ components:
                         type: string
                       joinphrase:
                         type: string
+                        example: "feat."
                       artist:
-                        type: object
-                        properties:
-                          text:
-                            type: string
-                          id:
-                            type: string
-                          'type':
-                            type: string
-                          type_id:
-                            type: string
-                          name:
-                            type: string
-                          sort_name:
-                            type: string
+                        $ref: '#/components/schemas/Artist'
             release_list:
               type: object
             isrc_list:
