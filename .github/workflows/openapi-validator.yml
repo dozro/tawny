@@ -32,7 +32,7 @@ jobs:
       - name: Validate OpenAPI spec (./api/apispec.yaml)
         id: validation
         run: |
-          if lint-openapi -c ./.validator-config.yml ./api/apispec.yaml --no-colors -m | tee validation_result.txt 2>&1; then
+          if lint-openapi -c ./.validator-config.yml --ruleset ./.validator-rules.yml ./api/apispec.yaml --no-colors -m | tee validation_result.txt 2>&1; then
             echo "validation_status=success" >> $GITHUB_OUTPUT
           else
             echo "validation_status=failed" >> $GITHUB_OUTPUT
@@ -57,7 +57,7 @@ jobs:
             if (validationStatus === 'success') {
               body = `## ✅ OpenAPI Validation Passed\n\n**File**: \`./api/apispec.yaml\`\n\n**Commit**: \`${{ github.sha }}\`\n\n${validationOutput}\n\n`;
             } else {
-              body = `## ❌ OpenAPI Validation Failed\n\n**File**: \`./api/apispec.yaml\`\n\n**Commit**: \`${{ github.sha }}\`\n\n${validationOutput}\n\n`;
+              body = `## ❌ OpenAPI Validation Failed\n\n**File**: \`./api/apispec.yaml\`\n\n**Commit**: \`${{ github.sha }}\`\n Action triggered by @${{GITHUB_ACTOR}}\n\n${validationOutput}\n\n`;
             }
             if(body.length > 65000) {
               body = body.slice(0, 65000) + '\n\n... (truncated due to GitHub comment length limit)';

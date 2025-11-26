@@ -8,6 +8,11 @@ info:
   version: 0.1.0
 servers:
   - url: /api/v1
+tags:
+  - name: user
+    description: Operations related to users
+  - name: hmac
+    description: Operations related to hmac
 paths:
   '/user/{username}':
     get:
@@ -46,7 +51,7 @@ paths:
       summary: Get User Info
       operationId: get_user
       tags:
-        - user
+        - us
   '/user/{username}/tracks/loved':
     get:
       description: 'Get loved tracks of specified User - https://www.last.fm/api/show/user.getLovedTracks'
@@ -534,9 +539,9 @@ paths:
         required: true
     get:
       summary: lookup artist details by mbid
-      operationId: get_musicbrainz_lookup_artist_by_mbid
       tags:
         - musicbrainz
+      operationId: get_musicbrainz_lookup_artist_by_mbid
       responses:
         '200':
           description: Request successful
@@ -623,11 +628,12 @@ components:
         api_parameters:
           description: The Api Parameters you want to provide
           type: object
+          required:
+            - username
           properties:
             username:
               type: string
               example: alice
-              required: true
               description: The Username you want to specify
             page:
               type: number
@@ -671,7 +677,6 @@ components:
           maxLength: 64
         request:
           type: string
-
       required:
         - signature
         - request
@@ -729,39 +734,51 @@ components:
                   type: string
                 method:
                   type: string
-      x-stoplight:
-        id: 8izaqp46xka2w
+    LFMArtistSimple:
+      type: object
+      nullable: true
+      properties:
+        name:
+          type: string
+        mbid:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: url
     UserLovedTracks:
       type: object
       properties:
         loved_tracks:
           type: array
+          required:
+            - items
           items:
             type: object
             properties:
               name:
                 type: string
+                maxLength: 100
+                minLength: 1
+                description: Track Name
               mbid:
                 type: string
+                format: uuid
                 nullable: true
+                description: The musicbrainz id of the track
               url:
                 type: string
+                format: url
+                description: The url to the lastfm entry of the track
               date:
                 type: string
+                format: date
               image:
                 type: string
+                format: url
+                description: album cover image
               artist:
-                type: object
-                nullable: true
-                properties:
-                  name:
-                    type: string
-                  mbid:
-                    type: string
-                    format: uuid
-                  url:
-                    type: string
-                    format: url
+                $ref: '#/components/schemas/LFMArtistSimple'
               streamable:
                 type: integer
                 format: int32
@@ -776,6 +793,8 @@ components:
           type: array
           items:
             type: object
+            required:
+              - items
             properties:
               now_playing:
                 type: boolean
@@ -855,14 +874,14 @@ components:
           nullable: false
     UserTopTracks:
       title: UserTopTracks
-      x-tags:
-        - user
       type: object
       properties:
         track:
           type: array
           items:
             type: object
+            required:
+              - items
             properties:
               name:
                 type: string
