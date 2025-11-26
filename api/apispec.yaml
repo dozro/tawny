@@ -448,13 +448,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserRecentTracks'
+                $ref: '#/components/schemas/UserTopTracks'
             application/xml:
               schema:
-                $ref: '#/components/schemas/UserRecentTracks'
+                $ref: '#/components/schemas/UserTopTracks'
             application/yaml:
               schema:
-                $ref: '#/components/schemas/UserRecentTracks'
+                $ref: '#/components/schemas/UserTopTracks'
         '401':
           description: Unauthorized
       operationId: get-user-username-top-tracks
