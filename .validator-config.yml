@@ -5,7 +5,7 @@ limits:
 outputFormat: 'text'
 summaryOnly: false
 files:
-  - api.yml
+  - ./api/apispec.yaml
 ignoreFiles:
   - validator-config.yml
 logLevels:
