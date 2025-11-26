@@ -3,9 +3,11 @@ package client
 import (
 	"github.com/dozro/tawny/pkg/lfm_api"
 	"github.com/dozro/tawny/pkg/lfm_types"
+	log "github.com/sirupsen/logrus"
 )
 
 func GetUserRecentTracks(username string, apikey string, limit int, page int) (*lfm_types.UserGetRecentTracks, error) {
+	log.Debugf("getting recent tracks for %s ...", username)
 	lt, err := lfm_api.User{}.GetRecentTracks(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,
 		UserName: username,
