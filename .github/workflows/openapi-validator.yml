@@ -52,7 +52,7 @@ jobs:
           script: |
             const fs = require('fs');
             const validationStatus = '${{ steps.validation.outputs.validation_status }}';
-            const validationOutput = fs.readFileSync('api-validator-report.md', 'utf8');
+            const validationOutput = fs.readFileSync('apispec-validator-report.md', 'utf8');
             let body = '';
             if (validationStatus === 'success') {
               body = `## ✅ OpenAPI Validation Passed\n\n**File**: \`./api/apispec.yaml\`\n\n**Commit**: \`${{ github.sha }}\`\n\n${validationOutput}\n\n`;
