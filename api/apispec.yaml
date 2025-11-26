@@ -208,9 +208,14 @@ paths:
             type: string
       responses:
         '200':
-          description: OK
+          description: The operation was successful
+          content: {}
+        '500':
+          description: Internal Server Error
           content:
-            image/png:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
       operationId: 'get-user-:username-tracks-current-embed'
       x-stoplight:
         id: r4nu8mvgwcbbf
@@ -222,8 +227,8 @@ paths:
         - hmac
         - hmac_base64
       responses:
-        200:
-          description: "successfully signed"
+        '200':
+          description: successfully signed
       operationId: post-hmac-sign
       x-stoplight:
         id: 1hthsq5tpk5xi
@@ -240,15 +245,15 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/HmacProxyRequest'
-      security: [ ]
+      security: []
   /hmac/sign:
     post:
       summary: sign a request
       tags:
         - hmac
       responses:
-        200:
-          description: "successfully signed"
+        '200':
+          description: successfully signed
       operationId: post-hmac-sign
       x-stoplight:
         id: 1hthsq5tpk5xi
@@ -420,9 +425,8 @@ paths:
           schema:
             type: string
       responses:
-        200:
-          description: "successful request"
-
+        '200':
+          description: successful request
 security:
   - defaultApiKey: []
 components:
