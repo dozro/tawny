@@ -460,7 +460,7 @@ paths:
       operationId: get-user-username-top-tracks
       x-stoplight:
         id: l3tqqqu7any10
-  '/(user/{username}/top/albums':
+  '/user/{username}/top/albums':
     parameters:
       - schema:
           type: string
