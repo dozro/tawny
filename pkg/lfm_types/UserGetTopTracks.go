@@ -1,7 +1,7 @@
 package lfm_types
 
 type UserGetTopTracks struct {
-	UserAlbums []UserTrack `xml:"track"`
+	UserAlbums []LFMTrack `xml:"track"`
 }
 
 type WrappedUserGetTopTracks struct {
