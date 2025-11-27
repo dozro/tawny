@@ -19,6 +19,9 @@ func MaskAPIKey(key string) string {
 	return key[:4] + strings.Repeat("X", maskLength)
 }
 
+// MaskURLKey masks sensitive API keys within URLs for safe logging.
+// It masks query parameters named "api_key" and path segments that
+// look like API keys (prefixed with "sk-" or "ak-" and longer than 10 chars).
 func MaskURLKey(fullURL string) string {
 	u, err := url.Parse(fullURL)
 	if err != nil {
