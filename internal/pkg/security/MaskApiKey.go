@@ -28,8 +28,18 @@ func MaskURLKey(fullURL string) string {
 	}
 
 	parts := strings.Split(u.Path, "/")
+	// Mask path segments that match common API key patterns.
+	const minAPIKeyLength = 8 // Chosen to catch most API keys, configurable as needed.
 	for i, part := range parts {
-		if len(part) > 10 && (strings.HasPrefix(part, "sk-") || strings.HasPrefix(part, "ak-")) {
+		// Check for common API key prefixes and patterns.
+		if len(part) > minAPIKeyLength &&
+			(strings.HasPrefix(part, "sk-") ||
+				strings.HasPrefix(part, "ak-") ||
+				strings.HasPrefix(part, "api_key") ||
+				strings.HasPrefix(part, "apikey") ||
+				strings.HasPrefix(part, "token") ||
+				strings.Contains(part, "apikey") ||
+				strings.Contains(part, "api_key")) {
 			parts[i] = MaskAPIKey(part)
 		}
 	}
