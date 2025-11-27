@@ -6,6 +6,7 @@ import (
 
 	"github.com/dozro/tawny/internal/pkg/client"
 	"github.com/dozro/tawny/internal/pkg/embed"
+	"github.com/dozro/tawny/internal/pkg/security"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -14,7 +15,7 @@ import (
 func getUserInfo(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
-	log.Infof("getUserInfo: %s, %s", username, apikey)
+	log.Infof("getUserInfo: %s, %s", username, security.MaskAPIKey(apikey))
 	if apikeyUndefined(apikey, c) {
 		return
 	}
