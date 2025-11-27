@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+// MaskAPIKey masks sensitive API keys for safe logging.
+// For keys longer than 8 characters, it preserves the first 4 characters
+// and masks the rest with a random number of 'X' characters (between 5 and 15).
+// For keys 8 characters or shorter, it completely masks the value with 'X' characters.
 func MaskAPIKey(key string) string {
 	randnum := rand.Intn(20-5) + 5
 	if len(key) <= 8 {
