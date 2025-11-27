@@ -13,9 +13,9 @@ import (
 
 const pathToFont = "assets/fonts/RubikMarker/RubikMarkerHatch-Regular.ttf"
 
-func EmbedNowPlaying(track_title string, track_artist string, track_album string, track_album_cover string, username string, now bool) (*bytes.Buffer, error) {
+func EmbedNowPlaying(trackTitle string, trackArtist string, trackAlbum string, trackAlbumCover string, username string, now bool) (*bytes.Buffer, error) {
 	// Albumcover herunterladen
-	albumCoverResp, err := doHttpGetRequest(track_album_cover)
+	albumCoverResp, err := doHttpGetRequest(trackAlbumCover)
 	if err != nil {
 		return nil, fmt.Errorf("failed to download album cover: %w", err)
 	}
@@ -58,15 +58,15 @@ func EmbedNowPlaying(track_title string, track_artist string, track_album string
 	textY := float64(imgHeight/2 - 60)
 
 	dc.SetColor(color.White)
-	drawTextWithGlow(dc, truncateString(track_title, 40), textX-50, textY-100, 450, 50, color.White)
+	drawTextWithGlow(dc, truncateString(trackTitle, 40), textX-50, textY-100, 450, 50, color.White)
 
 	dc.LoadFontFace(pathToFont, 28)
 	dc.SetColor(color.RGBA{220, 220, 220, 255})
-	dc.DrawStringWrapped(truncateString(track_album, 35), textX, textY+60, 0, 0, textWidth, 1.3, gg.AlignLeft)
+	dc.DrawStringWrapped(truncateString(trackAlbum, 35), textX, textY+60, 0, 0, textWidth, 1.3, gg.AlignLeft)
 
 	dc.LoadFontFace(pathToFont, 24)
 	dc.SetColor(color.RGBA{180, 180, 180, 255})
-	dc.DrawStringWrapped(truncateString(track_artist, 40), textX, textY+110, 0, 0, textWidth, 1.3, gg.AlignLeft)
+	dc.DrawStringWrapped(truncateString(trackArtist, 40), textX, textY+110, 0, 0, textWidth, 1.3, gg.AlignLeft)
 
 	//artistSymbole = resizeImage(artistSymbole, 30, 30)
 	//dc.DrawImage(artistSymbole, int(textX-30), int(textY+105))
