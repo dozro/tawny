@@ -2,14 +2,14 @@ package server
 
 import "regexp"
 
-var userInfoRegex *regexp.Regexp
-var userNowPlayingRegex *regexp.Regexp
-var userNowPlayingEmbed *regexp.Regexp
-var userRecentlyPlayedRegex *regexp.Regexp
+var hmacProxyUserInfoRegex *regexp.Regexp
+var hmacProxyUserNowPlayingRegex *regexp.Regexp
+var hmacProxyUserNowPlayingEmbed *regexp.Regexp
+var hmacProxyUserRecentlyPlayedRegex *regexp.Regexp
 
 func init() {
-	userInfoRegex = regexp.MustCompile(`^/user/?$`)
-	userNowPlayingRegex = regexp.MustCompile(`^/user/tracks/current/?$`)
-	userNowPlayingEmbed = regexp.MustCompile(`^/user/tracks/current/embed?$`)
-	userRecentlyPlayedRegex = regexp.MustCompile(`^/user/tracks/recent/?$`)
+	hmacProxyUserInfoRegex = regexp.MustCompile(`^[/_]?user/?$`)
+	hmacProxyUserNowPlayingRegex = regexp.MustCompile(`^[/_]?user[/_]tracks[/_]current/?$`)
+	hmacProxyUserNowPlayingEmbed = regexp.MustCompile(`^^[/_]?user[/_]tracks[/_]current[/_]embed/?$`)
+	hmacProxyUserRecentlyPlayedRegex = regexp.MustCompile(`^[/_]?user[/_]tracks[/_]recent/?$`)
 }

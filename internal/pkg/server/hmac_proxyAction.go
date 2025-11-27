@@ -14,7 +14,7 @@ import (
 func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	log.Debug("performing proxy action")
 	switch {
-	case userInfoRegex.MatchString(request.ApiIdentifier):
+	case hmacProxyUserInfoRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.GetInfo")
 			userinfo, err := client.GetUserInfo(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
@@ -36,7 +36,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 			c.JSON(200, userinfo)
 			return
 		}
-	case userNowPlayingRegex.MatchString(request.ApiIdentifier):
+	case hmacProxyUserNowPlayingRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.NowPlaying")
 			usernowplaying, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
@@ -46,7 +46,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 			c.JSON(200, usernowplaying)
 			return
 		}
-	case userNowPlayingEmbed.MatchString(request.ApiIdentifier):
+	case hmacProxyUserNowPlayingEmbed.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.NowPlayingEmbed")
 			ct, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
@@ -62,7 +62,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 			}
 			c.Data(http.StatusOK, "image/png", img.Bytes())
 		}
-	case userRecentlyPlayedRegex.MatchString(request.ApiIdentifier):
+	case hmacProxyUserRecentlyPlayedRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.RecentlyPlayed")
 			rp, err := client.GetUserRecentTracks(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, request.ApiParameters.Limit, request.ApiParameters.Page, false)
