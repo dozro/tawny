@@ -1,23 +1,20 @@
 package security
 
 import (
+	"math/rand"
 	"net/url"
 	"strings"
 )
 
-const maskLength = 12
-
 func MaskAPIKey(key string) string {
+	randnum := rand.Intn(20-5) + 5
 	if len(key) <= 8 {
-		return strings.Repeat("X", maskLength)
+		return strings.Repeat("X", randnum)
 	}
 
-	return key[:4] + strings.Repeat("X", maskLength)
+	return key[:4] + strings.Repeat("X", randnum)
 }
 
-// MaskURLKey masks sensitive API keys within URLs for safe logging.
-// It masks query parameters named "api_key" and path segments that
-// look like API keys (prefixed with "sk-" or "ak-" and longer than 10 chars).
 func MaskURLKey(fullURL string) string {
 	u, err := url.Parse(fullURL)
 	if err != nil {
@@ -31,18 +28,8 @@ func MaskURLKey(fullURL string) string {
 	}
 
 	parts := strings.Split(u.Path, "/")
-	// Mask path segments that match common API key patterns.
-	const minAPIKeyLength = 8 // Chosen to catch most API keys, configurable as needed.
 	for i, part := range parts {
-		// Check for common API key prefixes and patterns.
-		if len(part) > minAPIKeyLength &&
-			(strings.HasPrefix(part, "sk-") ||
-				strings.HasPrefix(part, "ak-") ||
-				strings.HasPrefix(part, "api_key") ||
-				strings.HasPrefix(part, "apikey") ||
-				strings.HasPrefix(part, "token") ||
-				strings.Contains(part, "apikey") ||
-				strings.Contains(part, "api_key")) {
+		if len(part) > 10 && (strings.HasPrefix(part, "sk-") || strings.HasPrefix(part, "ak-")) {
 			parts[i] = MaskAPIKey(part)
 		}
 	}
