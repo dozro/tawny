@@ -3,7 +3,7 @@ package lfm_api
 import (
 	"fmt"
 
-	"github.com/dozro/tawny/pkg/api_commons"
+	"github.com/dozro/tawny/internal/pkg/api_commons"
 	"github.com/dozro/tawny/pkg/lfm_types"
 )
 
