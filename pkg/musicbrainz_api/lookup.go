@@ -19,16 +19,16 @@ func AreaLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.Area
 	return &data, nil
 }
 
-func ArtistLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.ArtistLookupResult, error) {
+func ArtistLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.Artist, error) {
 	apiUrl := fmt.Sprintf("https://musicbrainz.org/ws/2/artist/%s", mbid)
 	if includeAliases {
 		apiUrl += "?inc=aliases"
 	}
-	data, err := api_commons.FetchXML[musicbrainz_types.ArtistLookupResult](apiUrl)
+	data, err := api_commons.FetchXML[musicbrainz_types.WrappedArtistLookupResult](apiUrl)
 	if err != nil {
 		return nil, err
 	}
-	return &data, nil
+	return &data.Artist, nil
 }
 
 func GenreLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.GenreLookupResult, error) {
@@ -43,14 +43,14 @@ func GenreLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.Gen
 	return &data, nil
 }
 
-func RecordingLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.RecordingLookupResult, error) {
+func RecordingLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.Recording, error) {
 	apiUrl := fmt.Sprintf("https://musicbrainz.org/ws/2/recording/%s", mbid)
 	if includeAliases {
 		apiUrl += "?inc=artist-credits+isrcs+releases"
 	}
-	data, err := api_commons.FetchXML[musicbrainz_types.RecordingLookupResult](apiUrl)
+	data, err := api_commons.FetchXML[musicbrainz_types.WrappedRecordingLookupResult](apiUrl)
 	if err != nil {
 		return nil, err
 	}
-	return &data, nil
+	return &data.Recording, nil
 }
