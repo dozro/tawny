@@ -39,13 +39,13 @@ func verifyHMAC(secret, message, receivedSig string) bool {
 	return hmac.Equal(expectedMAC, receivedMAC)
 }
 func signBase64Request(c *gin.Context) {
-	psk := c.Request.Header.Get("HMAC-PSK") // For Testing purposes TO-DO
+	psk := c.Request.Header.Get(stringsHmacPsk)
 	raw, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, apiError.ApiError{
 			HttpCode:          403,
 			InternalErrorCode: apiError.InvalidBody,
-			Message:           "invalid request body",
+			Message:           stringsInvalidRequestBody,
 			Success:           false,
 		})
 		return
@@ -63,14 +63,14 @@ func signBase64Request(c *gin.Context) {
 	})
 }
 func signRequest(c *gin.Context) {
-	psk := c.Request.Header.Get("HMAC-PSK") // For Testing purposes TO-DO
+	psk := c.Request.Header.Get(stringsHmacPsk)
 
 	raw, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		render(c, http.StatusBadRequest, apiError.ApiError{
 			HttpCode:          403,
 			InternalErrorCode: apiError.InvalidBody,
-			Message:           "invalid request body",
+			Message:           stringsInvalidRequestBody,
 			Success:           false,
 		})
 		return
@@ -78,7 +78,7 @@ func signRequest(c *gin.Context) {
 
 	signature := generateHMAC(psk, string(raw))
 
-	log.Debug("signing request")
+	log.Debug(logStringSigningRequest)
 	log.Debugf("Message bytes: %s", raw)
 	log.Printf("Generated signature: %s", signature)
 
@@ -91,7 +91,7 @@ func signRequest(c *gin.Context) {
 }
 
 func verifyRequest(c *gin.Context) {
-	psk := c.Request.Header.Get("HMAC-PSK") // For Testing purposes TO-DO
+	psk := c.Request.Header.Get(stringsHmacPsk)
 	isValid, _, err, code := verifyRequestInternal(c, psk, determineIfBase64(c), nil)
 	if err != nil {
 		render(c, code, apiError.ApiError{
@@ -104,14 +104,14 @@ func verifyRequest(c *gin.Context) {
 	if !isValid {
 		render(c, 403, apiError.ApiError{
 			HttpCode: 403,
-			Message:  "Invalid HMAC signature",
+			Message:  stringsInvalidHmacSignature,
 			Data:     c.Request.Body,
 			Success:  false,
 		})
 		return
 	} else {
 		render(c, 200, gin.H{
-			"message": "Valid HMAC signature",
+			"message": stringsValidHmacSignature,
 			"success": true,
 		})
 		return
@@ -130,13 +130,13 @@ func verifyAgainstServerSecret(c *gin.Context) {
 	if !isValid {
 		render(c, 403, apiError.ApiError{
 			HttpCode: 403,
-			Message:  "Invalid HMAC signature",
+			Message:  stringsInvalidHmacSignature,
 			Success:  false,
 		})
 		return
 	} else {
 		render(c, 200, gin.H{
-			"message": "Valid HMAC signature",
+			"message": stringsValidHmacSignature,
 			"success": true,
 		})
 		return
@@ -183,7 +183,7 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overr
 	isValid = verifyHMAC(hmacSecret, string(signedReq.Request), signedReq.Signature)
 
 	if !isValid {
-		log.Debug("invalid signature")
+		log.Debug(stringsInvalidHmacSignature)
 		log.Debugf("Signature: %s", signedReq.Signature)
 		log.Debugf("Signature should be: %s", generateHMAC(hmacSecret, string(signedReq.Request)))
 		return false, nil, errors.New("invalid HMAC signature"), http.StatusForbidden
@@ -211,7 +211,7 @@ func executeSignedRequest(c *gin.Context) {
 			return
 		}
 		overridenCont = &HmacBase64SignedRequest{
-			Signature: c.Query("signature"),
+			Signature: c.Query(queryStringSignature),
 			Request:   []byte(request),
 		}
 	}
@@ -228,7 +228,7 @@ func executeSignedRequest(c *gin.Context) {
 	if !isValid {
 		c.JSON(403, apiError.ApiError{
 			HttpCode: 403,
-			Message:  "Invalid HMAC signature",
+			Message:  stringsInvalidHmacSignature,
 			Success:  false,
 		})
 		return
@@ -238,8 +238,8 @@ func executeSignedRequest(c *gin.Context) {
 
 func determineIfBase64(c *gin.Context) bool {
 	log.Debug("determineIfBase64")
-	isBase64R := c.Query("isBase64")
-	isBase64L := c.Query("is_base64")
+	isBase64R := c.Query(queryStringIsBase64)
+	isBase64L := c.Query(queryStringIsBase64New)
 	isBase64 := false
 	if isBase64R == "true" || isBase64L == "true" {
 		isBase64 = true
