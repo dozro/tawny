@@ -1,0 +1,53 @@
+name: Update branch
+
+on:
+  push:
+    branches:
+      - main
+      - devel
+  pull_request:
+    types:
+      - labeled
+    branches:
+      - main
+      - devel
+  check_suite:
+    types:
+      - completed
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  update-branch:
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lcdsmao/update-branch@v3
+        with:
+          # Or use personal access token
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # One of MERGE, SQUASH, REBASE (default: MERGE)
+          autoMergeMethod: SQUASH
+          # Ignore pull requests without these labels
+          requiredLabels: auto-merge
+          # Required at least 2 approves (default: 0)
+          requiredApprovals: 1
+          # Required approvals from all requested reviewers
+          allRequestedReviewersMustApprove: true
+          # Required these status checks success
+          requiredStatusChecks: |
+            ghcr-pub
+            WIP
+          # Optionally set the maximum amount of pull requests to match against (default: 50)
+          fetchMaxPr: 50
+          # Optionally set the maximum amount of pull request checks to fetch (default: 100)
+          fetchMaxPrChecks: 100
+          # Optionally set the maximum amount of pull request labels to fetch (default: 10)
+          fetchMaxPrLabels: 10
+          # Optionally set the maximum amount of pull request comments to fetch (default: 50)
+          fetchMaxComments: 50
+          # The order pr checks should be fetched in. If the required checks are the last ones, consider setting to "last"
+          prChecksFetchOrder: first
