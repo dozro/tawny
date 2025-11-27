@@ -26,7 +26,7 @@ jobs:
   update-branch:
     runs-on: ubuntu-latest
     steps:
-      - uses: lcdsmao/update-branch@v3
+      - uses: lcdsmao/update-branch@2818e4c8c88702062414a3a7a66cba544baab8ce
         name: Update branch on PRs
         with:
           # Or use personal access token
