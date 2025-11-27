@@ -17,15 +17,17 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   update-branch:
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
     runs-on: ubuntu-latest
     steps:
       - uses: lcdsmao/update-branch@v3
+        name: Update branch on PRs
         with:
           # Or use personal access token
           token: ${{ secrets.GITHUB_TOKEN }}
