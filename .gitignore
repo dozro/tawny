@@ -1,0 +1,7 @@
+validation_result.txt
+apispec-validator-report.md
+tawnycli
+*.bundle.yaml
+*/**/.DS_Store
+.DS_Store
+.idea/*
