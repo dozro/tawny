@@ -1,7 +1,7 @@
 package lfm_types
 
 type UserGetLovedTracks struct {
-	LovedTracks []UserTrack `xml:"track"`
+	LovedTracks []LFMTrack `xml:"track"`
 }
 
 type WrappedUserGetLovedTracks struct {

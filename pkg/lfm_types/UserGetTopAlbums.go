@@ -8,14 +8,19 @@ type UserAlbumImage struct {
 }
 
 type UserAlbums struct {
-	Rank           int              `xml:"rank,attr"`
-	Name           string           `xml:"name"`
-	Playcount      int              `xml:"playcount"`
-	Mbid           string           `xml:"mbid"`
-	MusicBrainzUrl string           `xml:"music_brainz_url"`
-	Url            string           `xml:"url"`
-	Artist         UserTrackArtist  `xml:"artist"`
-	Image          []UserAlbumImage `xml:"image"`
+	Rank           int    `xml:"rank,attr"`
+	Name           string `xml:"name"`
+	Playcount      int    `xml:"playcount"`
+	Mbid           string `xml:"mbid"`
+	MusicBrainzUrl string `xml:"music_brainz_url"`
+	Url            string `xml:"url"`
+	Artist         struct {
+		Name           string `xml:"name,chardata"`
+		Mbid           string `xml:"mbid,attr"`
+		MusicBrainzUrl string `xml:"music_brainz_url"`
+		Url            string `xml:"url"`
+	} `xml:"artist"`
+	Image []UserAlbumImage `xml:"image"`
 }
 
 func (ua *UserAlbums) Brainz() {
