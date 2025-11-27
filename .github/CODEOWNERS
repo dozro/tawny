@@ -1,0 +1,9 @@
+cmd/* git@itsrye.dev
+api/apispec.yaml git@itsrye.dev
+cmd/fm-cli/* git@itsrye.dev
+cmd/fm-cli/* git@itsrye.dev
+internal/pkg/* git@itsrye.dev
+pkg/lfm_api/* git@itsrye.dev
+pkg/lfm_types/* git@itsrye.dev
+pkg/musicbrainz_api git@itsrye.dev
+pkg/musicbrainz_types git@itsrye.dev

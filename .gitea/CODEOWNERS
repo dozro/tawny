@@ -1,0 +1,9 @@
+cmd/* @Ryee
+api/apispec.yaml @Ryee
+cmd/fm-cli/* @Ryee
+cmd/fm-cli/* @Ryee
+internal/pkg/* @Ryee
+pkg/lfm_api/* @Ryee
+pkg/lfm_types/* @Ryee
+pkg/musicbrainz_api @Ryee
+pkg/musicbrainz_types @Ryee
