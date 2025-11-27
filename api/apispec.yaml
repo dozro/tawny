@@ -4,14 +4,8 @@ info:
   description: |-
     A lastfm Api Proxy
 
-    The Source Code can be found here: https://github.com/dozro/tawny/tree/main
+    https://github.com/dozro/tawny/tree/main
   version: 0.1.0
-  summary: ''
-  contact:
-    name: Rye
-  license:
-    url: 'https://github.com/dozro/tawny/blob/main/LICENSE'
-    name: Apache License 2.0
 servers:
   - url: /api/v1
 tags:
@@ -34,7 +28,11 @@ paths:
           required: true
           description: the username
           schema:
-            $ref: '#/components/schemas/LastFMUsername'
+            type: string
+            example: alice
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
       responses:
         '200':
           description: The fetched User Info
@@ -77,20 +75,26 @@ paths:
           required: true
           description: the username
           schema:
-            $ref: '#/components/schemas/LastFMUsername'
+            type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
         - name: signature
           in: query
           required: false
           description: the HMAC Signature for this OP
           schema:
-            $ref: '#/components/schemas/HMACSignature'
+            type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            maxLength: 64
+            minLength: 64
       responses:
         '200':
           description: the fetched list of loved songs
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WrapperUserLovedTracks'
+                $ref: '#/components/schemas/UserLovedTracks'
         '307':
           description: a redirect
         '401':
@@ -150,7 +154,10 @@ paths:
           required: false
           description: the HMAC Signature for this OP
           schema:
-            $ref: '#/components/schemas/HMACSignature'
+            type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            minLength: 64
+            maxLength: 64
         - name: fetch_musicbrainz
           in: query
           required: false
@@ -162,7 +169,10 @@ paths:
           required: true
           description: The username
           schema:
-            $ref: '#/components/schemas/LastFMUsername'
+            type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
   '/user/{username}/tracks/current':
     get:
       summary: get current track
@@ -174,13 +184,19 @@ paths:
           required: true
           description: The username
           schema:
-            $ref: '#/components/schemas/LastFMUsername'
+            type: string
+            pattern: "^[a-zA-Z0-9_-]{3,20}$"
+            minLength: 3
+            maxLength: 20
         - name: signature
           in: query
           required: false
           description: the HMAC Signature for this OP
           schema:
-            $ref: '#/components/schemas/HMACSignature'
+            type: string
+            pattern: "^[A-Fa-f0-9]{64}$"
+            minLength: 64
+            maxLength: 64
       responses:
         '200':
           description: OK
@@ -213,13 +229,13 @@ paths:
           required: true
           description: The username
           schema:
-            $ref: '#/components/schemas/LastFMUsername'
+            type: string
         - name: signature
           in: query
           required: false
           description: the HMAC Signature for this OP
           schema:
-            $ref: '#/components/schemas/HMACSignature'
+            type: string
       responses:
         '200':
           description: The operation was successful
@@ -292,11 +308,6 @@ paths:
           in: query
           name: is_base64
           required: false
-        - schema:
-            type: boolean
-          in: query
-          deprecated: true
-          name: isBase64
       requestBody:
         required: true
         content:
@@ -341,6 +352,7 @@ paths:
         - name: is_base64
           description: if the request is base64 encoded
           required: false
+          deprecated: true
           in: query
           schema:
             type: boolean
@@ -351,18 +363,15 @@ paths:
       tags:
         - hmac
       parameters:
-        - name: isBase64
-          deprecated: true
-          description: if the request is base64 encoded
-          in: query
-          schema:
-            type: boolean
         - name: is_base64
           description: if the request is base64 encoded
           required: false
           in: query
           schema:
-            type: boolean
+            type: string
+            enum:
+              - false
+              - true
       requestBody:
         required: true
         content:
@@ -400,12 +409,6 @@ paths:
         - name: is_base64
           description: if the request is base64 encoded
           required: false
-          in: query
-          schema:
-            type: boolean
-        - name: isBase64
-          deprecated: true
-          description: if the request is base64 encoded
           in: query
           schema:
             type: boolean
@@ -480,7 +483,7 @@ paths:
   '/user/{username}/top/tracks':
     parameters:
       - schema:
-          $ref: '#/components/schemas/LastFMUsername'
+          type: string
         name: username
         in: path
         required: true
@@ -509,7 +512,7 @@ paths:
   '/user/{username}/top/albums':
     parameters:
       - schema:
-          $ref: '#/components/schemas/LastFMUsername'
+          type: string
         name: username
         in: path
         required: true
@@ -530,7 +533,7 @@ paths:
   /musicbrainz/lookup/artist/by_mbid/{artist_mbid}:
     parameters:
       - schema:
-          $ref: '#/components/schemas/Mbid'
+          type: string
         name: artist_mbid
         in: path
         required: true
@@ -589,8 +592,6 @@ components:
           description: Internal Error message
         success:
           $ref: '#/components/schemas/Success'
-        data:
-          $ref: '#/components/schemas/errorAttachedData'
         message:
           type: string
           example: Invalid HMAC signature
@@ -739,34 +740,25 @@ components:
         registered:
           type: string
           format: date
-    HttpRequestMeta:
-      type: object
-      properties:
-        host:
-          type: string
-        query:
-          type: string
-        path:
-          type: string
-        method:
-          type: string
-    errorAttachedData:
-      description: Data attached to Error
-      type: object
-      properties:
-        request:
-          $ref: '#/components/schemas/HttpRequestMeta'
     internalError:
       description: internal server error
-      title: Internal Server Error Message
-      deprecated: true
       properties:
         code:
           type: number
         error:
           type: string
         data:
-          $ref: '#/components/schemas/errorAttachedData'
+          properties:
+            request:
+              properties:
+                host:
+                  type: string
+                path:
+                  type: string
+                query:
+                  type: string
+                method:
+                  type: string
     LFMArtistSimple:
       type: object
       nullable: true
@@ -774,62 +766,48 @@ components:
         name:
           type: string
         mbid:
-          $ref: '#/components/schemas/Mbid'
+          type: string
+          format: uuid
         url:
           type: string
           format: url
     UserLovedTracks:
-      type: array
-      items:
-        $ref: '#/components/schemas/LFMTrack'
-    WrapperUserLovedTracks:
       type: object
       properties:
         loved_tracks:
-          $ref: '#/components/schemas/UserLovedTracks'
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                maxLength: 100
+                minLength: 1
+                description: Track Name
+              mbid:
+                type: string
+                format: uuid
+                nullable: true
+                description: The musicbrainz id of the track
+              url:
+                type: string
+                format: url
+                description: The url to the lastfm entry of the track
+              date:
+                type: string
+                format: date
+              image:
+                type: string
+                format: url
+                description: album cover image
+              artist:
+                $ref: '#/components/schemas/LFMArtistSimple'
+              streamable:
+                type: integer
+                format: int32
+                minimum: 0
+                maximum: 255
       description: The tracks a user loves
-    LFMTrack:
-      title: LastFM Track
-      type: object
-      properties:
-        name:
-          type: string
-          maxLength: 100
-          minLength: 1
-          description: Track Name
-        now_playing:
-          type: boolean
-          description: If the track is currently playing (only defined when requesting recent tracks)
-          nullable: true
-        rank:
-          nullable: true
-          description: "only defined when requesting top tracks"
-        mbid:
-          $ref: '#/components/schemas/Mbid'
-        url:
-          type: string
-          format: url
-          description: The url to the lastfm entry of the track
-        date:
-          type: string
-          format: date
-        image:
-          type: string
-          format: url
-          description: album cover image
-        artist:
-          $ref: '#/components/schemas/LFMArtistSimple'
-        artist_mbid:
-          $ref: '#/components/schemas/Mbid'
-        artist_music_brainz:
-          $ref: '#/components/schemas/MusicBrainzArtist'
-        track_music_brainz:
-          $ref: '#/components/schemas/MusicBrainzRecording'
-        streamable:
-          type: integer
-          format: int32
-          minimum: 0
-          maximum: 255
     UserRecentTracks:
       type: object
       description: The Tracks a user listened to recently
@@ -837,7 +815,44 @@ components:
         track:
           type: array
           items:
-            $ref: '#/components/schemas/LFMTrack'
+            type: object
+            required:
+              - items
+            properties:
+              now_playing:
+                type: boolean
+                description: If the track is currently playing
+                nullable: false
+              name:
+                type: string
+                description: The Trackname
+              track_mbid:
+                type: string
+                format: uuid
+                description: The MusicBrainz identifier for the track
+              url:
+                type: string
+                format: url
+                description: The url to the lastfm entry
+              date:
+                type: string
+                format: date
+                description: The date of the scrobble
+              timestamp:
+                type: string
+                format: date-time
+              image:
+                type: string
+                format: url
+              artist:
+                $ref: '#/components/schemas/Artist'
+              artist_mbid:
+                type: string
+                format: uuid
+              streamable:
+                type: number
+              track_musicbrainz:
+                $ref: '#/components/schemas/MusicbrainzRecording'
     UnauthorizedResponse:
       type: object
       properties:
@@ -873,7 +888,9 @@ components:
           minimum: 0
           maximum: 32000
         mbid:
-          $ref: '#/components/schemas/Mbid'
+          type: string
+          format: uuid
+          nullable: true
         url:
           type: string
           format: url
@@ -885,7 +902,37 @@ components:
         track:
           type: array
           items:
-            $ref: '#/components/schemas/LFMTrack'
+            type: object
+            required:
+              - items
+            properties:
+              name:
+                type: string
+              rank:
+                type: integer
+                description: The ranking
+                format: int32
+                minimum: 1
+                maximum: 16000
+              mbid:
+                type: string
+                format: uuid
+                description: The musicbrainz identifier of the track
+              url:
+                type: string
+                format: url
+                description: the url of the lastfm entry
+              date:
+                type: string
+                format: date
+                description: the date of the scrobble
+                nullable: true
+              image:
+                type: string
+                format: url
+                description: Link to the tracks image
+              artist:
+                $ref: '#/components/schemas/Artist'
     Artist:
       title: Artist
       type: object
@@ -895,212 +942,51 @@ components:
           example: Linkin Park
           description: The name of the artist
         mbid:
-          $ref: '#/components/schemas/Mbid'
+          type: string
+          format: uuid
         url:
           type: string
           format: url
           example: 'https://www.last.fm/music/Linkin+Park'
           description: The URL of the artist's entry on last.fm
-    Mbid:
-      title: MusicBrainz ID
-      type: string
-      format: uuid
-      example: 0383dadf-2a4e-4d10-a46a-e9e041da8eb3
-    MusicBrainzRecording:
-      title: MusicBrainz Recording
-      description: Detailed information about a specific MusicBrainz recording.
+    MusicbrainzRecording:
       type: object
+      nullable: true
       properties:
-        text:
-          type: string
-          description: Raw character data from XML content.
-        id:
-          $ref: '#/components/schemas/Mbid'
-        title:
-          type: string
-          description: Recording title.
-          example: "Numb"
-        length:
-          type: integer
-          description: Length of the recording in milliseconds.
-          example: 185000
-        artist-credit:
-          $ref: "#/components/schemas/MusicBrainzArtistCredit"
-        release-list:
-          $ref: "#/components/schemas/MusicBrainzRecordingReleaseList"
-        isrc-list:
-          $ref: "#/components/schemas/MusicBrainzIsrcList"
-      additionalProperties: false
-    example:
-      id: "f27ec8db-af05-4f36-916e-3d7e9c7033d4"
-      title: "Numb"
-      length: 185000
-
-    MusicBrainzArtistCredit:
-        title: MusicBrainz Artist Credit
-        description: Contains artist credit information showing who performed on the recording.
-        type: object
-        properties:
-          text:
-            type: string
-            description: Raw character data.
-          name-credit:
-            type: array
-            description: List of credited artists.
-            items:
-              $ref: "#/components/schemas/MusicBrainzNameCredit"
-        additionalProperties: false
-        example:
-          name-credit:
-            - joinphrase: " & "
-              artist:
-                id: "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
-                name: "Nirvana"
-                sort-name: "Nirvana"
-
-
-    MusicBrainzNameCredit:
-        title: MusicBrainz Name Credit
-        description: A single credit entry referencing an artist in the artist-credit list.
-        type: object
-        properties:
-          text:
-            type: string
-            description: Raw text data.
-          joinphrase:
-            type: string
-            description: How this artist is joined with the next one (e.g. "feat.", " & ").
-            example: "feat."
-          artist:
-            $ref: "#/components/schemas/MusicBrainzNameCreditArtist"
-        additionalProperties: false
-        example:
-          joinphrase: ""
-          artist:
-            id: "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
-            name: "Nirvana"
-
-    MusicBrainzNameCreditArtist:
-        title: MusicBrainz Name Credit Artist
-        description: Metadata describing an artist credited in a recording.
-        type: object
-        properties:
-          text:
-            type: string
-          id:
-            $ref: '#/components/schemas/Mbid'
-          type:
-            type: string
-            description: Artist type (e.g. Person, Group).
-            example: "Group"
-          type-id:
-            $ref: '#/components/schemas/Mbid'
-          name:
-            type: string
-            description: Artist display name.
-            example: "Nirvana"
-          sort_name:
-            type: string
-            description: Canonical sorting name.
-            example: "Nirvana"
-        additionalProperties: false
-        example:
-          id: "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
-          type: "Group"
-          name: "Nirvana"
-          sort-name: "Nirvana"
-
-    MusicBrainzRecordingReleaseList:
-        type: object
-        description: Contains releases associated with the recording (albums, singles, etc.).
-        properties:
-          text:
-            type: string
-          count:
-            type: string
-            description: Total number of releases.
-            example: "1"
-          release:
-            type: array
-            description: Release entries.
-            items:
-              $ref: "#/components/schemas/MusicBrainzRecordingRelease"
-        additionalProperties: false
-        example:
-          count: "1"
-          release:
-            - id: "1d9f9d3c-1c62-4b4a-8cc9-dc61d1c59d84"
-              title: "Meteora"
-
-    MusicBrainzRecordingRelease:
-        title: MusicBrainz Recording Release
-        description: A release (album, EP, etc.) containing this recording.
-        type: object
-        properties:
-          text:
-            type: string
-          id:
-            $ref: '#/components/schemas/Mbid'
-          title:
-            type: string
-            description: Release title.
-            example: "Meteora"
-        additionalProperties: false
-        example:
-          id: "1d9f9d3c-1c62-4b4a-8cc9-dc61d1c59d84"
-          title: "Meteora"
-
-    MusicBrainzIsrcList:
-        title: MusicBrainz ISRC List
-        description: International Standard Recording Codes (ISRCs) associated with the recording.
-        type: object
-        properties:
-          count:
-            type: string
-            description: Number of ISRC entries.
-            example: "1"
-          isrc:
-            $ref: "#/components/schemas/MusicBrainzIsrc"
-        additionalProperties: false
-        example:
-          count: "1"
-          isrc:
-            id: "USWB10300015"
-
-    MusicBrainzIsrc:
-        type: object
-        description: Single ISRC entry for the recording.
-        properties:
-          id:
-            type: string
-            description: The ISRC code.
-            example: "USWB10300015"
-        additionalProperties: false
-        example:
-          id: "USWB10300015"
-
-    MusicBrainzArtist:
-      type: object
-      properties:
-        name:
-          type: string
-        sort_name:
-          type: string
-        disambiguation:
-          type: string
-    LastFMUsername:
-      type: string
-      title: LastFM Username
-      example: alice
-      pattern: "^[a-zA-Z0-9_-]{3,20}$"
-      minLength: 3
-      maxLength: 20
-    HMACSignature:
-      title: HMAC Signature
-      type: string
-      pattern: "^[A-Fa-f0-9]{64}$"
-      minLength: 64
-      maxLength: 64
+        recording:
+          type: object
+          properties:
+            text:
+              type: string
+            id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            length:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 2147483647
+            artist_credit:
+              type: object
+              properties:
+                name_credit:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                      joinphrase:
+                        type: string
+                        example: "feat."
+                      artist:
+                        $ref: '#/components/schemas/Artist'
+            release_list:
+              type: object
+            isrc_list:
+              type: object
   responses:
     ApiErrorReturn401:
       description: Api Error 401
