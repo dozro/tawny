@@ -1,9 +1,10 @@
 package main
 
 import (
-	sc "codeberg.org/dozrye/golang_simpleconfig"
 	"flag"
 	"net/url"
+
+	sc "codeberg.org/dozrye/golang_simpleconfig"
 )
 
 type tawnyCliConfig struct {
