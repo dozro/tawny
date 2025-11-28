@@ -9,6 +9,7 @@ const (
 	MissingApiKeyInRequest
 	JsonNotMatchingExpectedSchema
 	InvalidBody
+	EndpointDisabledByConfig
 )
 
 var ApiErrorCodeNames = map[ApiErrorCode]string{
@@ -18,6 +19,7 @@ var ApiErrorCodeNames = map[ApiErrorCode]string{
 	MissingApiKeyInRequest:        "missing_api_key_in_request",
 	JsonNotMatchingExpectedSchema: "json_not_matching_expected_schema",
 	InvalidBody:                   "invalid_body",
+	EndpointDisabledByConfig:      "endpoint_disabled_by_config",
 }
 
 func (aec ApiErrorCode) String() string {

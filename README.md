@@ -18,3 +18,7 @@ Improvements against the official lastfm api:
 - more modern api design
 - OpenApi Api Specification
 - HMAC Signed Requests
+
+## building
+
+*See [build.md](./build.md)*
