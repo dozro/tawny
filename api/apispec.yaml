@@ -4,8 +4,14 @@ info:
   description: |-
     A lastfm Api Proxy
 
-    https://github.com/dozro/tawny/tree/main
+    The Source Code can be found here: https://github.com/dozro/tawny/tree/main
   version: 0.1.0
+  summary: ''
+  contact:
+    name: Rye
+  license:
+    url: 'https://github.com/dozro/tawny/blob/main/LICENSE'
+    name: Apache License 2.0
 servers:
   - url: /api/v1
 tags:
