@@ -1,6 +1,7 @@
 package main
 
 import (
+	sc "codeberg.org/dozrye/golang_simpleconfig"
 	"flag"
 	"net/url"
 )
@@ -12,11 +13,14 @@ type tawnyCliConfig struct {
 	Op          string
 }
 
+var configHandler sc.SimpleConfigHandler
+
 func Flagread() tawnyCliConfig {
-	apiKeyFlag := flag.String("apikey", "", "LastFm API key")
-	endpointFlag := flag.String("endpoint", "", "Tawny API endpoint")
-	usernameFlag := flag.String("username", "", "Tawny username")
-	opFlag := flag.String("op", "user_tracks_current", "Tawny Op")
+	apiKeyFlag := configHandler.GetStringOption(sc.ConfigEntry{Key: "apikey", Description: "LastFm API Key"})
+	endpointFlag := configHandler.GetStringOption(sc.ConfigEntry{Key: "endpoint", DefaultString: "tawny.itsrye.uk", Description: "Tawny API Endpoint"})
+	usernameFlag := configHandler.GetStringOption(sc.ConfigEntry{Key: "username", Description: "LastFm Username"})
+	opFlag := configHandler.GetStringOption(sc.ConfigEntry{Key: "op", DefaultString: "user_tracks_current", Description: "Tawny Operation"})
+	configHandler.ParseFlags()
 	flag.Parse()
 	return tawnyCliConfig{
 		ApiKey: *apiKeyFlag,
