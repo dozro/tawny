@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	configHandler.Init("TAWNY", true, true, nil)
+	configHandler.Init("TAWNY", true, true, true, nil)
 	c := Flagread()
 	log.SetLevel(log.DebugLevel)
 	tawny := tawny_sdk.Tawny{}.NewTawny(tawny_sdk.TawnyCreationArgs{
