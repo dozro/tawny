@@ -1,23 +1,33 @@
 package server
 
 import (
-	"github.com/dozro/tawny/internal/pkg/proxy_config"
+	"fmt"
+
+	"github.com/dozro/tawny/internal/pkg/server_config"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var proxyConfig *proxy_config.ProxyConfig
+var proxyConfig *server_config.ServerConfig
 
-func StartServer(config *proxy_config.ProxyConfig) {
+func StartServer(config *server_config.ServerConfig) {
 
 	proxyConfig = config
 
 	router := gin.Default()
 	router.Use(gin.Recovery())
 	router.Use(serverHeader)
+	if config.ReleaseMode {
+		log.Info("Running in ReleaseMode; setting Gin to Release Mode")
+		gin.SetMode(gin.ReleaseMode)
+	} else if config.DebugMode {
+		log.Info("Running in DebugMode; setting Gin to Debug Mode")
+		gin.SetMode(gin.DebugMode)
+	}
 
-	api := router.Group("/api")
+	api := router.Group(config.ApiBasePath)
 	v1 := api.Group("/v1")
 
 	user := v1.Group("/user")
@@ -47,5 +57,5 @@ func StartServer(config *proxy_config.ProxyConfig) {
 
 	addHealthChecks(router)
 
-	router.Run()
+	router.Run(fmt.Sprintf("%s:%d", proxyConfig.ApiHost, proxyConfig.ApiPort))
 }
