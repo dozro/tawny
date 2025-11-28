@@ -31,21 +31,42 @@ func StartServer(config *server_config.ServerConfig) {
 	v1 := api.Group("/v1")
 
 	user := v1.Group("/user")
-	user.GET(":username", getUserInfo)
-	user.GET(":username/friends", getUserFriends)
-	user.GET(":username/tracks/loved", getUserLovedTracks)
-	user.GET(":username/tracks/recent", getUserRecentTracks)
-	user.GET(":username/tracks/current", getUserCurrentTrack)
-	user.GET(":username/tracks/current/embed", getUserCurrentTrackEmbed)
-	user.GET(":username/top/albums", getUserTopAlbums)
-	user.GET(":username/top/tracks", getUserTopTracks)
+	if !config.DisabledEndpoints.EnableOnlyHMACEndpoints {
+		user.GET(":username", getUserInfo)
+		user.GET(":username/friends", getUserFriends)
+		user.GET(":username/tracks/loved", getUserLovedTracks)
+		user.GET(":username/tracks/recent", getUserRecentTracks)
+		user.GET(":username/tracks/current", getUserCurrentTrack)
+		if config.DisabledEndpoints.DisableImageEmbeddedEndpoints {
+			user.GET(":username/tracks/current/embed", disabledEndpointHandler)
+		} else {
+			user.GET(":username/tracks/current/embed", getUserCurrentTrackEmbed)
+		}
+
+		user.GET(":username/top/albums", getUserTopAlbums)
+		user.GET(":username/top/tracks", getUserTopTracks)
+	} else {
+		user.GET(":username", disabledEndpointHandler)
+		user.GET(":username/friends", disabledEndpointHandler)
+		user.GET(":username/tracks/loved", disabledEndpointHandler)
+		user.GET(":username/tracks/recent", disabledEndpointHandler)
+		user.GET(":username/tracks/current", disabledEndpointHandler)
+		user.GET(":username/tracks/current/embed", disabledEndpointHandler)
+		user.GET(":username/top/albums", disabledEndpointHandler)
+		user.GET(":username/top/tracks", disabledEndpointHandler)
+	}
 
 	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
 
 	hmacapi := v1.Group("/hmac")
-	hmacapi.POST("sign", signRequest)
-	hmacapi.POST("sign/base64", signBase64Request)
+	if config.DisabledEndpoints.DisableHMACSigningEndpoint {
+		hmacapi.POST("sign", disabledEndpointHandler)
+		hmacapi.POST("sign/base64", disabledEndpointHandler)
+	} else {
+		hmacapi.POST("sign", signRequest)
+		hmacapi.POST("sign/base64", signBase64Request)
+	}
 	hmacapi.POST("verify", verifyRequest)
 	hmacapi.POST("verify/againstServer", verifyAgainstServerSecret)
 	hmacapi.POST("verify/against_server", verifyAgainstServerSecret)
