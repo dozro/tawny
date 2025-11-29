@@ -17,9 +17,9 @@ func pageLimitAuthReq(c *gin.Context) (string, string, int, int) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
 	var limit, page int
-	if c.Query("page") == "-1" && c.Query("start") != "" {
+	if c.Query("page") != "" {
 		var err error
-		page, err = strconv.Atoi(c.Query("start"))
+		page, err = strconv.Atoi(c.Query("page"))
 		if err != nil {
 			// if atoi fails interpret as -1
 			page = -1
