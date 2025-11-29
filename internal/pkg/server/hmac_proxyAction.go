@@ -17,7 +17,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	case hmacProxyUserInfoRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.GetInfo")
-			userinfo, err := client.GetUserInfo(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			userinfo, err := client.LfmUserInfo(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
 			if handleError(err, c) {
 				return
 			}
@@ -39,7 +39,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	case hmacProxyUserNowPlayingRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.NowPlaying")
-			usernowplaying, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			usernowplaying, err := client.LfmUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
 			if handleError(err, c) {
 				return
 			}
@@ -49,7 +49,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	case hmacProxyUserNowPlayingEmbed.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.NowPlayingEmbed")
-			ct, err := client.GetUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			ct, err := client.LfmUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
 			if ct == nil || err != nil {
 				e := fmt.Errorf("Unexpected or error", err)
 				log.Error(e)
@@ -65,7 +65,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	case hmacProxyUserRecentlyPlayedRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.RecentlyPlayed")
-			rp, err := client.GetUserRecentTracks(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, request.ApiParameters.Limit, request.ApiParameters.Page, false)
+			rp, err := client.LfmUserRecentTracks(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, request.ApiParameters.Limit, request.ApiParameters.Page, false)
 			if handleError(err, c) {
 				return
 			}

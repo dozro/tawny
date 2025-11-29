@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetUserTopAlbum(username string, apikey string, limit int, page int) (*lfm_types.UserGetTopAlbums, error) {
+func LfmUserTopAlbum(username, apikey string, limit, page int) (*lfm_types.UserGetTopAlbums, error) {
 	log.Debugf("getting top albums for %s ...", username)
 	lt, err := lfm_api.User{}.GetTopAlbums(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,
