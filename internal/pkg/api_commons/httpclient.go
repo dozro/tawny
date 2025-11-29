@@ -2,7 +2,7 @@ package api_commons
 
 import "net/http"
 
-const userAgent = "Tawny/0.0.1 (linux;github.com/dozro/tawny;+abuse@itsrye.dev)"
+const userAgent = "Tawny/0.0.3 (Linux; +https://github.com/dozro/tawny; +abuse@itsrye.dev)"
 
 var httpClient = &http.Client{}
 
