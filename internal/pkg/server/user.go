@@ -19,7 +19,7 @@ func getUserInfo(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	userinfo, err := client.GetUserInfo(username, apikey)
+	userinfo, err := client.LfmUserInfo(username, apikey)
 	if handleError(err, c) {
 		return
 	}
@@ -31,7 +31,7 @@ func getUserTopAlbums(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ta, err := client.GetUserTopAlbum(username, apikey, limit, page)
+	ta, err := client.LfmUserTopAlbum(username, apikey, limit, page)
 	if handleError(err, c) {
 		return
 	}
@@ -46,7 +46,7 @@ func getUserLovedTracks(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	lt, err := client.GetUserLovedTracks(username, apikey, limit, page)
+	lt, err := client.UserLovedTracks(username, apikey, limit, page)
 	if handleError(err, c) {
 		return
 	}
@@ -66,7 +66,7 @@ func getUserRecentTracks(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	lt, err := client.GetUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB)
+	lt, err := client.UserRecentTracks(username, apikey, limit, page, embedMusicBrainzB)
 	if handleError(err, c) {
 		return
 	}
@@ -82,7 +82,7 @@ func getUserCurrentTrack(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.GetUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey)
 	if handleError(err, c) {
 		return
 	}
@@ -95,7 +95,7 @@ func getUserCurrentTrackEmbed(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.GetUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey)
 	if handleError(err, c) {
 		return
 	}
@@ -125,7 +125,7 @@ func getUserFriends(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	uf, err := client.GetUserFriends(username, apikey, limit, page, getRT)
+	uf, err := client.LfmUserFriends(username, apikey, limit, page, getRT)
 	if handleError(err, c) {
 		return
 	}
@@ -137,7 +137,7 @@ func getUserTopTracks(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	tt, err := client.GetUserTopTracks(username, apikey, limit, page)
+	tt, err := client.LfmUserTopTracks(username, apikey, limit, page)
 	if handleError(err, c) {
 		return
 	}
