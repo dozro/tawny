@@ -109,13 +109,11 @@ func verifyRequest(c *gin.Context) {
 			Success:  false,
 		})
 		return
-	} else {
-		render(c, 200, gin.H{
-			"message": stringsValidHmacSignature,
-			"success": true,
-		})
-		return
 	}
+	render(c, 200, gin.H{
+		"message": stringsValidHmacSignature,
+		"success": true,
+	})
 }
 
 func verifyAgainstServerSecret(c *gin.Context) {
@@ -134,13 +132,11 @@ func verifyAgainstServerSecret(c *gin.Context) {
 			Success:  false,
 		})
 		return
-	} else {
-		render(c, 200, gin.H{
-			"message": stringsValidHmacSignature,
-			"success": true,
-		})
-		return
 	}
+	render(c, 200, gin.H{
+		"message": stringsValidHmacSignature,
+		"success": true,
+	})
 }
 
 // verifyRequestInternal internal code for hmac request verification
@@ -155,7 +151,7 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overr
 			signedReqBase64.Request = overridenReqCont.Request
 			signedReqBase64.Signature = overridenReqCont.Signature
 		} else {
-			if err := c.ShouldBindJSON(&signedReqBase64); err != nil {
+			if c.ShouldBindJSON(&signedReqBase64) != nil {
 				return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
 			}
 		}
@@ -170,7 +166,7 @@ func verifyRequestInternal(c *gin.Context, hmacSecret string, base64 bool, overr
 		}
 
 	} else {
-		if err := c.ShouldBindJSON(&signedReq); err != nil {
+		if c.ShouldBindJSON(&signedReq) != nil {
 			return false, nil, errors.New("invalid JSON"), http.StatusBadRequest
 		}
 
