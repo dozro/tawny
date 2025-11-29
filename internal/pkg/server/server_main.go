@@ -32,19 +32,19 @@ func StartServer(config *server_config.ServerConfig) {
 
 	user := v1.Group("/user")
 	if !config.DisabledEndpoints.EnableOnlyHMACEndpoints {
-		user.GET(":username", getUserInfo)
-		user.GET(":username/friends", getUserFriends)
-		user.GET(":username/tracks/loved", getUserLovedTracks)
-		user.GET(":username/tracks/recent", getUserRecentTracks)
-		user.GET(":username/tracks/current", getUserCurrentTrack)
+		user.GET(":username", lfmUserInfo)
+		user.GET(":username/friends", lfmUserFriends)
+		user.GET(":username/tracks/loved", lfmUserLovedTracks)
+		user.GET(":username/tracks/recent", lfmUserRecentTracks)
+		user.GET(":username/tracks/current", lfmUserCurrentTrack)
 		if config.DisabledEndpoints.DisableImageEmbeddedEndpoints {
 			user.GET(":username/tracks/current/embed", disabledEndpointHandler)
 		} else {
-			user.GET(":username/tracks/current/embed", getUserCurrentTrackEmbed)
+			user.GET(":username/tracks/current/embed", lfmUserCurrentTrackEmbed)
 		}
 
-		user.GET(":username/top/albums", getUserTopAlbums)
-		user.GET(":username/top/tracks", getUserTopTracks)
+		user.GET(":username/top/albums", lfmUserTopAlbums)
+		user.GET(":username/top/tracks", lfmUserTopTracks)
 	} else {
 		user.GET(":username", disabledEndpointHandler)
 		user.GET(":username/friends", disabledEndpointHandler)
