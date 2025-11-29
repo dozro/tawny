@@ -7,6 +7,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o tawnyfm ./cmd/fm-proxy/main.go
 
 FROM scratch
 
+LABEL org.opencontainers.image.source="https://github.com/dozro/tawny"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+
 EXPOSE 8080
 
 WORKDIR /app
