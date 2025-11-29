@@ -1,36 +1,29 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
-	"github.com/dozro/tawny/pkg/lfm_api"
+	"github.com/dozro/tawny/pkg/tawny_sdk"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	apiKey := flag.String("apikey", "", "api key")
-	username := flag.String("username", "", "username")
-	what := flag.String("what", "nowplaying", "what")
-	flag.Parse()
-	if *apiKey == "" || *username == "" || *what == "" {
-		fmt.Println("Tawny cli tool, (C) 2025 itsrye.dev, Apache 2.0 Licensed, https://github.com/dozro/tawny")
-		flag.Usage()
-		return
-	}
-	if *what == "nowplaying" {
-		np, _ := lfm_api.User{}.GetRecentTracks(lfm_api.UserGetArgsWithLimitPage{
-			ApiKey:   *apiKey,
-			UserName: *username,
-			Limit:    1,
-			Page:     -1,
-		})
-		if np.Track[0].NowPlaying {
-			fmt.Printf("Now playing %s by %s\n", np.Track[0].Name, np.Track[0].Artist.Name)
-		} else {
-			fmt.Printf("Last playing %s by %s\n", np.Track[0].Name, np.Track[0].Artist.Name)
+	configHandler.Init("TAWNY", true, true, true, nil)
+	c := Flagread()
+	log.SetLevel(log.DebugLevel)
+	tawny := tawny_sdk.Tawny{}.NewTawny(tawny_sdk.TawnyCreationArgs{
+		LastFMApiKey:  c.ApiKey,
+		TawnyEndPoint: c.ApiEndpoint,
+	})
+	if c.Op == "user_tracks_current" {
+		nl, err := tawny.GetNowListeningFor(c.Username)
+		if err != nil {
+			log.Fatal(err)
 		}
-
-	} else {
-		fmt.Println("You need to specify what")
+		if nl.NowPlaying {
+			fmt.Printf("%s is currently listening to \"%s\" by %s\n", c.Username, nl.Name, nl.Artist.Name)
+		} else {
+			fmt.Printf("%s was recently listening to \"%s\" by %s\n", c.Username, nl.Name, nl.Artist.Name)
+		}
 	}
 }

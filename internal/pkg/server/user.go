@@ -12,33 +12,33 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func getUserInfo(c *gin.Context) {
+func lfmUserInfo(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
 	log.Infof("getUserInfo: %s, %s", username, security.MaskAPIKey(apikey))
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	userinfo, err := client.GetUserInfo(username, apikey)
+	userinfo, err := client.LfmUserInfo(username, apikey)
 	if handleError(err, c) {
 		return
 	}
 	c.JSON(200, userinfo)
 }
 
-func getUserTopAlbums(c *gin.Context) {
+func lfmUserTopAlbums(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ta, err := client.GetUserTopAlbum(username, apikey, limit, page)
+	ta, err := client.LfmUserTopAlbum(username, apikey, limit, page)
 	if handleError(err, c) {
 		return
 	}
 	c.JSON(200, ta)
 }
 
-func getUserLovedTracks(c *gin.Context) {
+func lfmUserLovedTracks(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
 	if redirectToHMACEndpoint(c, "/user/tracks/loved", HmacProxyRequestApiParameters{Username: username}) {
 		return
@@ -46,14 +46,14 @@ func getUserLovedTracks(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	lt, err := client.GetUserLovedTracks(username, apikey, limit, page)
+	lt, err := client.UserLovedTracks(username, apikey, limit, page)
 	if handleError(err, c) {
 		return
 	}
 	c.JSON(200, lt)
 }
 
-func getUserRecentTracks(c *gin.Context) {
+func lfmUserRecentTracks(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
 	embedMusicBrainz := c.Query("fetch_musicbrainz")
 	embedMusicBrainzB := false
@@ -66,14 +66,14 @@ func getUserRecentTracks(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	lt, err := client.GetUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB)
+	lt, err := client.LfmUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB)
 	if handleError(err, c) {
 		return
 	}
 	c.JSON(200, lt)
 }
 
-func getUserCurrentTrack(c *gin.Context) {
+func lfmUserCurrentTrack(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
 	if redirectToHMACEndpoint(c, "/user/tracks/current", HmacProxyRequestApiParameters{Username: username}) {
@@ -82,20 +82,20 @@ func getUserCurrentTrack(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.GetUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey)
 	if handleError(err, c) {
 		return
 	}
 	c.JSON(200, ct)
 }
 
-func getUserCurrentTrackEmbed(c *gin.Context) {
+func lfmUserCurrentTrackEmbed(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.GetUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey)
 	if handleError(err, c) {
 		return
 	}
@@ -112,7 +112,7 @@ func getUserCurrentTrackEmbed(c *gin.Context) {
 	c.Data(http.StatusOK, "image/png", img.Bytes())
 }
 
-func getUserFriends(c *gin.Context) {
+func lfmUserFriends(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
 	if apikeyUndefined(apikey, c) {
 		return
@@ -125,19 +125,19 @@ func getUserFriends(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	uf, err := client.GetUserFriends(username, apikey, limit, page, getRT)
+	uf, err := client.LfmUserFriends(username, apikey, limit, page, getRT)
 	if handleError(err, c) {
 		return
 	}
 	render(c, http.StatusOK, uf)
 }
 
-func getUserTopTracks(c *gin.Context) {
+func lfmUserTopTracks(c *gin.Context) {
 	apikey, username, page, limit := pageLimitAuthReq(c)
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	tt, err := client.GetUserTopTracks(username, apikey, limit, page)
+	tt, err := client.LfmUserTopTracks(username, apikey, limit, page)
 	if handleError(err, c) {
 		return
 	}

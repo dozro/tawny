@@ -8,12 +8,15 @@ on:
     branches:
       - main
       - devel
+
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   openapi_validate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
+
 
     steps:
       - name: Checkout code

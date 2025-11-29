@@ -6,7 +6,7 @@ const userAgent = "Tawny/0.0.1 (linux;github.com/dozro/tawny;+abuse@itsrye.dev)"
 
 var httpClient = &http.Client{}
 
-func doHttpGetRequestJSONWithAuth(url string, auth string) (*http.Response, error) {
+func doHttpGetRequestJSONWithAuth(url, auth string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
