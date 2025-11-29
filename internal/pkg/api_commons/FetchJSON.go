@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func FetchJSON[T any](url string, authHeader string) (T, error) {
+func FetchJSON[T any](url, authHeader string) (T, error) {
 	log.Debugf("fetching json from %s with auth header: %s", url, security.MaskAPIKey(authHeader))
 	var zero T
 

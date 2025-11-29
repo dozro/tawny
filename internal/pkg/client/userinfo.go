@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetUserInfo(username string, apikey string) (*lfm_types.UserGetInfo, error) {
+func LfmUserInfo(username, apikey string) (*lfm_types.UserGetInfo, error) {
 	log.Debugf("getting User info for %s ...", username)
 	userinfo, err := lfm_api.User{}.GetInfo(lfm_api.UserGetInfoArgs{
 		UserName: username,

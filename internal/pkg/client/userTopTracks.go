@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetUserTopTracks(username string, apikey string, limit int, page int) (*lfm_types.UserGetTopTracks, error) {
+func LfmUserTopTracks(username, apikey string, limit, page int) (*lfm_types.UserGetTopTracks, error) {
 	log.Debugf("getting top tracks for %s ...", username)
 	lt, err := lfm_api.User{}.GetTopTracks(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,

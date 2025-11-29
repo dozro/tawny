@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetUserRecentTracks(username string, apikey string, limit int, page int, embedMB bool) (*lfm_types.UserGetRecentTracks, error) {
+func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB bool) (*lfm_types.UserGetRecentTracks, error) {
 	log.Debugf("getting recent tracks for %s ...", username)
 	lt, err := lfm_api.User{}.GetRecentTracks(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,
@@ -25,6 +25,6 @@ func GetUserRecentTracks(username string, apikey string, limit int, page int, em
 	return lt, nil
 }
 
-func GetUserCurrentTrack(username string, apiKey string, embedMusicBrainz bool) (*lfm_types.UserGetRecentTracks, error) {
-	return GetUserRecentTracks(username, apiKey, 1, -1, embedMusicBrainz)
+func LfmUserCurrentTrack(username string, apiKey string) (*lfm_types.UserGetRecentTracks, error) {
+	return LfmUserRecentTracks(username, apiKey, 1, -1, false)
 }

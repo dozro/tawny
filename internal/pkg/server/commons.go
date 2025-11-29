@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 func pageLimitAuthReq(c *gin.Context) (string, string, int, int) {
@@ -15,12 +16,22 @@ func pageLimitAuthReq(c *gin.Context) (string, string, int, int) {
 	username := c.Param("username")
 	var limit, page int
 	if c.Query("page") != "" {
-		page, _ = strconv.Atoi(c.Query("page"))
+		var err error
+		page, err = strconv.Atoi(c.Query("page"))
+		if err != nil {
+			// if atoi fails interpret as -1
+			page = -1
+		}
 	} else {
 		page = -1
 	}
 	if c.Query("limit") != "" {
-		limit, _ = strconv.Atoi(c.Query("limit"))
+		var err error
+		limit, err = strconv.Atoi(c.Query("limit"))
+		if err != nil {
+			// if atoi fails interpret as -1
+			limit = -1
+		}
 	} else {
 		limit = -1
 	}
@@ -52,7 +63,12 @@ func redirectToHMACEndpoint(c *gin.Context, apiId string, apipara HmacProxyReque
 			ApiIdentifier: apiId,
 			ApiParameters: apipara,
 		}
-		reqBytes, _ := json.Marshal(req)
+		reqBytes, err := json.Marshal(req)
+		if err != nil {
+			// this shouldn't happen
+			log.Errorf("Unexpected Error in json marshall of HmacProxy Request: %v", err)
+			return false
+		}
 		reqb64 := base64.URLEncoding.EncodeToString(reqBytes)
 		c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/api/v1/hmac/execute?isBase64=true&signature=%s&request=%s", signature, reqb64))
 		return true
