@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetUserWeeklyChart(username string, apikey string, from int, to int) (*lfm_types.UserGetWeeklyAlbumChart, error) {
+func LfmUserWeeklyChart(username string, apikey string, from int, to int) (*lfm_types.UserGetWeeklyAlbumChart, error) {
 	log.Debugf("getting top tracks for %s ...", username)
 	wac, err := lfm_api.User{}.GetWeeklyChart(lfm_api.FromToAKArgs{
 		ApiKey:   apikey,

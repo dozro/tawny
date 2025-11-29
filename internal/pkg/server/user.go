@@ -149,12 +149,12 @@ func lfmUserTopTracks(c *gin.Context) {
 	render(c, http.StatusOK, tt)
 }
 
-func getUserWeeklyChart(c *gin.Context) {
+func lfmUserWeeklyChart(c *gin.Context) {
 	apikey, username, from, to := fromToAuthReq(c)
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	wac, err := client.GetUserWeeklyChart(username, apikey, from, to)
+	wac, err := client.LfmUserWeeklyChart(username, apikey, from, to)
 	if handleError(err, c) {
 		return
 	}

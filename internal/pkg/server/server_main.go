@@ -44,7 +44,7 @@ func StartServer(config *server_config.ServerConfig) {
 
 	un.GET("top/albums", lfmUserTopAlbums)
 	un.GET("top/tracks", lfmUserTopTracks)
-	unweekly.GET("album", getUserWeeklyChart)
+	unweekly.GET("album", lfmUserWeeklyChart)
 
 	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
