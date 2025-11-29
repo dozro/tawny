@@ -76,13 +76,18 @@ func lfmUserRecentTracks(c *gin.Context) {
 func lfmUserCurrentTrack(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
+	embedMusicBrainz := c.Query("fetch_musicbrainz")
+	embedMusicBrainzB := false
+	if embedMusicBrainz == "true" {
+		embedMusicBrainzB = true
+	}
 	if redirectToHMACEndpoint(c, "/user/tracks/current", HmacProxyRequestApiParameters{Username: username}) {
 		return
 	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.LfmUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey, embedMusicBrainzB)
 	if handleError(err, c) {
 		return
 	}
@@ -95,7 +100,7 @@ func lfmUserCurrentTrackEmbed(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.LfmUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey, false)
 	if handleError(err, c) {
 		return
 	}
@@ -142,4 +147,16 @@ func lfmUserTopTracks(c *gin.Context) {
 		return
 	}
 	render(c, http.StatusOK, tt)
+}
+
+func lfmUserWeeklyChart(c *gin.Context) {
+	apikey, username, from, to := fromToAuthReq(c)
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	wac, err := client.LfmUserWeeklyChart(username, apikey, from, to)
+	if handleError(err, c) {
+		return
+	}
+	render(c, http.StatusOK, wac)
 }

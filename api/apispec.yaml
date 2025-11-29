@@ -44,6 +44,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       summary: Get User Info
       operationId: get_user
       tags:
@@ -95,6 +97,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       summary: Get Users Loved Tracks
       operationId: user_get_loved_tracks
       tags:
@@ -119,6 +123,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: 'get_user_username_tracks_recent'
       parameters:
         - schema:
@@ -169,6 +175,13 @@ paths:
           description: The username
           schema:
             $ref: '#/components/schemas/LastFMUsername'
+        - name: fetch_musicbrainz
+          in: query
+          required: false
+          description: fetch assosicated data from MusicBrainz
+          schema:
+            type: boolean
+            default: false
         - name: signature
           in: query
           required: false
@@ -194,6 +207,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internalError'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: 'get_user_username_tracks_current'
       description: equivalent to calling recent with limit of 1
   '/user/{username}/tracks/current/embed':
@@ -224,6 +239,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: 'get-user-:username-tracks-current-embed'
       x-stoplight:
         id: r4nu8mvgwcbbf
@@ -271,6 +288,8 @@ paths:
                 $ref: '#/components/schemas/HmacProxyRequest'
         '401':
           $ref: '#/components/responses/ApiErrorReturn401'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: post-hmac-sign
       x-stoplight:
         id: 1hthsq5tpk5xi
@@ -497,9 +516,9 @@ paths:
                 $ref: '#/components/schemas/UserTopTracks'
         '401':
           description: Unauthorized
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: get-user-username-top-tracks
-      x-stoplight:
-        id: l3tqqqu7any10
   '/user/{username}/top/albums':
     parameters:
       - schema:
@@ -518,14 +537,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserTopAlbums'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/UserTopAlbums'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserTopAlbums'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: get-user-username-top-albums
-      x-stoplight:
-        id: thto4eee1rct0
-  /musicbrainz/lookup/artist/by_mbid/{artist_mbid}:
+  /musicbrainz/lookup/artist/by_mbid/{mbid}:
     parameters:
       - schema:
           $ref: '#/components/schemas/Mbid'
-        name: artist_mbid
+        name: mbid
         in: path
         required: true
     get:
@@ -536,7 +561,45 @@ paths:
       responses:
         '200':
           description: Request successful
-      
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzArtist'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzArtist'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzArtist'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
+  /musicbrainz/lookup/recording/by_mbid/{mbid}:
+    parameters:
+      - schema:
+          $ref: '#/components/schemas/Mbid'
+        name: mbid
+        in: path
+        required: true
+    get:
+      summary: lookup recording details by mbid
+      tags:
+        - musicbrainz
+      operationId: get_musicbrainz_lookup_recording_by_mbid
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzRecording'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzRecording'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzRecording'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
 security:
   - defaultApiKey: []
 components:
@@ -1096,6 +1159,18 @@ components:
       minLength: 64
       maxLength: 64
   responses:
+    EndpointDisabledByServer:
+      description: The Server disabled this endpoint
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
     ApiErrorReturn401:
       description: Api Error 401
       content:

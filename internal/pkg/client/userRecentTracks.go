@@ -25,6 +25,6 @@ func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB bool)
 	return lt, nil
 }
 
-func LfmUserCurrentTrack(username string, apiKey string) (*lfm_types.UserGetRecentTracks, error) {
-	return LfmUserRecentTracks(username, apiKey, 1, -1, false)
+func LfmUserCurrentTrack(username, apiKey string, embedMB bool) (*lfm_types.UserGetRecentTracks, error) {
+	return LfmUserRecentTracks(username, apiKey, 1, -1, embedMB)
 }

@@ -39,7 +39,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	case hmacProxyUserNowPlayingRegex.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.NowPlaying")
-			usernowplaying, err := client.LfmUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			usernowplaying, err := client.LfmUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, request.ApiParameters.FetchMusicBrainz)
 			if handleError(err, c) {
 				return
 			}
@@ -49,7 +49,7 @@ func performProxyAction(request *HmacProxyRequest, c *gin.Context) {
 	case hmacProxyUserNowPlayingEmbed.MatchString(request.ApiIdentifier):
 		{
 			log.Debug("proxy action: user.NowPlayingEmbed")
-			ct, err := client.LfmUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey)
+			ct, err := client.LfmUserCurrentTrack(request.ApiParameters.Username, proxyConfig.LastFMAPIKey, false)
 			if ct == nil || err != nil {
 				e := fmt.Errorf("Unexpected or error", err)
 				log.Error(e)

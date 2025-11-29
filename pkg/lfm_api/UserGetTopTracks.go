@@ -3,6 +3,7 @@ package lfm_api
 import (
 	"github.com/dozro/tawny/internal/pkg/api_commons"
 	"github.com/dozro/tawny/pkg/lfm_types"
+	log "github.com/sirupsen/logrus"
 )
 
 func (User) GetTopTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetTopTracks, error) {
@@ -10,5 +11,9 @@ func (User) GetTopTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetTopTr
 
 	data, err := api_commons.FetchXML[lfm_types.WrappedUserGetTopTracks](apiUrl)
 
+	if err != nil {
+		log.Debugf("Error fetching top tracks: %s", err.Error())
+		return nil, err
+	}
 	return &data.UserTopTracks, err
 }
