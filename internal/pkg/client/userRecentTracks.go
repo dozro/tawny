@@ -25,6 +25,6 @@ func GetUserRecentTracks(username string, apikey string, limit int, page int, em
 	return lt, nil
 }
 
-func GetUserCurrentTrack(username string, apiKey string) (*lfm_types.UserGetRecentTracks, error) {
-	return GetUserRecentTracks(username, apiKey, 1, -1, false)
+func GetUserCurrentTrack(username string, apiKey string, embedMusicBrainz bool) (*lfm_types.UserGetRecentTracks, error) {
+	return GetUserRecentTracks(username, apiKey, 1, -1, embedMusicBrainz)
 }

@@ -175,6 +175,13 @@ paths:
           description: The username
           schema:
             $ref: '#/components/schemas/LastFMUsername'
+        - name: fetch_musicbrainz
+          in: query
+          required: false
+          description: fetch assosicated data from MusicBrainz
+          schema:
+            type: boolean
+            default: false
         - name: signature
           in: query
           required: false

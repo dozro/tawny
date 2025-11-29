@@ -76,13 +76,18 @@ func getUserRecentTracks(c *gin.Context) {
 func getUserCurrentTrack(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
+	embedMusicBrainz := c.Query("fetch_musicbrainz")
+	embedMusicBrainzB := false
+	if embedMusicBrainz == "true" {
+		embedMusicBrainzB = true
+	}
 	if redirectToHMACEndpoint(c, "/user/tracks/current", HmacProxyRequestApiParameters{Username: username}) {
 		return
 	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.GetUserCurrentTrack(username, apikey)
+	ct, err := client.GetUserCurrentTrack(username, apikey, embedMusicBrainzB)
 	if handleError(err, c) {
 		return
 	}
@@ -95,7 +100,7 @@ func getUserCurrentTrackEmbed(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.GetUserCurrentTrack(username, apikey)
+	ct, err := client.GetUserCurrentTrack(username, apikey, false)
 	if handleError(err, c) {
 		return
 	}
