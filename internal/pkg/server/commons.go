@@ -27,6 +27,23 @@ func pageLimitAuthReq(c *gin.Context) (string, string, int, int) {
 	return apikey, username, page, limit
 }
 
+func fromToAuthReq(c *gin.Context) (string, string, int, int) {
+	apikey := c.Request.Header.Get("Authorization")
+	username := c.Param("username")
+	var to, from int
+	if c.Query("from") != "" {
+		from, _ = strconv.Atoi(c.Query("from"))
+	} else {
+		from = -1
+	}
+	if c.Query("to") != "" {
+		to, _ = strconv.Atoi(c.Query("to"))
+	} else {
+		to = -1
+	}
+	return apikey, username, from, to
+}
+
 func redirectToHMACEndpoint(c *gin.Context, apiId string, apipara HmacProxyRequestApiParameters) bool {
 	signature := c.Query("signature")
 	if signature != "" {

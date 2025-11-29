@@ -148,3 +148,15 @@ func getUserTopTracks(c *gin.Context) {
 	}
 	render(c, http.StatusOK, tt)
 }
+
+func getUserWeeklyChart(c *gin.Context) {
+	apikey, username, from, to := fromToAuthReq(c)
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	wac, err := client.GetUserWeeklyChart(username, apikey, from, to)
+	if handleError(err, c) {
+		return
+	}
+	render(c, http.StatusOK, wac)
+}
