@@ -3,7 +3,7 @@ module github.com/dozro/tawny
 go 1.24.0
 
 require (
-	codeberg.org/dozrye/golang_simpleconfig v0.0.7
+	codeberg.org/dozrye/golang_simpleconfig v0.0.8
 	github.com/disintegration/imaging v1.6.2
 	github.com/fogleman/gg v1.3.0
 	github.com/gin-gonic/gin v1.11.0
