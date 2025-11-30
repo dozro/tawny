@@ -127,10 +127,9 @@ func lfmUserCurrentTrackEmbed(c *gin.Context) {
 	} else if accepts == "image/tiff" {
 		c.Data(http.StatusOK, "image/tiff", img.Bytes())
 		return
-	} else {
-		c.Data(http.StatusOK, "image/png", img.Bytes())
-		return
 	}
+	c.Data(http.StatusOK, "image/png", img.Bytes())
+	return
 }
 
 func lfmUserFriends(c *gin.Context) {

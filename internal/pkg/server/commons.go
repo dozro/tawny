@@ -52,12 +52,22 @@ func fromToAuthReq(c *gin.Context) (string, string, int, int) {
 	username := c.Param("username")
 	var to, from int
 	if c.Query("from") != "" {
-		from, _ = strconv.Atoi(c.Query("from"))
+		var err error
+		from, err = strconv.Atoi(c.Query("from"))
+		if err != nil {
+			// if atoi fails interpret as -1
+			from = -1
+		}
 	} else {
 		from = -1
 	}
 	if c.Query("to") != "" {
-		to, _ = strconv.Atoi(c.Query("to"))
+		var err error
+		to, err = strconv.Atoi(c.Query("to"))
+		if err != nil {
+			// if atoi fails interpret as -1
+			to = -1
+		}
 	} else {
 		to = -1
 	}
