@@ -8,9 +8,9 @@ type ArtistAliasList struct {
 
 type ArtistAlias struct {
 	Text     string `xml:",chardata" json:"text,omitempty"`
-	SortName string `xml:"sort-name,attr" json:"sort-name,omitempty"`
+	SortName string `xml:"sort-name,attr" json:"sort_name,omitempty"`
 	Locale   string `xml:"locale,attr" json:"locale,omitempty"`
 	Type     string `xml:"type,attr" json:"type,omitempty"`
-	TypeID   string `xml:"type-id,attr" json:"type-id,omitempty"`
+	TypeID   string `xml:"type-id,attr" json:"type_id,omitempty"`
 	Primary  string `xml:"primary,attr" json:"primary,omitempty"`
 }

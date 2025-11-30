@@ -3,15 +3,16 @@ info:
   title: Tawny
   description: |-
     A lastfm Api Proxy
-
-    The Source Code can be found here: https://github.com/dozro/tawny/tree/main
-  version: 0.1.0
-  summary: ''
+  version: 0.0.3
   contact:
     name: Rye
+    url: https://github.com/dozro/tawny/wiki
   license:
-    url: 'https://github.com/dozro/tawny/blob/main/LICENSE'
-    name: Apache License 2.0
+    name: Apache 2.0
+    url: https://opensource.org/licenses/Apache-2.0
+externalDocs:
+  description: Read the documentation in the Github Wiki
+  url: https://github.com/dozro/tawny/wiki
 servers:
   - url: /api/v1
 tags:
@@ -41,15 +42,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userinfo'
+                $ref: '#/components/schemas/LFMUserInfo'
         '401':
           $ref: '#/components/responses/ApiErrorReturn401'
         '500':
-          description: internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internalError'
+          $ref: '#/components/responses/ApiErrorReturn500'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       summary: Get User Info
       operationId: get_user
       tags:
@@ -62,16 +61,34 @@ paths:
       parameters:
         - name: limit
           in: query
+          description: The maximum number of tracks to return.
           required: false
-          description: The limit
           schema:
-            type: number
-        - name: page
+            type: integer
+            format: int32
+            default: 25
+            minimum: 1
+            maximum: 250
+        - name: start
           in: query
+          description: The starting index for the results (used for pagination), equivalent to page.
           required: false
-          description: The page you want to get
           schema:
-            type: number
+            type: integer
+            format: int64
+            default: 1
+            minimum: 1
+            maximum: 32000
+        - schema:
+            type: integer
+            format: int64
+            default: -1
+            minimum: -1
+            maximum: 32000
+          in: query
+          name: page
+          description: The page number (deprecated, use `start` instead)
+          deprecated: true
         - name: username
           in: path
           required: true
@@ -96,18 +113,17 @@ paths:
         '401':
           $ref: '#/components/responses/ApiErrorReturn401'
         '500':
-          description: internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internalError'
+          $ref: '#/components/responses/ApiErrorReturn500'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       summary: Get Users Loved Tracks
       operationId: user_get_loved_tracks
       tags:
         - user
   '/user/{username}/tracks/recent':
     get:
-      summary: get recent tracks
+      summary: Get a user's recent tracks
+      description: Retrieve the most recently played tracks for a given Last.fm user.
       tags:
         - user
       responses:
@@ -116,51 +132,62 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserRecentTracks'
+                $ref: '#/components/schemas/LFMUserRecentTracks'
         '401':
           $ref: '#/components/responses/ApiErrorReturn401'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internalError'
+          $ref: '#/components/responses/ApiErrorReturn500'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: 'get_user_username_tracks_recent'
       parameters:
-        - schema:
+        - name: limit
+          in: query
+          description: The maximum number of tracks to return.
+          required: false
+          schema:
             type: integer
             format: int32
             default: 25
             minimum: 1
             maximum: 250
+        - name: start
           in: query
-          name: limit
-          description: The limit
-        - schema:
+          description: The starting index for the results (used for pagination), equivalent to page.
+          required: false
+          schema:
             type: integer
             format: int64
             default: 1
             minimum: 1
             maximum: 32000
+        - schema:
+            type: integer
+            format: int64
+            default: -1
+            minimum: -1
+            maximum: 32000
           in: query
           name: page
-          description: The page
+          description: The page number (deprecated, use `start` instead)
+          deprecated: true
         - name: signature
           in: query
           required: false
-          description: the HMAC Signature for this OP
+          description: The HMAC signature for this operation.
           schema:
             $ref: '#/components/schemas/HMACSignature'
         - name: fetch_musicbrainz
           in: query
           required: false
+          description: Include MusicBrainz metadata for tracks.
           schema:
             type: boolean
             default: false
         - name: username
           in: path
           required: true
-          description: The username
+          description: The Last.fm username to fetch recent tracks for.
           schema:
             $ref: '#/components/schemas/LastFMUsername'
   '/user/{username}/tracks/current':
@@ -175,6 +202,13 @@ paths:
           description: The username
           schema:
             $ref: '#/components/schemas/LastFMUsername'
+        - name: fetch_musicbrainz
+          in: query
+          required: false
+          description: fetch assosicated data from MusicBrainz
+          schema:
+            type: boolean
+            default: false
         - name: signature
           in: query
           required: false
@@ -187,65 +221,77 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserRecentTracks'
+                $ref: '#/components/schemas/LFMUserRecentTracks'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+          $ref: '#/components/responses/ApiErrorReturn401'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internalError'
+          $ref: '#/components/responses/ApiErrorReturn500'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: 'get_user_username_tracks_current'
       description: equivalent to calling recent with limit of 1
   '/user/{username}/tracks/current/embed':
     get:
-      summary: get current track
+      summary: Get the current track as an embedded image
+      description: Returns the current track for a user as an image. Equivalent to calling recent tracks with limit of 1.
       tags:
         - user
       parameters:
         - name: username
           in: path
           required: true
-          description: The username
+          description: The Last.fm username
           schema:
             $ref: '#/components/schemas/LastFMUsername'
         - name: signature
           in: query
           required: false
-          description: the HMAC Signature for this OP
+          description: Optional HMAC signature for this operation
           schema:
             $ref: '#/components/schemas/HMACSignature'
       responses:
         '200':
-          description: The operation was successful
-          content: {}
+          description: Successfully generated image of the current track
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/tiff:
+              schema:
+                type: string
+                format: binary
+        '409':
+          $ref: '#/components/responses/ApiErrorReturn409'
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-      operationId: 'get-user-:username-tracks-current-embed'
-      x-stoplight:
-        id: r4nu8mvgwcbbf
-      description: equivalent to calling recent with limit of 1
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
+      operationId: 'get-user-username-tracks-current-embed'
   /hmac/sign/base64:
     post:
-      summary: sign a request
+      summary: Sign a request in Base64
+      description: Generate an HMAC signature for a given request payload and return it encoded in Base64.
       tags:
         - hmac
-        - hmac_base64
       responses:
         '200':
-          description: successfully signed
+          description: Successfully signed request in Base64
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignedBase64Request'
+        '500':
+          $ref: '#/components/responses/ApiErrorReturn500'
       operationId: post-hmac-sign-base64
-      x-stoplight:
-        id: 1hthsq5tpk5xi
       parameters:
         - schema:
             type: string
@@ -262,12 +308,13 @@ paths:
       security: []
   /hmac/sign:
     post:
-      summary: sign a request
+      summary: Sign a request
+      description: Generate an HMAC signature for a given request payload.
       tags:
         - hmac
       responses:
         '200':
-          description: successfully signed
+          description: Successfully signed request
           content:
             application/json:
               schema:
@@ -277,9 +324,11 @@ paths:
                 $ref: '#/components/schemas/HmacProxyRequest'
         '401':
           $ref: '#/components/responses/ApiErrorReturn401'
+        '500':
+          $ref: '#/components/responses/ApiErrorReturn500'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: post-hmac-sign
-      x-stoplight:
-        id: 1hthsq5tpk5xi
       parameters:
         - schema:
             type: string
@@ -291,11 +340,13 @@ paths:
             type: boolean
           in: query
           name: is_base64
+          description: If true, the signed payload will be returned as Base64.
           required: false
         - schema:
             type: boolean
           in: query
           deprecated: true
+          description: Deprecated alias for `is_base64`.
           name: isBase64
       requestBody:
         required: true
@@ -316,6 +367,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Verification'
+        '500':
+          $ref: '#/components/responses/ApiErrorReturn500'
       operationId: get-hmac-verify
       x-stoplight:
         id: rrb5zs04683wq
@@ -377,19 +430,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Verification'
         '400':
-          description: Bad input or invalid JSON
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ApiErrorReturn400'
         '403':
           $ref: '#/components/responses/ApiErrorReturn403'
         '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ApiErrorReturn500'
       security: [ ]
   /hmac/execute:
     post:
@@ -429,17 +474,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
         '403':
-          description: Invalid signature or not authorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ApiErrorReturn403'
         '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/ApiErrorReturn500'
       security: []
     get:
       security: []
@@ -479,6 +516,36 @@ paths:
           description: successful request
   '/user/{username}/top/tracks':
     parameters:
+      - name: limit
+        in: query
+        description: The maximum number of tracks to return.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 25
+          minimum: 1
+          maximum: 250
+      - name: start
+        in: query
+        description: The starting index for the results (used for pagination), equivalent to page.
+        required: false
+        schema:
+          type: integer
+          format: int64
+          default: 1
+          minimum: 1
+          maximum: 32000
+      - schema:
+          type: integer
+          format: int64
+          default: -1
+          minimum: -1
+          maximum: 32000
+        in: query
+        name: page
+        description: The page number (deprecated, use `start` instead)
+        deprecated: true
       - schema:
           $ref: '#/components/schemas/LastFMUsername'
         name: username
@@ -494,44 +561,82 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserTopTracks'
+                $ref: '#/components/schemas/LFMUserTopTracks'
             application/xml:
               schema:
-                $ref: '#/components/schemas/UserTopTracks'
+                $ref: '#/components/schemas/LFMUserTopTracks'
             application/yaml:
               schema:
-                $ref: '#/components/schemas/UserTopTracks'
+                $ref: '#/components/schemas/LFMUserTopTracks'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/ApiErrorReturn401'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: get-user-username-top-tracks
-      x-stoplight:
-        id: l3tqqqu7any10
   '/user/{username}/top/albums':
     parameters:
+      - name: limit
+        in: query
+        description: The maximum number of tracks to return.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 25
+          minimum: 1
+          maximum: 250
+      - name: start
+        in: query
+        description: The starting index for the results (used for pagination), equivalent to page.
+        required: false
+        schema:
+          type: integer
+          format: int64
+          default: 1
+          minimum: 1
+          maximum: 32000
+      - schema:
+          type: integer
+          format: int64
+          default: -1
+          minimum: 1
+          maximum: 32000
+        in: query
+        name: page
+        description: The page number (deprecated, use `start` instead)
+        deprecated: true
       - schema:
           $ref: '#/components/schemas/LastFMUsername'
         name: username
+        description: The Last.fm username for which to fetch top albums.
         in: path
         required: true
     get:
-      summary: get a user's topalbums
+      summary: Get a user's top albums
+      description: Retrieve the top albums listened to by a Last.fm user.
       tags: 
         - user
       responses:
         '200':
-          description: success
+          description: Successful response with the user's top albums
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserTopAlbums'
+                $ref: '#/components/schemas/LFMUserTopAlbums'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/LFMUserTopAlbums'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LFMUserTopAlbums'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
       operationId: get-user-username-top-albums
-      x-stoplight:
-        id: thto4eee1rct0
-  /musicbrainz/lookup/artist/by_mbid/{artist_mbid}:
+  /musicbrainz/lookup/artist/by_mbid/{mbid}:
     parameters:
       - schema:
           $ref: '#/components/schemas/Mbid'
-        name: artist_mbid
+        name: mbid
         in: path
         required: true
     get:
@@ -542,7 +647,47 @@ paths:
       responses:
         '200':
           description: Request successful
-      
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzArtist'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzArtist'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzArtist'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
+  /musicbrainz/lookup/recording/by_mbid/{mbid}:
+    parameters:
+      - schema:
+          $ref: '#/components/schemas/Mbid'
+        name: mbid
+        description: The MusicBrainz ID of the recording to lookup.
+        in: path
+        required: true
+    get:
+      summary: lookup recording details by mbid
+      description: Retrieve detailed information about a MusicBrainz recording using its MBID.
+      tags:
+        - musicbrainz
+      operationId: get_musicbrainz_lookup_recording_by_mbid
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzRecording'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzRecording'
+            application/yaml:
+              schema:
+                $ref: '#/components/schemas/MusicBrainzRecording'
+        '503':
+          $ref: '#/components/responses/EndpointDisabledByServer'
 security:
   - defaultApiKey: []
 components:
@@ -574,29 +719,46 @@ components:
           type: boolean
     ApiError:
       type: object
+      title: API Error
+      description: Standard structure for API errors.
       properties:
         http_code:
           type: number
-          description: The HTTP Error Code
+          description: The HTTP status code returned by the server.
           example: 403
+          minimum: 100
+          maximum: 599
         internal_error_code:
           type: number
-          description: The internal Error Code
+          description: Internal application-specific error code.
           example: 1
         internal_error_msg:
           type: string
           nullable: true
-          description: Internal Error message
+          description: Optional internal error message providing additional context.
+          example: "Signature verification failed in backend service."
         success:
-          $ref: '#/components/schemas/Success'
+          type: boolean
+          description: If the operation was successful
+          default: false
         data:
           $ref: '#/components/schemas/errorAttachedData'
         message:
           type: string
-          example: Invalid HMAC signature
+          description: Human-readable error message describing the failure.
+          example: "Invalid HMAC signature"
       required:
         - success
         - message
+      example:
+        http_code: 403
+        internal_error_code: 1
+        internal_error_msg: "Signature verification failed in backend service."
+        success: false
+        data:
+          field: "signature"
+          detail: "HMAC mismatch"
+        message: "Invalid HMAC signature"
     HmacProxyApiIdentifier:
       title: HMAC Proxy Identifier (deprecated)
       type: string
@@ -704,52 +866,100 @@ components:
       required:
         - signature
         - request
-    userinfo:
-      description: the User Info
+    LFMUserInfo:
+      title: Last.fm User Info
+      description: The Last.fm user information object.
       properties:
         id:
           type: number
+          description: Unique numeric identifier of the user.
+          example: 123456
+          deprecated: true
         name:
-          type: string
-          pattern: "^[a-zA-Z0-9_-]{3,20}$"
-          minLength: 3
-          maxLength: 20
+          $ref: '#/components/schemas/LastFMUsername'
         realname:
           type: string
+          description: The real name of the user.
+          example: "John Doe"
+          nullable: true
         url:
-          type: string
-          format: url
+          $ref: '#/components/schemas/LastFMURL'
         imageurl:
           type: string
           format: url
+          description: URL of the user's profile image.
+          example: "https://lastfm.freetls.fastly.net/i/u/300x300/abcdef123456.png"
         country:
           type: string
+          description: The user's country.
+          example: "United States"
+          nullable: true
         age:
           type: number
+          description: The user's age, if available.
+          example: 28
+          minimum: 0
         gender:
           type: string
+          description: The user's gender.
+          pattern: "^(m|f|n|)$"
         subscriber:
-          type: number
+          type: integer
         playcount:
-          type: number
+          type: integer
+          description: Total number of tracks the user has played.
+          example: 2345
+          minimum: 0
         playlists:
-          type: number
+          type: integer
+          description: Total number of playlists the user has.
+          example: 5
+          minimum: 0
         bootstrap:
-          type: number
+          type: integer
+          description: Bootstrap value (used internally by Last.fm).
+          example: 0
+          default: 0
+          minimum: 0
         registered:
           type: string
           format: date
+          description: The date the user registered on Last.fm.
+          example: "2012-03-15"
+      required:
+        - name
+        - url
     HttpRequestMeta:
+      title: HTTP Request
+      description: Metadata describing an HTTP request.
       type: object
       properties:
         host:
           type: string
+          description: The hostname of the server receiving the request.
+          example: "example.org"
+          pattern: "^(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$"
         query:
           type: string
+          description: The query string of the request, if any (e.g., `?id=123&sort=asc`).
+          nullable: true
+          example: "?id=123&sort=asc"
+          pattern: "^\\?.*$"
         path:
           type: string
+          description: The path portion of the URL being requested.
+          example: "/api/meow"
+          pattern: "^/.*$"
         method:
           type: string
+          description: The HTTP method used for the request.
+          example: "GET"
+          pattern: "^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|TRACE|CONNECT)$"
+      example:
+        host: "example.org"
+        query: "?id=123&sort=asc"
+        path: "/api/meow"
+        method: "GET"
     errorAttachedData:
       description: Data attached to Error
       type: object
@@ -767,17 +977,6 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/errorAttachedData'
-    LFMArtistSimple:
-      type: object
-      nullable: true
-      properties:
-        name:
-          type: string
-        mbid:
-          $ref: '#/components/schemas/Mbid'
-        url:
-          type: string
-          format: url
     UserLovedTracks:
       type: array
       items:
@@ -818,7 +1017,7 @@ components:
           format: url
           description: album cover image
         artist:
-          $ref: '#/components/schemas/LFMArtistSimple'
+          $ref: '#/components/schemas/LFMArtist'
         artist_mbid:
           $ref: '#/components/schemas/Mbid'
         artist_music_brainz:
@@ -830,7 +1029,7 @@ components:
           format: int32
           minimum: 0
           maximum: 255
-    UserRecentTracks:
+    LFMUserRecentTracks:
       type: object
       description: The Tracks a user listened to recently
       properties:
@@ -849,15 +1048,19 @@ components:
           maximum: 599
         error:
           type: string
-    UserTopAlbums:
-      title: UserTopAlbums
+    LFMUserTopAlbums:
+      title: Last.fm top albums of a user
+      description: Represents the list of top albums for a given Last.fm user, including ranking and play statistics for each album.
       type: object
       properties:
         album:
           type: array
+          description: A list of albums ordered by the user's listening behavior.
           items:
-            $ref: '#/components/schemas/UserAlbums'
-    UserAlbums:
+            $ref: '#/components/schemas/LFMUserAlbums'
+    LFMUserAlbums:
+      title: Last.fm Album
+      description: Represents an album entry in a Last.fm user's library, including ranking, metadata, and reference identifiers.
       type: object
       properties:
         rank:
@@ -865,44 +1068,128 @@ components:
           format: int32
           minimum: 1
           maximum: 255
+          description: The album's position within the user's ranked list, typically based on play count or Last.fm sorting.
         name:
           type: string
+          description: The name of the album.
         playcount:
           type: integer
           format: int64
           minimum: 0
           maximum: 32000
+          description: The number of times the user has played tracks from this album.
         mbid:
           $ref: '#/components/schemas/Mbid'
         url:
           type: string
           format: url
           nullable: false
-    UserTopTracks:
-      title: UserTopTracks
+          description: The URL of the album's page on Last.fm.
+    LFMUserTopTracks:
+      title: Last.fm Top tracks of a user
+      description: Represents the list of top tracks for a user on Last.fm, ordered by listening frequency.
       type: object
       properties:
         track:
           type: array
+          description: A list of tracks ranked by how often the user has listened to them.
           items:
             $ref: '#/components/schemas/LFMTrack'
-    Artist:
-      title: Artist
+      example:
+        track:
+          - name: "In the End"
+            rank: 1
+            now_playing: false
+            playcount: 152
+            url: "https://www.last.fm/music/Linkin+Park/_/In+the+End"
+            mbid: "c3b33b69-9961-4e1d-b76e-7ee3dd7c6a3d"
+            artist:
+              name: "Linkin Park"
+              mbid: "f59c5520-5f46-4d2c-b2c4-822eabf53419"
+              url: "https://www.last.fm/music/Linkin+Park"
+          - name: "Numb"
+            rank: 2
+            now_playing: false
+            playcount: 131
+            url: "https://www.last.fm/music/Linkin+Park/_/Numb"
+            mbid: "d9160f5a-bc74-4cc2-9e2c-c8733f91c82f"
+            artist:
+              name: "Linkin Park"
+              mbid: "f59c5520-5f46-4d2c-b2c4-822eabf53419"
+              url: "https://www.last.fm/music/Linkin+Park"
+          - name: "The Emptiness Machine"
+            album: ""
+            rank: 3
+            playcount: 53
+            mbid: "0815f294-becd-4544-bad0-5d43b7426cce"
+            artist_music_brainz:
+                api_error:
+                  http_code: 0
+                  internal_error_code: 0
+                  internal_error_msg: ""
+                  message: ""
+                  data: null
+                  success: false
+                  date: ""
+                sort_name: ""
+                Disambiguation: ""
+                isni_list:
+                  Isni: null
+                Country: ""
+                area:
+                  name: ""
+                  sort_name: ""
+                  alias_list: { }
+                begin_area:
+                  name: ""
+                  sort_name: ""
+                  alias_list: { }
+                life_span:
+                  Begin: ""
+                  End: ""
+                  Ended: ""
+                alias_list: { }
+            track_music_brainz:
+                api_error:
+                  http_code: 0
+                  internal_error_code: 0
+                  internal_error_msg: ""
+                  message: ""
+                  data: null
+                  success: false
+                  date: ""
+                Title: ""
+                Length: 0
+                artist_credit: { }
+                release_list: { }
+                isrc_list:
+                  isrc: { }
+            url: "https://www.last.fm/music/Linkin+Park/_/The+Emptiness+Machine"
+            image: "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png"
+            artist:
+                name: ""
+                mbid: ""
+                url: "https://www.last.fm/music/Linkin+Park"
+            streamable: 0
+    LFMArtist:
+      title: Last.fm Artist
+      description: Represents an artist as returned by the Last.fm API, including basic metadata such as the artist name, MusicBrainz identifier, and a link to the artist’s Last.fm page.
       type: object
       properties:
         name:
           type: string
           example: Linkin Park
-          description: The name of the artist
+          description: The name of the artist.
         mbid:
           $ref: '#/components/schemas/Mbid'
         url:
           type: string
           format: url
           example: 'https://www.last.fm/music/Linkin+Park'
-          description: The URL of the artist's entry on last.fm
+          description: The URL of the artist's page on Last.fm, providing access to their profile, biography, tracks, albums, and related listening statistics.
     Mbid:
       title: MusicBrainz ID
+      description: A unique identifier assigned by the MusicBrainz database, used to unambiguously reference artists, releases, recordings, or other music-related entities.
       type: string
       format: uuid
       example: 0383dadf-2a4e-4d10-a46a-e9e041da8eb3
@@ -911,6 +1198,8 @@ components:
       description: Detailed information about a specific MusicBrainz recording.
       type: object
       properties:
+        api_error:
+          $ref: '#/components/schemas/ApiError'
         text:
           type: string
           description: Raw character data from XML content.
@@ -931,10 +1220,6 @@ components:
         isrc-list:
           $ref: "#/components/schemas/MusicBrainzIsrcList"
       additionalProperties: false
-    example:
-      id: "f27ec8db-af05-4f36-916e-3d7e9c7033d4"
-      title: "Numb"
-      length: 185000
 
     MusicBrainzArtistCredit:
         title: MusicBrainz Artist Credit
@@ -1082,6 +1367,8 @@ components:
     MusicBrainzArtist:
       type: object
       properties:
+        api_error:
+          $ref: '#/components/schemas/ApiError'
         name:
           type: string
         sort_name:
@@ -1095,6 +1382,11 @@ components:
       pattern: "^[a-zA-Z0-9_-]{3,20}$"
       minLength: 3
       maxLength: 20
+    LastFMURL:
+      type: string
+      format: url
+      title: LastFM URL
+      pattern: "^https:\\/\\/last\\.fm"
     HMACSignature:
       title: HMAC Signature
       type: string
@@ -1102,8 +1394,32 @@ components:
       minLength: 64
       maxLength: 64
   responses:
+    EndpointDisabledByServer:
+      description: The Server disabled this endpoint
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    ApiErrorReturn400:
+      description: Api Error 400
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
     ApiErrorReturn401:
-      description: Api Error 401
+      description: Represents an error response returned when the client is not authorized to access the requested resource.
       content:
         application/json:
           schema:
@@ -1115,7 +1431,31 @@ components:
           schema:
             $ref: '#/components/schemas/ApiError'
     ApiErrorReturn403:
-      description: Api Error 401
+      description: Api Error 403
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    ApiErrorReturn409:
+      description: Internally inconsistent Data occured
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/yaml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    ApiErrorReturn500:
+      description: Api Error 500
       content:
         application/json:
           schema:

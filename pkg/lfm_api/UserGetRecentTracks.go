@@ -10,5 +10,8 @@ func (User) GetRecentTracks(args UserGetArgsWithLimitPage) (*lfm_types.UserGetRe
 
 	data, err := api_commons.FetchXML[lfm_types.WrappedUserGetRecentTracks](apiUrl)
 
+	if err != nil {
+		return nil, err
+	}
 	return &data.RecentTracks, err
 }

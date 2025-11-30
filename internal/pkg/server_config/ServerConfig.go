@@ -3,14 +3,15 @@ package server_config
 import sc "codeberg.org/dozrye/golang_simpleconfig"
 
 type ServerConfig struct {
-	ApiPort           int                     `json:"api_port"`
-	ApiHost           string                  `json:"api_host"`
-	ApiBasePath       string                  `json:"api_base_path"`
-	HmacSecret        string                  `json:"hmac_secret"`
-	LastFMAPIKey      string                  `json:"last_fm_api_key"`
-	DebugMode         bool                    `json:"debug_mode"`
-	ReleaseMode       bool                    `json:"release_mode"`
-	DisabledEndpoints ServerDisabledEndpoints `json:"disabled_endpoints"`
+	ApiPort                    int                     `json:"api_port"`
+	ApiHost                    string                  `json:"api_host"`
+	ApiBasePath                string                  `json:"api_base_path"`
+	HmacSecret                 string                  `json:"hmac_secret"`
+	LastFMAPIKey               string                  `json:"last_fm_api_key"`
+	DebugMode                  bool                    `json:"debug_mode"`
+	ReleaseMode                bool                    `json:"release_mode"`
+	DisabledEndpoints          ServerDisabledEndpoints `json:"disabled_endpoints"`
+	DisableEmbeddedMusicBrainz bool                    `json:"disable_embedded_music_brainz"`
 }
 
 type ServerDisabledEndpoints struct {
@@ -34,15 +35,17 @@ func SetupServerConfig() *ServerConfig {
 	disableImageEmbedingEndpoints := ch.GetBooleanOption(sc.ConfigEntry{Key: "DISABLE_IMAGE_EMBEDING_ENDPOINTS", Description: "Disable Image Embeding Endpoints", DefaultBool: false})
 	enableOnlyHMACEndpoints := ch.GetBooleanOption(sc.ConfigEntry{Key: "ENABLE_ONLY_HMAC_ENDPOINTS", Description: "Enable only HMAC Request Signing endpoint", DefaultBool: false})
 	disableMusicBrainzEndpoints := ch.GetBooleanOption(sc.ConfigEntry{Key: "DISABLE_MUSICBRAINZ_ENDPOINTS", Description: "Disable MusicBrainz Endpoints", DefaultBool: false})
+	disableEmbeddedMusicBrainz := ch.GetBooleanOption(sc.ConfigEntry{Key: "DISABLE_MUSICBRAINZ_EMBEDDING", Description: "Disable the enrichment with MusicBrainz data", DefaultBool: false})
 	ch.ParseFlags()
 	return &ServerConfig{
-		ApiPort:      *apiport,
-		ApiHost:      *apihost,
-		ApiBasePath:  *apibasepath,
-		HmacSecret:   *hmacsecret,
-		LastFMAPIKey: *lastfmapikey,
-		DebugMode:    *debugmode,
-		ReleaseMode:  *releasemode,
+		ApiPort:                    *apiport,
+		ApiHost:                    *apihost,
+		ApiBasePath:                *apibasepath,
+		HmacSecret:                 *hmacsecret,
+		LastFMAPIKey:               *lastfmapikey,
+		DebugMode:                  *debugmode,
+		ReleaseMode:                *releasemode,
+		DisableEmbeddedMusicBrainz: *disableEmbeddedMusicBrainz,
 		DisabledEndpoints: ServerDisabledEndpoints{
 			DisableHMACSigningEndpoint:    *disableHmacSigningEndpoint,
 			DisableMusicBrainzEndpoints:   *disableMusicBrainzEndpoints,

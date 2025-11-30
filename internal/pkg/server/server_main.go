@@ -31,42 +31,28 @@ func StartServer(config *server_config.ServerConfig) {
 	v1 := api.Group("/v1")
 
 	user := v1.Group("/user")
-	if !config.DisabledEndpoints.EnableOnlyHMACEndpoints {
-		user.GET(":username", lfmUserInfo)
-		user.GET(":username/friends", lfmUserFriends)
-		user.GET(":username/tracks/loved", lfmUserLovedTracks)
-		user.GET(":username/tracks/recent", lfmUserRecentTracks)
-		user.GET(":username/tracks/current", lfmUserCurrentTrack)
-		if config.DisabledEndpoints.DisableImageEmbeddedEndpoints {
-			user.GET(":username/tracks/current/embed", disabledEndpointHandler)
-		} else {
-			user.GET(":username/tracks/current/embed", lfmUserCurrentTrackEmbed)
-		}
+	user.Use(disabledEndpointMiddleware())
+	un := user.Group(":username")
+	untracks := un.Group("tracks")
+	unweekly := un.Group("chart/weekly")
+	un.GET("", lfmUserInfo)
+	un.GET("friends", lfmUserFriends)
+	untracks.GET("loved", lfmUserLovedTracks)
+	untracks.GET("recent", lfmUserRecentTracks)
+	untracks.GET("current", lfmUserCurrentTrack)
+	untracks.GET("current/embed", lfmUserCurrentTrackEmbed)
 
-		user.GET(":username/top/albums", lfmUserTopAlbums)
-		user.GET(":username/top/tracks", lfmUserTopTracks)
-	} else {
-		user.GET(":username", disabledEndpointHandler)
-		user.GET(":username/friends", disabledEndpointHandler)
-		user.GET(":username/tracks/loved", disabledEndpointHandler)
-		user.GET(":username/tracks/recent", disabledEndpointHandler)
-		user.GET(":username/tracks/current", disabledEndpointHandler)
-		user.GET(":username/tracks/current/embed", disabledEndpointHandler)
-		user.GET(":username/top/albums", disabledEndpointHandler)
-		user.GET(":username/top/tracks", disabledEndpointHandler)
-	}
+	un.GET("top/albums", lfmUserTopAlbums)
+	un.GET("top/tracks", lfmUserTopTracks)
+	unweekly.GET("album", lfmUserWeeklyChart)
 
 	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
 
 	hmacapi := v1.Group("/hmac")
-	if config.DisabledEndpoints.DisableHMACSigningEndpoint {
-		hmacapi.POST("sign", disabledEndpointHandler)
-		hmacapi.POST("sign/base64", disabledEndpointHandler)
-	} else {
-		hmacapi.POST("sign", signRequest)
-		hmacapi.POST("sign/base64", signBase64Request)
-	}
+	hmacapi.Use(disabledEndpointMiddleware())
+	hmacapi.POST("sign", signRequest)
+	hmacapi.POST("sign/base64", signBase64Request)
 	hmacapi.POST("verify", verifyRequest)
 	hmacapi.POST("verify/againstServer", verifyAgainstServerSecret)
 	hmacapi.POST("verify/against_server", verifyAgainstServerSecret)
@@ -74,6 +60,7 @@ func StartServer(config *server_config.ServerConfig) {
 	hmacapi.GET("execute", executeSignedRequest)
 
 	musicbrainz := v1.Group("/musicbrainz")
+	musicbrainz.Use(disabledEndpointMiddleware())
 	musicbrainz.GET("lookup/artist/by_mbid/:artist_mbid", lookUpArtistByMbid)
 
 	addHealthChecks(router)

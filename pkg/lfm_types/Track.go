@@ -3,6 +3,7 @@ package lfm_types
 import (
 	"fmt"
 
+	"github.com/dozro/tawny/pkg/apiError"
 	"github.com/dozro/tawny/pkg/musicbrainz_api"
 	"github.com/dozro/tawny/pkg/musicbrainz_types"
 )
@@ -20,11 +21,11 @@ type LFMTrack struct {
 	Url               string                      `xml:"url" json:"url"`
 	Date              string                      `xml:"date,omitempty" json:"date,omitempty"`
 	Image             string                      `xml:"image" json:"image"`
-	Artist            LFMTrackArtist              `xml:"artist" json:"artist"`
+	Artist            LFMArtist                   `xml:"artist" json:"artist"`
 	Streamable        int8                        `xml:"streamable" json:"streamable"`
 }
 
-type LFMTrackArtist struct {
+type LFMArtist struct {
 	Name           string `xml:",chardata" json:"name"`
 	Mbid           string `xml:"mbid,attr" json:"mbid"`
 	MusicBrainzUrl string `xml:"music_brainz_url,omitempty" json:"music_brainz_url,omitempty"`
@@ -37,6 +38,11 @@ func (ut *LFMTrack) String() string {
 
 func (ut *LFMTrack) Brainz() {
 	ut.MusicBrainzUrl = fmt.Sprintf("https://example.org/%s", ut.Mbid)
+}
+
+func (t *LFMTrack) SetApiError(apiError apiError.ApiError) {
+	t.ArtistMusicBrainz.ApiError = apiError
+	t.TrackMusicBrainz.ApiError = apiError
 }
 
 func (u *LFMTrack) EmbedMusicBrainz() {

@@ -1,12 +1,15 @@
 package client
 
 import (
+	"time"
+
+	"github.com/dozro/tawny/pkg/apiError"
 	"github.com/dozro/tawny/pkg/lfm_api"
 	"github.com/dozro/tawny/pkg/lfm_types"
 	log "github.com/sirupsen/logrus"
 )
 
-func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB bool) (*lfm_types.UserGetRecentTracks, error) {
+func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB, embedMBDisabledByServerConfig bool) (*lfm_types.UserGetRecentTracks, error) {
 	log.Debugf("getting recent tracks for %s ...", username)
 	lt, err := lfm_api.User{}.GetRecentTracks(lfm_api.UserGetArgsWithLimitPage{
 		ApiKey:   apikey,
@@ -14,17 +17,29 @@ func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB bool)
 		Limit:    limit,
 		Page:     page,
 	})
-	if embedMB {
+	if err != nil {
+		return nil, err
+	}
+	if embedMBDisabledByServerConfig {
+		for i := range lt.Track {
+			lt.Track[i].SetApiError(apiError.ApiError{
+				HttpCode:          503,
+				InternalErrorCode: apiError.MusicBrainzLookupDisabledByConfig,
+				InternalErrorMsg:  apiError.MusicBrainzLookupDisabledByConfig.String(),
+				Message:           "The enrichment of data with MusicBrainz Data is disabled by the server Admin",
+				Data:              nil,
+				Success:           false,
+				Date:              time.Now().String(),
+			})
+		}
+	} else if embedMB {
 		for i := range lt.Track {
 			lt.Track[i].EmbedMusicBrainz()
 		}
 	}
-	if err != nil {
-		return nil, err
-	}
 	return lt, nil
 }
 
-func LfmUserCurrentTrack(username string, apiKey string) (*lfm_types.UserGetRecentTracks, error) {
-	return LfmUserRecentTracks(username, apiKey, 1, -1, false)
+func LfmUserCurrentTrack(username, apiKey string, embedMB, embedMBDisabledByServerConfig bool) (*lfm_types.UserGetRecentTracks, error) {
+	return LfmUserRecentTracks(username, apiKey, 1, -1, embedMB, embedMBDisabledByServerConfig)
 }

@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/dozro/tawny/internal/pkg/apiError"
+	apiError2 "github.com/dozro/tawny/pkg/apiError"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -42,9 +42,9 @@ func signBase64Request(c *gin.Context) {
 	psk := c.Request.Header.Get(stringsHmacPsk)
 	raw, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, apiError.ApiError{
+		c.JSON(http.StatusBadRequest, apiError2.ApiError{
 			HttpCode:          403,
-			InternalErrorCode: apiError.InvalidBody,
+			InternalErrorCode: apiError2.InvalidBody,
 			Message:           stringsInvalidRequestBody,
 			Success:           false,
 		})
@@ -67,9 +67,9 @@ func signRequest(c *gin.Context) {
 
 	raw, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		render(c, http.StatusBadRequest, apiError.ApiError{
+		render(c, http.StatusBadRequest, apiError2.ApiError{
 			HttpCode:          403,
-			InternalErrorCode: apiError.InvalidBody,
+			InternalErrorCode: apiError2.InvalidBody,
 			Message:           stringsInvalidRequestBody,
 			Success:           false,
 		})
@@ -94,7 +94,7 @@ func verifyRequest(c *gin.Context) {
 	psk := c.Request.Header.Get(stringsHmacPsk)
 	isValid, _, err, code := verifyRequestInternal(c, psk, determineIfBase64(c), nil)
 	if err != nil {
-		render(c, code, apiError.ApiError{
+		render(c, code, apiError2.ApiError{
 			HttpCode: code,
 			Message:  err.Error(),
 			Success:  false,
@@ -102,7 +102,7 @@ func verifyRequest(c *gin.Context) {
 		return
 	}
 	if !isValid {
-		render(c, 403, apiError.ApiError{
+		render(c, 403, apiError2.ApiError{
 			HttpCode: 403,
 			Message:  stringsInvalidHmacSignature,
 			Data:     c.Request.Body,
@@ -119,14 +119,14 @@ func verifyRequest(c *gin.Context) {
 func verifyAgainstServerSecret(c *gin.Context) {
 	isValid, _, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c), nil)
 	if err != nil {
-		render(c, code, apiError.ApiError{
+		render(c, code, apiError2.ApiError{
 			HttpCode: code,
 			Message:  err.Error(),
 			Success:  false,
 		})
 	}
 	if !isValid {
-		render(c, 403, apiError.ApiError{
+		render(c, 403, apiError2.ApiError{
 			HttpCode: 403,
 			Message:  stringsInvalidHmacSignature,
 			Success:  false,
@@ -214,7 +214,7 @@ func executeSignedRequest(c *gin.Context) {
 	log.Debug("verifying signature")
 	isValid, req, err, code := verifyRequestInternal(c, proxyConfig.HmacSecret, determineIfBase64(c), overridenCont)
 	if err != nil {
-		c.JSON(code, apiError.ApiError{
+		c.JSON(code, apiError2.ApiError{
 			HttpCode: code,
 			Message:  err.Error(),
 			Success:  false,
@@ -222,7 +222,7 @@ func executeSignedRequest(c *gin.Context) {
 		return
 	}
 	if !isValid {
-		c.JSON(403, apiError.ApiError{
+		c.JSON(403, apiError2.ApiError{
 			HttpCode: 403,
 			Message:  stringsInvalidHmacSignature,
 			Success:  false,

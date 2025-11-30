@@ -8,24 +8,21 @@ on:
     branches:
       - main
       - devel
-
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   openapi_validate:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
+        uses: actions/checkout@1e31de5234b9f8995739874a8ce0492dc87873e2
 
       - name: Setup Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
-          node-version: '24'
+          node-version: '20'
 
       - name: Install IBM OpenAPI Validator
         run: |

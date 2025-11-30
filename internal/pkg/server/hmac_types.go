@@ -68,9 +68,10 @@ type HmacProxyRequest struct {
 }
 
 type HmacProxyRequestApiParameters struct {
-	Username string `json:"username"`
-	Limit    int    `json:"limit"`
-	Page     int    `json:"page"`
+	Username         string `json:"username"`
+	Limit            int    `json:"limit"`
+	Page             int    `json:"page"`
+	FetchMusicBrainz bool   `json:"fetch_music_brainz"`
 }
 
 type HmacProxyResponseWrapper struct {

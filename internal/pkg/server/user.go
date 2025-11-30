@@ -7,7 +7,7 @@ import (
 	"github.com/dozro/tawny/internal/pkg/client"
 	"github.com/dozro/tawny/internal/pkg/embed"
 	"github.com/dozro/tawny/internal/pkg/security"
-
+	"github.com/dozro/tawny/pkg/lfm_types"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -66,7 +66,7 @@ func lfmUserRecentTracks(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	lt, err := client.LfmUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB)
+	lt, err := client.LfmUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB, proxyConfig.DisableEmbeddedMusicBrainz)
 	if handleError(err, c) {
 		return
 	}
@@ -76,13 +76,18 @@ func lfmUserRecentTracks(c *gin.Context) {
 func lfmUserCurrentTrack(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
+	embedMusicBrainz := c.Query("fetch_musicbrainz")
+	embedMusicBrainzB := false
+	if embedMusicBrainz == "true" {
+		embedMusicBrainzB = true
+	}
 	if redirectToHMACEndpoint(c, "/user/tracks/current", HmacProxyRequestApiParameters{Username: username}) {
 		return
 	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.LfmUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey, embedMusicBrainzB, proxyConfig.DisableEmbeddedMusicBrainz)
 	if handleError(err, c) {
 		return
 	}
@@ -91,15 +96,22 @@ func lfmUserCurrentTrack(c *gin.Context) {
 
 func lfmUserCurrentTrackEmbed(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
+	accepts := c.Request.Header.Get("Accept")
 	username := c.Param("username")
+	if !checkIfAcceptImage(c) {
+		return
+	}
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.LfmUserCurrentTrack(username, apikey)
+	ct, err := client.LfmUserCurrentTrack(username, apikey, false, proxyConfig.DisableEmbeddedMusicBrainz)
 	if handleError(err, c) {
 		return
 	}
-	img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image, username, ct.Track[0].NowPlaying)
+	if checkIfArrayIsEmpty[lfm_types.LFMTrack](c, ct.Track, "Recent Track List is empty") {
+		return
+	}
+	img, err := embed.EmbedNowPlaying(ct.Track[0].Name, ct.Track[0].Artist.Name, ct.Track[0].Album, ct.Track[0].Image, username, ct.Track[0].NowPlaying, accepts)
 	if handleError(err, c) {
 		return
 	}
@@ -109,7 +121,15 @@ func lfmUserCurrentTrackEmbed(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, e)
 		return
 	}
+	if accepts == "image/jpeg" {
+		c.Data(http.StatusOK, "image/jpeg", img.Bytes())
+		return
+	} else if accepts == "image/tiff" {
+		c.Data(http.StatusOK, "image/tiff", img.Bytes())
+		return
+	}
 	c.Data(http.StatusOK, "image/png", img.Bytes())
+	return
 }
 
 func lfmUserFriends(c *gin.Context) {
@@ -142,4 +162,16 @@ func lfmUserTopTracks(c *gin.Context) {
 		return
 	}
 	render(c, http.StatusOK, tt)
+}
+
+func lfmUserWeeklyChart(c *gin.Context) {
+	apikey, username, from, to := fromToAuthReq(c)
+	if apikeyUndefined(apikey, c) {
+		return
+	}
+	wac, err := client.LfmUserWeeklyChart(username, apikey, from, to)
+	if handleError(err, c) {
+		return
+	}
+	render(c, http.StatusOK, wac)
 }
