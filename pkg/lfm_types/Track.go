@@ -3,6 +3,7 @@ package lfm_types
 import (
 	"fmt"
 
+	"github.com/dozro/tawny/pkg/apiError"
 	"github.com/dozro/tawny/pkg/musicbrainz_api"
 	"github.com/dozro/tawny/pkg/musicbrainz_types"
 )
@@ -37,6 +38,11 @@ func (ut *LFMTrack) String() string {
 
 func (ut *LFMTrack) Brainz() {
 	ut.MusicBrainzUrl = fmt.Sprintf("https://example.org/%s", ut.Mbid)
+}
+
+func (t *LFMTrack) SetApiError(apiError apiError.ApiError) {
+	t.ArtistMusicBrainz.ApiError = apiError
+	t.TrackMusicBrainz.ApiError = apiError
 }
 
 func (u *LFMTrack) EmbedMusicBrainz() {

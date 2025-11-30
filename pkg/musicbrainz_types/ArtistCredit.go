@@ -2,7 +2,7 @@ package musicbrainz_types
 
 type ArtistCredit struct {
 	Text       string       `xml:",chardata" json:"text,omitempty"`
-	NameCredit []NameCredit `xml:"name-credit" json:"name-credit,omitempty"`
+	NameCredit []NameCredit `xml:"name-credit" json:"name_credit,omitempty"`
 }
 
 type NameCredit struct {
@@ -15,7 +15,7 @@ type NameCreditArtist struct {
 	Text     string `xml:",chardata" json:"text,omitempty"`
 	ID       string `xml:"id,attr" json:"id,omitempty"`
 	Type     string `xml:"type,attr" json:"type,omitempty"`
-	TypeID   string `xml:"type-id,attr" json:"type-id,omitempty"`
+	TypeID   string `xml:"type-id,attr" json:"type_id,omitempty"`
 	Name     string `xml:"name"`
 	SortName string `xml:"sort-name"`
 }

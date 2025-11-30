@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"image/jpeg"
 	"image/png"
 
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
+	log "github.com/sirupsen/logrus"
+	"golang.org/x/image/tiff"
 )
 
 const pathToFont = "assets/fonts/RubikMarker/RubikMarkerHatch-Regular.ttf"
 
-func EmbedNowPlaying(trackTitle string, trackArtist string, trackAlbum string, trackAlbumCover string, username string, now bool) (*bytes.Buffer, error) {
+func EmbedNowPlaying(trackTitle string, trackArtist, trackAlbum, trackAlbumCover, username string, now bool, outputformat string) (*bytes.Buffer, error) {
 	// Albumcover herunterladen
 	albumCoverResp, err := doHttpGetRequest(trackAlbumCover)
 	if err != nil {
@@ -82,8 +85,29 @@ func EmbedNowPlaying(trackTitle string, trackArtist string, trackAlbum string, t
 
 	outputImage := dc.Image()
 	buf := new(bytes.Buffer)
-	if err := png.Encode(buf, outputImage); err != nil {
-		return nil, fmt.Errorf("failed to encode PNG: %w", err)
+	switch outputformat {
+	case "image/jpeg":
+		{
+			log.Debug("generating jpeg image")
+			if err := jpeg.Encode(buf, outputImage, nil); err != nil {
+				return nil, fmt.Errorf("failed to encode JPEG: %w", err)
+			}
+			break
+		}
+	case "image/tiff":
+		{
+			log.Debug("generating tiff image")
+			if err := tiff.Encode(buf, outputImage, nil); err != nil {
+				return nil, fmt.Errorf("failed to encode webp image: %w", err)
+			}
+		}
+	default:
+		{
+			log.Debug("generating png image")
+			if err := png.Encode(buf, outputImage); err != nil {
+				return nil, fmt.Errorf("failed to encode PNG: %w", err)
+			}
+		}
 	}
 
 	return buf, nil

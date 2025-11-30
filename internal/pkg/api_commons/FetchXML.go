@@ -28,7 +28,7 @@ func FetchXML[T any](url string) (T, error) {
 	decoder := xml.NewDecoder(resp.Body)
 
 	var result T
-	if err := decoder.Decode(&result); err != nil {
+	if decoder.Decode(&result) != nil {
 		return zero, fmt.Errorf("xml decode failed: %w", err)
 	}
 

@@ -7,4 +7,5 @@ type ApiError struct {
 	Message           string       `json:"message"`
 	Data              interface{}  `json:"data"`
 	Success           bool         `json:"success"`
+	Date              string       `json:"date"`
 }

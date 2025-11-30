@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/dozro/tawny/pkg/apiError"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,7 +17,14 @@ func pageLimitAuthReq(c *gin.Context) (string, string, int, int) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
 	var limit, page int
-	if c.Query("page") != "" {
+	if c.Query("page") == "-1" && c.Query("start") != "" {
+		var err error
+		page, err = strconv.Atoi(c.Query("start"))
+		if err != nil {
+			// if atoi fails interpret as -1
+			page = -1
+		}
+	} else if c.Query("page") != "" {
 		var err error
 		page, err = strconv.Atoi(c.Query("page"))
 		if err != nil {
@@ -55,6 +64,36 @@ func fromToAuthReq(c *gin.Context) (string, string, int, int) {
 	return apikey, username, from, to
 }
 
+func checkIfArrayIsEmpty[T any](c *gin.Context, arr []T, errmsg string) bool {
+	if len(arr) == 0 {
+		render(c, http.StatusConflict, apiError.ApiError{
+			HttpCode:          http.StatusConflict,
+			InternalErrorCode: apiError.ArrayIsUnexpectedEmpty,
+			InternalErrorMsg:  apiError.ArrayIsUnexpectedEmpty.String(),
+			Message:           errmsg,
+			Success:           false,
+			Date:              time.Now().String(),
+		})
+		return true
+	}
+	return false
+}
+
+func checkIfAcceptImage(c *gin.Context) bool {
+	if !supportedImageTypes.MatchString(c.Request.Header.Get("Accept")) {
+		render(c, http.StatusNotAcceptable, apiError.ApiError{
+			HttpCode:          http.StatusNotAcceptable,
+			InternalErrorCode: apiError.SelectedImageEncodingNotSupported,
+			InternalErrorMsg:  apiError.SelectedImageEncodingNotSupported.String(),
+			Message:           "The image encoding in your Accept header is not supported",
+			Success:           false,
+			Date:              time.Now().String(),
+		})
+		return false
+	}
+	return true
+}
+
 func redirectToHMACEndpoint(c *gin.Context, apiId string, apipara HmacProxyRequestApiParameters) bool {
 	signature := c.Query("signature")
 	if signature != "" {
@@ -79,9 +118,15 @@ func redirectToHMACEndpoint(c *gin.Context, apiId string, apipara HmacProxyReque
 func render(c *gin.Context, status int, payload interface{}) {
 	switch c.GetHeader("Accept") {
 	case "application/xml":
-		c.XML(status, payload)
+		{
+			c.XML(status, payload)
+			break
+		}
 	case "application/yaml":
-		c.YAML(status, payload)
+		{
+			c.YAML(status, payload)
+			break
+		}
 	default:
 		c.JSON(status, payload)
 	}

@@ -11,6 +11,7 @@ var middlewareHMACEndpointRegex *regexp.Regexp
 var middlewareEmbedEndpointRegex *regexp.Regexp
 var middlewareHMACSignEndpointRegex *regexp.Regexp
 var middlewareMusicBrainzEndpointRegex *regexp.Regexp
+var supportedImageTypes *regexp.Regexp
 
 func init() {
 	hmacProxyUserInfoRegex = regexp.MustCompile(`^[/_]?user/?$`)
@@ -21,4 +22,5 @@ func init() {
 	middlewareEmbedEndpointRegex = regexp.MustCompile(`/embed$`)
 	middlewareHMACSignEndpointRegex = regexp.MustCompile(`^/?hmac/sign`)
 	middlewareMusicBrainzEndpointRegex = regexp.MustCompile(`^/?musicbrainz/`)
+	supportedImageTypes = regexp.MustCompile(`image/(png|tiff|jpeg)`)
 }
