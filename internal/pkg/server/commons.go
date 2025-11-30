@@ -24,9 +24,9 @@ func pageLimitAuthReq(c *gin.Context) (string, string, int, int) {
 			// if atoi fails interpret as -1
 			page = -1
 		}
-	} else if c.Query("page") != "" {
+	} else if c.Query("start") != "" && c.Query("page") == "-1" {
 		var err error
-		page, err = strconv.Atoi(c.Query("page"))
+		page, err = strconv.Atoi(c.Query("start"))
 		if err != nil {
 			// if atoi fails interpret as -1
 			page = -1
