@@ -1,19 +1,24 @@
 module github.com/dozro/tawny
 
-go 1.24.0
+go 1.25
 
 require (
 	codeberg.org/dozrye/golang_simpleconfig v0.0.7
 	github.com/disintegration/imaging v1.6.2
+	github.com/dozro/tawny_lfm_types v0.0.3
 	github.com/fogleman/gg v1.3.0
 	github.com/gin-gonic/gin v1.11.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/tavsec/gin-healthcheck v1.7.12
+	gitlab.com/rye_tawny/api_commons v0.0.3
+	gitlab.com/rye_tawny/hmac_types v0.0.1
+	golang.org/x/image v0.33.0
 )
 
 require (
+	codeberg.org/dozrye/golang_apierror v0.0.2 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
@@ -62,11 +67,13 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
+	gitlab.com/rye_tawny/musicbrainz/api v0.0.4 // indirect
+	gitlab.com/rye_tawny/musicbrainz/types v0.0.2 // indirect
+	gitlab.com/rye_tawny/security v0.0.2 // indirect
 	go.mongodb.org/mongo-driver v1.17.6 // indirect
 	go.uber.org/mock v0.5.0 // indirect
 	golang.org/x/arch v0.20.0 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
-	golang.org/x/image v0.33.0 // indirect
 	golang.org/x/mod v0.29.0 // indirect
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
