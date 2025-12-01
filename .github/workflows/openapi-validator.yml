@@ -40,7 +40,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Validation Results to artifacts
-        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: validation_result
           path: validation_result.txt
