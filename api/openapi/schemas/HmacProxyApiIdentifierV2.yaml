@@ -1,0 +1,9 @@
+title: HMAC Proxy Identifier
+description: new version of ApiIdentifier
+type: string
+example: user
+enum:
+  - user
+  - user_tracks_current
+  - user_tracks_current_embed
+  - user_tracks_recent

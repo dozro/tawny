@@ -1,0 +1,4 @@
+type: string
+format: url
+title: LastFM URL
+pattern: ^https:\/\/last\.fm

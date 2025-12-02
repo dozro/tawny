@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  title: Tawny
+  description: A lastfm Api Proxy
+  version: 0.0.3
+  contact:
+    name: Rye
+    url: https://github.com/dozro/tawny/wiki
+  license:
+    name: Apache 2.0
+    url: https://opensource.org/licenses/Apache-2.0
+servers:
+  - url: /api/v1
+    description: the local Endpoint
+  - url: https://tawny.itsrye.uk/api/v1
+    description: the reference server
+paths:
+  /user/{username}:
+    $ref: ./paths/user_username_.yaml
+  /user/{username}/tracks/loved:
+    $ref: ./paths/user_username_tracks_loved.yaml
+  /user/{username}/tracks/recent:
+    $ref: ./paths/user_username_tracks_recent.yaml
+  /user/{username}/tracks/current:
+    $ref: ./paths/user_username_tracks_current.yaml
+  /user/{username}/tracks/current/embed:
+    $ref: ./paths/user_username_tracks_current_embed.yaml
+  /hmac/sign/base64:
+    $ref: ./paths/hmac_sign_base64.yaml
+  /hmac/sign:
+    $ref: ./paths/hmac_sign.yaml
+  /hmac/verify:
+    $ref: ./paths/hmac_verify.yaml
+  /hmac/verify/against_server:
+    $ref: ./paths/hmac_verify_against_server.yaml
+  /hmac/execute:
+    $ref: ./paths/hmac_execute.yaml
+  /user/{username}/top/tracks:
+    $ref: ./paths/user_username_top_tracks.yaml
+  /user/{username}/top/albums:
+    $ref: ./paths/user_username_top_albums.yaml
+  /musicbrainz/lookup/artist/by_mbid/{mbid}:
+    $ref: ./paths/musicbrainz_lookup_artist_by_mbid_mbid_.yaml
+  /musicbrainz/lookup/recording/by_mbid/{mbid}:
+    $ref: ./paths/musicbrainz_lookup_recording_by_mbid_mbid_.yaml
+components:
+  schemas:
+    $ref: ./schemas/_index.yaml
+  parameters: { }
+  responses:
+    $ref: ./responses/_index.yaml
+  securitySchemes:
+    defaultApiKey:
+      description: The Api Key you obtained from lastfm
+      type: apiKey
+      name: Authorization
+      in: header
+tags:
+  $ref: ./tags/_index.yaml

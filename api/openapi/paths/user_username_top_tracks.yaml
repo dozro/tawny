@@ -1,0 +1,60 @@
+parameters:
+  - name: limit
+    in: query
+    description: The maximum number of tracks to return.
+    required: false
+    schema:
+      type: integer
+      format: int32
+      default: 25
+      minimum: 1
+      maximum: 250
+  - name: start
+    in: query
+    description: >-
+      The starting index for the results (used for pagination), equivalent to
+      page.
+    required: false
+    schema:
+      type: integer
+      format: int64
+      default: 1
+      minimum: 1
+      maximum: 32000
+  - schema:
+      type: integer
+      format: int64
+      default: -1
+      minimum: -1
+      maximum: 32000
+    in: query
+    name: page
+    description: The page number (deprecated, use `start` instead)
+    deprecated: true
+  - schema:
+      $ref: ../schemas/LastFMUsername.yaml
+    name: username
+    in: path
+    required: true
+get:
+  summary: get the top tracks
+  tags:
+    - user
+  responses:
+    '200':
+      description: Request successful
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/LFMUserTopTracks.yaml
+        application/xml:
+          schema:
+            $ref: ../schemas/LFMUserTopTracks.yaml
+        application/yaml:
+          schema:
+            $ref: ../schemas/LFMUserTopTracks.yaml
+    '401':
+      $ref: ../responses/ApiErrorReturn401.yaml
+    '503':
+      $ref: ../responses/EndpointDisabledByServer.yaml
+  operationId: get-user-username-top-tracks

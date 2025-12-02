@@ -1,0 +1,10 @@
+type: object
+properties:
+  api_error:
+    $ref: ../schemas/ApiError.yaml
+  name:
+    type: string
+  sort_name:
+    type: string
+  disambiguation:
+    type: string

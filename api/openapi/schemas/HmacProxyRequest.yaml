@@ -1,0 +1,16 @@
+type: object
+title: HMAC Proxy Request
+properties:
+  method:
+    $ref: ../schemas/HmacProxyMethod.yaml
+  api_identifier:
+    $ref: ../schemas/HmacProxyApiIdentifierV2.yaml
+  api_parameters:
+    $ref: ../schemas/HmacProxyApiParameters.yaml
+  body:
+    type: string
+    nullable: true
+    default: null
+required:
+  - method
+  - api_identifier

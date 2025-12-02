@@ -1,0 +1,42 @@
+post:
+  summary: verify a hmac signed method
+  tags:
+    - hmac
+  responses:
+    '200':
+      description: request success
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/Verification.yaml
+    '500':
+      $ref: ../responses/ApiErrorReturn500.yaml
+  operationId: get-hmac-verify
+  x-stoplight:
+    id: rrb5zs04683wq
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/SignedRequest.yaml
+  parameters:
+    - schema:
+        type: string
+      in: header
+      name: HMAC-PSK
+      required: true
+    - name: isBase64
+      description: if the request is base64 encoded
+      required: false
+      deprecated: true
+      in: query
+      schema:
+        type: boolean
+    - name: is_base64
+      description: if the request is base64 encoded
+      required: false
+      in: query
+      schema:
+        type: boolean
+  security: [ ]

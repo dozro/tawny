@@ -1,0 +1,48 @@
+post:
+  summary: Sign a request
+  description: Generate an HMAC signature for a given request payload.
+  tags:
+    - hmac
+  responses:
+    '200':
+      description: Successfully signed request
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/HmacProxyRequest.yaml
+        application/yaml:
+          schema:
+            $ref: ../schemas/HmacProxyRequest.yaml
+    '401':
+      $ref: ../responses/ApiErrorReturn401.yaml
+    '500':
+      $ref: ../responses/ApiErrorReturn500.yaml
+    '503':
+      $ref: ../responses/EndpointDisabledByServer.yaml
+  operationId: post-hmac-sign
+  parameters:
+    - schema:
+        type: string
+      in: header
+      name: HMAC-PSK
+      description: HMAC Pre-Shared-Key
+      required: true
+    - schema:
+        type: boolean
+      in: query
+      name: is_base64
+      description: If true, the signed payload will be returned as Base64.
+      required: false
+    - schema:
+        type: boolean
+      in: query
+      deprecated: true
+      description: Deprecated alias for `is_base64`.
+      name: isBase64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/HmacProxyRequest.yaml
+  security: [ ]

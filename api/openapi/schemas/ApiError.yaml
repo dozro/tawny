@@ -1,0 +1,41 @@
+type: object
+title: API Error
+description: Standard structure for API errors.
+properties:
+  http_code:
+    type: number
+    description: The HTTP status code returned by the server.
+    example: 403
+    minimum: 100
+    maximum: 599
+  internal_error_code:
+    type: number
+    description: Internal application-specific error code.
+    example: 1
+  internal_error_msg:
+    type: string
+    nullable: true
+    description: Optional internal error message providing additional context.
+    example: Signature verification failed in backend service.
+  success:
+    type: boolean
+    description: If the operation was successful
+    default: false
+  data:
+    $ref: ../schemas/errorAttachedData.yaml
+  message:
+    type: string
+    description: Human-readable error message describing the failure.
+    example: Invalid HMAC signature
+required:
+  - success
+  - message
+example:
+  http_code: 403
+  internal_error_code: 1
+  internal_error_msg: Signature verification failed in backend service.
+  success: false
+  data:
+    field: signature
+    detail: HMAC mismatch
+  message: Invalid HMAC signature

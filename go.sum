@@ -1,7 +1,7 @@
-codeberg.org/dozrye/golang_apierror v0.0.2 h1:Nn3+HBK0vYa/9yWWjFa3oXosdzGQ/pac49EcIXiaCVs=
-codeberg.org/dozrye/golang_apierror v0.0.2/go.mod h1:7FJxLTrzgTcmbxJt3B8r6dJaG+ML6eB64QdKtYW4GK8=
-codeberg.org/dozrye/golang_simpleconfig v0.0.7 h1:IEE+UodIUow94F3nwnClOVIbJb1eM9pa5PhQW4TbFLM=
-codeberg.org/dozrye/golang_simpleconfig v0.0.7/go.mod h1:SBwAl0HI2EUeG86YYZ5DyFz5ubotDtCk0RAxH/rKC2o=
+codeberg.org/dozrye/golang_apierror v0.1.0 h1:rOx29I72KnLQI+uUxUFuxyI8tvfr73nlCEQNyp36EEI=
+codeberg.org/dozrye/golang_apierror v0.1.0/go.mod h1:4kSkK9uKY3FqkX1l+P54heEI2yKOUBvwyXNtoSUyN7s=
+codeberg.org/dozrye/golang_simpleconfig v0.1.0 h1:Opf7QzTi62Y0mMDTdNQSpfZS87ndZGApb89phXb2Y54=
+codeberg.org/dozrye/golang_simpleconfig v0.1.0/go.mod h1:SBwAl0HI2EUeG86YYZ5DyFz5ubotDtCk0RAxH/rKC2o=
 dario.cat/mergo v1.0.2 h1:85+piFYR1tMbRrLcDwR18y4UKJ3aH1Tbzi24VRW1TK8=
 dario.cat/mergo v1.0.2/go.mod h1:E/hbnu0NxMFBjpMIE34DRGLWqDy0g5FuKDhCb31ngxA=
 github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 h1:UQHMgLO+TxOElx5B5HZ4hJQsoJ/PvUvKRhJHDQXO8P8=

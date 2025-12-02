@@ -1,0 +1,6 @@
+type: string
+title: LastFM Username
+example: alice
+pattern: ^[a-zA-Z0-9_-]{3,20}$
+minLength: 3
+maxLength: 20

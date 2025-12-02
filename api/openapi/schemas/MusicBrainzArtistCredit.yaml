@@ -1,0 +1,20 @@
+title: MusicBrainz Artist Credit
+description: Contains artist credit information showing who performed on the recording.
+type: object
+properties:
+  text:
+    type: string
+    description: Raw character data.
+  name-credit:
+    type: array
+    description: List of credited artists.
+    items:
+      $ref: ../schemas/MusicBrainzNameCredit.yaml
+additionalProperties: false
+example:
+  name-credit:
+    - joinphrase: ' & '
+      artist:
+        id: 5b11f4ce-a62d-471e-81fc-a69a8278c7da
+        name: Nirvana
+        sort-name: Nirvana

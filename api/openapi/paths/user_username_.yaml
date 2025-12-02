@@ -1,0 +1,31 @@
+get:
+  description: |-
+    Get User Info
+
+    Lastfm Docu: https://www.last.fm/api/show/user.getInfo
+  security:
+    - defaultApiKey: [ ]
+  parameters:
+    - name: username
+      in: path
+      required: true
+      description: the username
+      schema:
+        $ref: ../schemas/LastFMUsername.yaml
+  responses:
+    '200':
+      description: The fetched User Info
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/LFMUserInfo.yaml
+    '401':
+      $ref: ../responses/ApiErrorReturn401.yaml
+    '500':
+      $ref: ../responses/ApiErrorReturn500.yaml
+    '503':
+      $ref: ../responses/EndpointDisabledByServer.yaml
+  summary: Get User Info
+  operationId: get_user
+  tags:
+    - user

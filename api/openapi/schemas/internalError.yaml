@@ -1,0 +1,10 @@
+description: internal server error
+title: Internal Server Error Message
+deprecated: true
+properties:
+  code:
+    type: number
+  error:
+    type: string
+  data:
+    $ref: ../schemas/errorAttachedData.yaml

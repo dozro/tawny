@@ -1,0 +1,5 @@
+description: Data attached to Error
+type: object
+properties:
+  request:
+    $ref: ../schemas/HttpRequestMeta.yaml

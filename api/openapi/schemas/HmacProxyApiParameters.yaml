@@ -1,0 +1,18 @@
+description: The Api Parameters you want to provide
+title: HMAC Proxy Api Parameter
+type: object
+required:
+  - username
+properties:
+  username:
+    type: string
+    example: alice
+    description: The Username you want to specify
+  page:
+    type: number
+    example: 1
+    description: The page of the result you want to get
+  limit:
+    type: number
+    example: 15
+    description: The limit of a page

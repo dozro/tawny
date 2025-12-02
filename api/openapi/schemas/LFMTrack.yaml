@@ -1,0 +1,43 @@
+title: LastFM Track
+type: object
+properties:
+  name:
+    type: string
+    maxLength: 100
+    minLength: 1
+    description: Track Name
+  now_playing:
+    type: boolean
+    description: >-
+      If the track is currently playing (only defined when requesting recent
+      tracks)
+    nullable: true
+  rank:
+    nullable: true
+    description: only defined when requesting top tracks
+  mbid:
+    $ref: ../schemas/Mbid.yaml
+  url:
+    type: string
+    format: url
+    description: The url to the lastfm entry of the track
+  date:
+    type: string
+    format: date
+  image:
+    type: string
+    format: url
+    description: album cover image
+  artist:
+    $ref: ../schemas/LFMArtist.yaml
+  artist_mbid:
+    $ref: ../schemas/Mbid.yaml
+  artist_music_brainz:
+    $ref: ../schemas/MusicBrainzArtist.yaml
+  track_music_brainz:
+    $ref: ../schemas/MusicBrainzRecording.yaml
+  streamable:
+    type: integer
+    format: int32
+    minimum: 0
+    maximum: 255

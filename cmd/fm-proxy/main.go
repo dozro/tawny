@@ -15,5 +15,8 @@ func main() {
 	} else if config.ReleaseMode {
 		log.SetLevel(log.InfoLevel)
 	}
+	if config.ExtendedServerConfig.LogOutputFormat == "json" {
+		log.SetFormatter(&log.JSONFormatter{})
+	}
 	server.StartServer(config)
 }

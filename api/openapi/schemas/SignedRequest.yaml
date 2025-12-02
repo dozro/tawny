@@ -1,0 +1,16 @@
+type: object
+deprecated: true
+title: HMAC signed Request (not encoded)
+description: The signed Request; not base64 encoded
+properties:
+  signature:
+    type: string
+    example: 4acfb7f8b2...
+    pattern: ^[A-Fa-f0-9]{64}$
+    minLength: 64
+    maxLength: 64
+  request:
+    $ref: ../schemas/HmacProxyRequest.yaml
+required:
+  - signature
+  - request

@@ -1,0 +1,9 @@
+title: HMAC Proxy Identifier (deprecated)
+type: string
+example: /user/
+deprecated: true
+enum:
+  - /user/
+  - /user/tracks/current/
+  - /user/tracks/current/embed
+  - /user/tracks/recent/
