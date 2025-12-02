@@ -1,0 +1,7 @@
+type: object
+description: whether the verification was successful
+properties:
+  message:
+    type: string
+  success:
+    type: boolean

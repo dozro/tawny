@@ -1,0 +1,16 @@
+title: MusicBrainz Recording Release
+description: A release (album, EP, etc.) containing this recording.
+type: object
+properties:
+  text:
+    type: string
+  id:
+    $ref: ../schemas/Mbid.yaml
+  title:
+    type: string
+    description: Release title.
+    example: Meteora
+additionalProperties: false
+example:
+  id: 1d9f9d3c-1c62-4b4a-8cc9-dc61d1c59d84
+  title: Meteora

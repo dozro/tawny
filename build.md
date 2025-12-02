@@ -24,7 +24,7 @@ docker build -t github.com/dozro/tawny .
 
 #### Building
 
-The source code for the last-fm CLI Tool can be found in [cmd/fm-cli](./cmd/fm-cli)
+The source code for the last-fm CLI Tool can be found in [cmd/fm-cli](cmd/tawny-cli)
 
 To build it simply run:
 

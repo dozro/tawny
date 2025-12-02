@@ -1,0 +1,7 @@
+type: object
+description: The Tracks a user listened to recently
+properties:
+  track:
+    type: array
+    items:
+      $ref: ../schemas/LFMTrack.yaml

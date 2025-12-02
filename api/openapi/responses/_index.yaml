@@ -1,0 +1,12 @@
+EndpointDisabledByServer:
+  $ref: ./EndpointDisabledByServer.yaml
+ApiErrorReturn400:
+  $ref: ./ApiErrorReturn400.yaml
+ApiErrorReturn401:
+  $ref: ./ApiErrorReturn401.yaml
+ApiErrorReturn403:
+  $ref: ./ApiErrorReturn403.yaml
+ApiErrorReturn409:
+  $ref: ./ApiErrorReturn409.yaml
+ApiErrorReturn500:
+  $ref: ./ApiErrorReturn500.yaml

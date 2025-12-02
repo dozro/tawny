@@ -1,0 +1,30 @@
+title: Last.fm Album
+description: >-
+  Represents an album entry in a Last.fm user's library, including ranking,
+  metadata, and reference identifiers.
+type: object
+properties:
+  rank:
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 255
+    description: >-
+      The album's position within the user's ranked list, typically based on
+      play count or Last.fm sorting.
+  name:
+    type: string
+    description: The name of the album.
+  playcount:
+    type: integer
+    format: int64
+    minimum: 0
+    maximum: 32000
+    description: The number of times the user has played tracks from this album.
+  mbid:
+    $ref: ../schemas/Mbid.yaml
+  url:
+    type: string
+    format: url
+    nullable: false
+    description: The URL of the album's page on Last.fm.

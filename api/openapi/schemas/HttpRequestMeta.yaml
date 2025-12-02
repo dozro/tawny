@@ -1,0 +1,30 @@
+title: HTTP Request
+description: Metadata describing an HTTP request.
+type: object
+properties:
+  host:
+    type: string
+    description: The hostname of the server receiving the request.
+    example: example.org
+    pattern: ^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$
+  query:
+    type: string
+    description: The query string of the request, if any (e.g., `?id=123&sort=asc`).
+    nullable: true
+    example: '?id=123&sort=asc'
+    pattern: ^\?.*$
+  path:
+    type: string
+    description: The path portion of the URL being requested.
+    example: /api/meow
+    pattern: ^/.*$
+  method:
+    type: string
+    description: The HTTP method used for the request.
+    example: GET
+    pattern: ^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|TRACE|CONNECT)$
+example:
+  host: example.org
+  query: '?id=123&sort=asc'
+  path: /api/meow
+  method: GET

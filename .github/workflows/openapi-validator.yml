@@ -26,13 +26,17 @@ jobs:
 
       - name: Install IBM OpenAPI Validator
         run: |
-          npm i -g ibm-openapi-validator
+          npm install --ignore-scripts -g swagger-cli@4.0.4
+          npm install -g ibm-openapi-validator
           npm i @ibm-cloud/openapi-ruleset
 
+      - name: Bundle Openapi spec
+        id: bundle
+        run: swagger-cli bundle ./api/openapi/openapi.yaml -o ./api/apispecb.yaml --type yaml
       - name: Validate OpenAPI spec (./api/apispec.yaml)
         id: validation
         run: |
-          if lint-openapi -c ./.validator-config.yml --ruleset ./.validator-rules.yml ./api/apispec.yaml --no-colors -m | tee validation_result.txt 2>&1; then
+          if lint-openapi -c ./.validator-config.yml --ruleset ./.validator-rules.yml ./api/apispecb.yaml --no-colors -m | tee validation_result.txt 2>&1; then
             echo "validation_status=success" >> $GITHUB_OUTPUT
           else
             echo "validation_status=failed" >> $GITHUB_OUTPUT
@@ -52,15 +56,15 @@ jobs:
           script: |
             const fs = require('fs');
             const validationStatus = '${{ steps.validation.outputs.validation_status }}';
-            const validationOutput = fs.readFileSync('apispec-validator-report.md', 'utf8');
+            const validationOutput = fs.readFileSync('apispecb-validator-report.md', 'utf8');
             let body = '';
             if (validationStatus === 'success') {
               body = `## ✅ OpenAPI Validation Passed\n\n**File**: \`./api/apispec.yaml\`\n\n**Commit**: \`${{ github.sha }}\`\n\n${validationOutput}\n\n`;
             } else {
               body = `## ❌ OpenAPI Validation Failed\n\n**File**: \`./api/apispec.yaml\`\n\n**Commit**: \`${{ github.sha }}\`\n\n${validationOutput}\n\n`;
             }
-            if(body.length > 65000) {
-              body = body.slice(0, 65000) + '\n\n... (truncated due to GitHub comment length limit)';
+            if(body.length > 1000) {
+              body = body.slice(0, 1000) + '\n\n... (truncated due to GitHub comment length limit)';
             }
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,

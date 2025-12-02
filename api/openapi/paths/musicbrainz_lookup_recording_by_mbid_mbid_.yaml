@@ -1,0 +1,28 @@
+parameters:
+  - schema:
+      $ref: ../schemas/Mbid.yaml
+    name: mbid
+    description: The MusicBrainz ID of the recording to lookup.
+    in: path
+    required: true
+get:
+  summary: lookup recording details by mbid
+  description: Retrieve detailed information about a MusicBrainz recording using its MBID.
+  tags:
+    - musicbrainz
+  operationId: get_musicbrainz_lookup_recording_by_mbid
+  responses:
+    '200':
+      description: Request successful
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/MusicBrainzRecording.yaml
+        application/xml:
+          schema:
+            $ref: ../schemas/MusicBrainzRecording.yaml
+        application/yaml:
+          schema:
+            $ref: ../schemas/MusicBrainzRecording.yaml
+    '503':
+      $ref: ../responses/EndpointDisabledByServer.yaml

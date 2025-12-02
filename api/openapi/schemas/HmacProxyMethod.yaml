@@ -1,0 +1,8 @@
+type: string
+title: HMAC Proxy Method
+description: lowercase http method
+example: get
+enum:
+  - get
+  - post
+  - head

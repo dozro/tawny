@@ -1,0 +1,88 @@
+title: Last.fm Top tracks of a user
+description: >-
+  Represents the list of top tracks for a user on Last.fm, ordered by listening
+  frequency.
+type: object
+properties:
+  track:
+    type: array
+    description: A list of tracks ranked by how often the user has listened to them.
+    items:
+      $ref: ../schemas/LFMTrack.yaml
+example:
+  track:
+    - name: In the End
+      rank: 1
+      now_playing: false
+      playcount: 152
+      url: https://www.last.fm/music/Linkin+Park/_/In+the+End
+      mbid: c3b33b69-9961-4e1d-b76e-7ee3dd7c6a3d
+      artist:
+        name: Linkin Park
+        mbid: f59c5520-5f46-4d2c-b2c4-822eabf53419
+        url: https://www.last.fm/music/Linkin+Park
+    - name: Numb
+      rank: 2
+      now_playing: false
+      playcount: 131
+      url: https://www.last.fm/music/Linkin+Park/_/Numb
+      mbid: d9160f5a-bc74-4cc2-9e2c-c8733f91c82f
+      artist:
+        name: Linkin Park
+        mbid: f59c5520-5f46-4d2c-b2c4-822eabf53419
+        url: https://www.last.fm/music/Linkin+Park
+    - name: The Emptiness Machine
+      album: ''
+      rank: 3
+      playcount: 53
+      mbid: 0815f294-becd-4544-bad0-5d43b7426cce
+      artist_music_brainz:
+        api_error:
+          http_code: 0
+          internal_error_code: 0
+          internal_error_msg: ''
+          message: ''
+          data: null
+          success: false
+          date: ''
+        sort_name: ''
+        Disambiguation: ''
+        isni_list:
+          Isni: null
+        Country: ''
+        area:
+          name: ''
+          sort_name: ''
+          alias_list: { }
+        begin_area:
+          name: ''
+          sort_name: ''
+          alias_list: { }
+        life_span:
+          Begin: ''
+          End: ''
+          Ended: ''
+        alias_list: { }
+      track_music_brainz:
+        api_error:
+          http_code: 0
+          internal_error_code: 0
+          internal_error_msg: ''
+          message: ''
+          data: null
+          success: false
+          date: ''
+        Title: ''
+        Length: 0
+        artist_credit: { }
+        release_list: { }
+        isrc_list:
+          isrc: { }
+      url: https://www.last.fm/music/Linkin+Park/_/The+Emptiness+Machine
+      image: >-
+        https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png
+      artist:
+        name: ''
+        mbid: ''
+        url: https://www.last.fm/music/Linkin+Park
+      streamable: 0

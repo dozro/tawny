@@ -1,0 +1,11 @@
+description: The Server disabled this endpoint
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/ApiError.yaml
+  application/yaml:
+    schema:
+      $ref: ../schemas/ApiError.yaml
+  application/xml:
+    schema:
+      $ref: ../schemas/ApiError.yaml

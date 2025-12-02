@@ -1,0 +1,20 @@
+title: Last.fm Artist
+description: >-
+  Represents an artist as returned by the Last.fm API, including basic metadata
+  such as the artist name, MusicBrainz identifier, and a link to the artist’s
+  Last.fm page.
+type: object
+properties:
+  name:
+    type: string
+    example: Linkin Park
+    description: The name of the artist.
+  mbid:
+    $ref: ../schemas/Mbid.yaml
+  url:
+    type: string
+    format: url
+    example: https://www.last.fm/music/Linkin+Park
+    description: >-
+      The URL of the artist's page on Last.fm, providing access to their
+      profile, biography, tracks, albums, and related listening statistics.

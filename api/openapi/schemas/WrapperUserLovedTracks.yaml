@@ -1,0 +1,5 @@
+type: object
+properties:
+  loved_tracks:
+    $ref: ../schemas/UserLovedTracks.yaml
+description: The tracks a user loves

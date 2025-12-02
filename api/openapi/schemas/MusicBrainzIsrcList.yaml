@@ -1,0 +1,15 @@
+title: MusicBrainz ISRC List
+description: International Standard Recording Codes (ISRCs) associated with the recording.
+type: object
+properties:
+  count:
+    type: string
+    description: Number of ISRC entries.
+    example: '1'
+  isrc:
+    $ref: ../schemas/MusicBrainzIsrc.yaml
+additionalProperties: false
+example:
+  count: '1'
+  isrc:
+    id: USWB10300015

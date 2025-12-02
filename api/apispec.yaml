@@ -15,6 +15,9 @@ externalDocs:
   url: https://github.com/dozro/tawny/wiki
 servers:
   - url: /api/v1
+    description: the local Endpoint
+  - url: https://tawny.itsrye.uk/api/v1
+    description: the reference server
 tags:
   - name: user
     description: Operations related to users

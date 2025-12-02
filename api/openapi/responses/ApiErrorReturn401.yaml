@@ -1,0 +1,13 @@
+description: >-
+  Represents an error response returned when the client is not authorized to
+  access the requested resource.
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/ApiError.yaml
+  application/yaml:
+    schema:
+      $ref: ../schemas/ApiError.yaml
+  application/xml:
+    schema:
+      $ref: ../schemas/ApiError.yaml

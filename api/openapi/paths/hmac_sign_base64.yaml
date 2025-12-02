@@ -1,0 +1,31 @@
+post:
+  summary: Sign a request in Base64
+  description: >-
+    Generate an HMAC signature for a given request payload and return it encoded
+    in Base64.
+  tags:
+    - hmac
+  responses:
+    '200':
+      description: Successfully signed request in Base64
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/SignedBase64Request.yaml
+    '500':
+      $ref: ../responses/ApiErrorReturn500.yaml
+  operationId: post-hmac-sign-base64
+  parameters:
+    - schema:
+        type: string
+      in: header
+      name: HMAC-PSK
+      description: HMAC Pre-Shared-Key
+      required: true
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/HmacProxyRequest.yaml
+  security: [ ]

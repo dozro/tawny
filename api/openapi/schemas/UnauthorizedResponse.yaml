@@ -1,0 +1,10 @@
+type: object
+properties:
+  code:
+    type: integer
+    format: int64
+    example: 403
+    minimum: 100
+    maximum: 599
+  error:
+    type: string

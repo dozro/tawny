@@ -66,7 +66,7 @@ func lfmUserRecentTracks(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	lt, err := client.LfmUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB, proxyConfig.DisableEmbeddedMusicBrainz)
+	lt, err := client.LfmUserRecentTracks(username, apikey, limit, page, embedMusicBrainzB, proxyConfig.ExtendedServerConfig.DisableEmbeddedMusicBrainz)
 	if handleError(err, c) {
 		return
 	}
@@ -87,7 +87,7 @@ func lfmUserCurrentTrack(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.LfmUserCurrentTrack(username, apikey, embedMusicBrainzB, proxyConfig.DisableEmbeddedMusicBrainz)
+	ct, err := client.LfmUserCurrentTrack(username, apikey, embedMusicBrainzB, proxyConfig.ExtendedServerConfig.DisableEmbeddedMusicBrainz)
 	if handleError(err, c) {
 		return
 	}
@@ -104,7 +104,7 @@ func lfmUserCurrentTrackEmbed(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.LfmUserCurrentTrack(username, apikey, false, proxyConfig.DisableEmbeddedMusicBrainz)
+	ct, err := client.LfmUserCurrentTrack(username, apikey, false, proxyConfig.ExtendedServerConfig.DisableEmbeddedMusicBrainz)
 	if handleError(err, c) {
 		return
 	}
