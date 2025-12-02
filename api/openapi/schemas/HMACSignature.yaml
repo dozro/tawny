@@ -1,0 +1,5 @@
+title: HMAC Signature
+type: string
+pattern: ^[A-Fa-f0-9]{64}$
+minLength: 64
+maxLength: 64

@@ -1,0 +1,76 @@
+ApiErrorCode:
+  $ref: ./ApiErrorCode.yaml
+Success:
+  $ref: ./Success.yaml
+Verification:
+  $ref: ./Verification.yaml
+ApiError:
+  $ref: ./ApiError.yaml
+HmacProxyApiIdentifier:
+  $ref: ./HmacProxyApiIdentifier.yaml
+HmacProxyApiIdentifierV2:
+  $ref: ./HmacProxyApiIdentifierV2.yaml
+HmacProxyApiParameters:
+  $ref: ./HmacProxyApiParameters.yaml
+HmacProxyResponse:
+  $ref: ./HmacProxyResponse.yaml
+HmacProxyMethod:
+  $ref: ./HmacProxyMethod.yaml
+HmacProxyRequest:
+  $ref: ./HmacProxyRequest.yaml
+SignedRequest:
+  $ref: ./SignedRequest.yaml
+SignedBase64Request:
+  $ref: ./SignedBase64Request.yaml
+LFMUserInfo:
+  $ref: ./LFMUserInfo.yaml
+HttpRequestMeta:
+  $ref: ./HttpRequestMeta.yaml
+errorAttachedData:
+  $ref: ./errorAttachedData.yaml
+internalError:
+  $ref: ./internalError.yaml
+UserLovedTracks:
+  $ref: ./UserLovedTracks.yaml
+WrapperUserLovedTracks:
+  $ref: ./WrapperUserLovedTracks.yaml
+LFMTrack:
+  $ref: ./LFMTrack.yaml
+LFMUserRecentTracks:
+  $ref: ./LFMUserRecentTracks.yaml
+UnauthorizedResponse:
+  $ref: ./UnauthorizedResponse.yaml
+LFMUserTopAlbums:
+  $ref: ./LFMUserTopAlbums.yaml
+LFMUserAlbums:
+  $ref: ./LFMUserAlbums.yaml
+LFMUserTopTracks:
+  $ref: ./LFMUserTopTracks.yaml
+LFMArtist:
+  $ref: ./LFMArtist.yaml
+Mbid:
+  $ref: ./Mbid.yaml
+MusicBrainzRecording:
+  $ref: ./MusicBrainzRecording.yaml
+MusicBrainzArtistCredit:
+  $ref: ./MusicBrainzArtistCredit.yaml
+MusicBrainzNameCredit:
+  $ref: ./MusicBrainzNameCredit.yaml
+MusicBrainzNameCreditArtist:
+  $ref: ./MusicBrainzNameCreditArtist.yaml
+MusicBrainzRecordingReleaseList:
+  $ref: ./MusicBrainzRecordingReleaseList.yaml
+MusicBrainzRecordingRelease:
+  $ref: ./MusicBrainzRecordingRelease.yaml
+MusicBrainzIsrcList:
+  $ref: ./MusicBrainzIsrcList.yaml
+MusicBrainzIsrc:
+  $ref: ./MusicBrainzIsrc.yaml
+MusicBrainzArtist:
+  $ref: ./MusicBrainzArtist.yaml
+LastFMUsername:
+  $ref: ./LastFMUsername.yaml
+LastFMURL:
+  $ref: ./LastFMURL.yaml
+HMACSignature:
+  $ref: ./HMACSignature.yaml

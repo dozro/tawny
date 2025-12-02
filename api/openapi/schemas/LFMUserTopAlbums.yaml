@@ -1,0 +1,11 @@
+title: Last.fm top albums of a user
+description: >-
+  Represents the list of top albums for a given Last.fm user, including ranking
+  and play statistics for each album.
+type: object
+properties:
+  album:
+    type: array
+    description: A list of albums ordered by the user's listening behavior.
+    items:
+      $ref: ../schemas/LFMUserAlbums.yaml

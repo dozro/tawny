@@ -1,0 +1,26 @@
+parameters:
+  - schema:
+      $ref: ../schemas/Mbid.yaml
+    name: mbid
+    in: path
+    required: true
+get:
+  summary: lookup artist details by mbid
+  tags:
+    - musicbrainz
+  operationId: get_musicbrainz_lookup_artist_by_mbid
+  responses:
+    '200':
+      description: Request successful
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/MusicBrainzArtist.yaml
+        application/yaml:
+          schema:
+            $ref: ../schemas/MusicBrainzArtist.yaml
+        application/xml:
+          schema:
+            $ref: ../schemas/MusicBrainzArtist.yaml
+    '503':
+      $ref: ../responses/EndpointDisabledByServer.yaml

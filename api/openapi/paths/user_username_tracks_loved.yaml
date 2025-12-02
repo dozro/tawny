@@ -1,0 +1,70 @@
+get:
+  description: >-
+    Get loved tracks of specified User -
+    https://www.last.fm/api/show/user.getLovedTracks
+  security:
+    - defaultApiKey: [ ]
+  parameters:
+    - name: limit
+      in: query
+      description: The maximum number of tracks to return.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 25
+        minimum: 1
+        maximum: 250
+    - name: start
+      in: query
+      description: >-
+        The starting index for the results (used for pagination), equivalent to
+        page.
+      required: false
+      schema:
+        type: integer
+        format: int64
+        default: 1
+        minimum: 1
+        maximum: 32000
+    - schema:
+        type: integer
+        format: int64
+        default: -1
+        minimum: -1
+        maximum: 32000
+      in: query
+      name: page
+      description: The page number (deprecated, use `start` instead)
+      deprecated: true
+    - name: username
+      in: path
+      required: true
+      description: the username
+      schema:
+        $ref: ../schemas/LastFMUsername.yaml
+    - name: signature
+      in: query
+      required: false
+      description: the HMAC Signature for this OP
+      schema:
+        $ref: ../schemas/HMACSignature.yaml
+  responses:
+    '200':
+      description: the fetched list of loved songs
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/WrapperUserLovedTracks.yaml
+    '307':
+      description: a redirect
+    '401':
+      $ref: ../responses/ApiErrorReturn401.yaml
+    '500':
+      $ref: ../responses/ApiErrorReturn500.yaml
+    '503':
+      $ref: ../responses/EndpointDisabledByServer.yaml
+  summary: Get Users Loved Tracks
+  operationId: user_get_loved_tracks
+  tags:
+    - user

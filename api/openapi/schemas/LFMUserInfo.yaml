@@ -1,0 +1,62 @@
+title: Last.fm User Info
+description: The Last.fm user information object.
+properties:
+  id:
+    type: number
+    description: Unique numeric identifier of the user.
+    example: 123456
+    deprecated: true
+  name:
+    $ref: ../schemas/LastFMUsername.yaml
+  realname:
+    type: string
+    description: The real name of the user.
+    example: John Doe
+    nullable: true
+  url:
+    $ref: ../schemas/LastFMURL.yaml
+  imageurl:
+    type: string
+    format: url
+    description: URL of the user's profile image.
+    example: https://lastfm.freetls.fastly.net/i/u/300x300/abcdef123456.png
+  country:
+    type: string
+    description: The user's country.
+    example: United States
+    nullable: true
+  age:
+    type: number
+    description: The user's age, if available.
+    example: 28
+    minimum: 0
+  gender:
+    type: string
+    description: The user's gender.
+    pattern: ^(m|f|n|)$
+  subscriber:
+    type: integer
+  playcount:
+    type: integer
+    description: Total number of tracks the user has played.
+    example: 2345
+    minimum: 0
+  playlists:
+    type: integer
+    description: Total number of playlists the user has.
+    example: 5
+    minimum: 0
+  bootstrap:
+    type: integer
+    description: Bootstrap value (used internally by Last.fm).
+    example: 0
+    default: 0
+    minimum: 0
+  registered:
+    type: string
+    format: date
+    description: The date the user registered on Last.fm.
+    example: '2012-03-15'
+required:
+  - name
+  - url

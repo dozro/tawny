@@ -3,7 +3,7 @@ module github.com/dozro/tawny
 go 1.25
 
 require (
-	codeberg.org/dozrye/golang_simpleconfig v0.0.7
+	codeberg.org/dozrye/golang_simpleconfig v0.1.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/dozro/tawny_lfm_types v0.0.3
 	github.com/fogleman/gg v1.3.0
@@ -14,11 +14,12 @@ require (
 	github.com/tavsec/gin-healthcheck v1.7.12
 	gitlab.com/rye_tawny/api_commons v0.0.3
 	gitlab.com/rye_tawny/hmac_types v0.0.1
+	gitlab.com/rye_tawny/security v0.0.2
 	golang.org/x/image v0.33.0
 )
 
 require (
-	codeberg.org/dozrye/golang_apierror v0.0.2 // indirect
+	codeberg.org/dozrye/golang_apierror v0.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
@@ -69,7 +70,6 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	gitlab.com/rye_tawny/musicbrainz/api v0.0.4 // indirect
 	gitlab.com/rye_tawny/musicbrainz/types v0.0.2 // indirect
-	gitlab.com/rye_tawny/security v0.0.2 // indirect
 	go.mongodb.org/mongo-driver v1.17.6 // indirect
 	go.uber.org/mock v0.5.0 // indirect
 	golang.org/x/arch v0.20.0 // indirect

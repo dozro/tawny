@@ -1,0 +1,4 @@
+user:
+  $ref: ./user.yaml
+hmac:
+  $ref: ./hmac.yaml

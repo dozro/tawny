@@ -1,0 +1,10 @@
+type: object
+description: Single ISRC entry for the recording.
+properties:
+  id:
+    type: string
+    description: The ISRC code.
+    example: USWB10300015
+additionalProperties: false
+example:
+  id: USWB10300015

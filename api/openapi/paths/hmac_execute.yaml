@@ -1,0 +1,77 @@
+post:
+  summary: Execute a signed HMAC proxy request
+  tags:
+    - hmac
+  parameters:
+    - name: is_base64
+      description: if the request is base64 encoded
+      required: false
+      in: query
+      schema:
+        type: boolean
+    - name: isBase64
+      deprecated: true
+      description: if the request is base64 encoded
+      in: query
+      schema:
+        type: boolean
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/SignedRequest.yaml
+  responses:
+    '200':
+      description: Proxy request succeeded
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/HmacProxyResponse.yaml
+    '400':
+      description: Bad input or invalid JSON
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/ApiError.yaml
+    '403':
+      $ref: ../responses/ApiErrorReturn403.yaml
+    '500':
+      $ref: ../responses/ApiErrorReturn500.yaml
+  security: [ ]
+get:
+  security: [ ]
+  summary: Execute a signed HMAC proxy request
+  tags:
+    - hmac
+  parameters:
+    - name: isBase64
+      description: if the request is base64 encoded
+      required: true
+      deprecated: true
+      in: query
+      schema:
+        type: boolean
+        default: true
+    - name: is_base64
+      description: if the request is base64 encoded
+      required: true
+      in: query
+      schema:
+        type: boolean
+        default: true
+    - name: request
+      description: base64 encoded request
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: signature
+      in: query
+      description: the signature of the request
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: successful request

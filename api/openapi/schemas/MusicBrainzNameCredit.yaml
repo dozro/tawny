@@ -1,0 +1,19 @@
+title: MusicBrainz Name Credit
+description: A single credit entry referencing an artist in the artist-credit list.
+type: object
+properties:
+  text:
+    type: string
+    description: Raw text data.
+  joinphrase:
+    type: string
+    description: How this artist is joined with the next one (e.g. "feat.", " & ").
+    example: feat.
+  artist:
+    $ref: ../schemas/MusicBrainzNameCreditArtist.yaml
+additionalProperties: false
+example:
+  joinphrase: ''
+  artist:
+    id: 5b11f4ce-a62d-471e-81fc-a69a8278c7da
+    name: Nirvana

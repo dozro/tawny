@@ -1,0 +1,28 @@
+title: MusicBrainz Name Credit Artist
+description: Metadata describing an artist credited in a recording.
+type: object
+properties:
+  text:
+    type: string
+  id:
+    $ref: ../schemas/Mbid.yaml
+  type:
+    type: string
+    description: Artist type (e.g. Person, Group).
+    example: Group
+  type-id:
+    $ref: ../schemas/Mbid.yaml
+  name:
+    type: string
+    description: Artist display name.
+    example: Nirvana
+  sort_name:
+    type: string
+    description: Canonical sorting name.
+    example: Nirvana
+additionalProperties: false
+example:
+  id: 5b11f4ce-a62d-471e-81fc-a69a8278c7da
+  type: Group
+  name: Nirvana
+  sort-name: Nirvana

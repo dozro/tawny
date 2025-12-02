@@ -6,8 +6,6 @@ import (
 	"github.com/dozro/tawny/internal/pkg/server_config"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var proxyConfig *server_config.ServerConfig
@@ -46,8 +44,9 @@ func StartServer(config *server_config.ServerConfig) {
 	un.GET("top/tracks", lfmUserTopTracks)
 	unweekly.GET("album", lfmUserWeeklyChart)
 
-	router.StaticFile("/swagger.yaml", "./api/apispec.yaml")
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
+	if !proxyConfig.DisabledEndpoints.DisableSwaggerUI {
+		serveSwagger(router)
+	}
 
 	hmacapi := v1.Group("/hmac")
 	hmacapi.Use(disabledEndpointMiddleware())

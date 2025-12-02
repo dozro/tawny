@@ -1,0 +1,20 @@
+type: object
+description: Contains releases associated with the recording (albums, singles, etc.).
+properties:
+  text:
+    type: string
+  count:
+    type: string
+    description: Total number of releases.
+    example: '1'
+  release:
+    type: array
+    description: Release entries.
+    items:
+      $ref: ../schemas/MusicBrainzRecordingRelease.yaml
+additionalProperties: false
+example:
+  count: '1'
+  release:
+    - id: 1d9f9d3c-1c62-4b4a-8cc9-dc61d1c59d84
+      title: Meteora
