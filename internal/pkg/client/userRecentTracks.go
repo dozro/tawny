@@ -18,6 +18,10 @@ func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB, embe
 		Limit:    limit,
 		Page:     page,
 	})
+	return recTrackInternals(lt, embedMB, embedMBDisabledByServerConfig, err)
+}
+
+func recTrackInternals(lt *lfm_types.UserGetRecentTracks, embedMB, embedMBDisabledByServerConfig bool, err error) (*lfm_types.UserGetRecentTracks, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -44,27 +48,7 @@ func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB, embe
 func LbGetCurrentTrack(username string, embedMB, embedMBDisabledByServerConfig bool) (*lfm_types.UserGetRecentTracks, error) {
 	log.Debugf("getting recent tracks for %s ...", username)
 	lt, err := listenbrainz_api.User{}.GetCurrentTrackLfmCompat(username)
-	if err != nil {
-		return nil, err
-	}
-	if embedMBDisabledByServerConfig {
-		for i := range lt.Track {
-			lt.Track[i].SetApiError(apiError.ApiError{
-				HttpCode:          503,
-				InternalErrorCode: apiError.MusicBrainzLookupDisabledByConfig,
-				InternalErrorMsg:  apiError.MusicBrainzLookupDisabledByConfig.String(),
-				Message:           "The enrichment of data with MusicBrainz Data is disabled by the server Admin",
-				Data:              nil,
-				Success:           false,
-				Date:              time.Now().String(),
-			})
-		}
-	} else if embedMB {
-		for i := range lt.Track {
-			lt.Track[i].EmbedMusicBrainz()
-		}
-	}
-	return lt, nil
+	return recTrackInternals(lt, embedMB, embedMBDisabledByServerConfig, err)
 }
 
 func LfmUserCurrentTrack(username, apiKey string, embedMB, embedMBDisabledByServerConfig bool) (*lfm_types.UserGetRecentTracks, error) {
