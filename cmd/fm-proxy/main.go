@@ -10,6 +10,9 @@ import (
 func main() {
 	log.Info("starting fm-proxy")
 	config := server_config.SetupServerConfig()
+	if config.ExtendedServerConfig.RunningInDocker {
+		log.Infof("This server is running on tawny version %s with revision %s", config.ExtendedServerConfig.TawnyVersion, config.ExtendedServerConfig.TawnyRevision)
+	}
 	if config.DebugMode {
 		log.SetLevel(log.DebugLevel)
 	} else if config.ReleaseMode {

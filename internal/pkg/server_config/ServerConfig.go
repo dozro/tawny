@@ -31,6 +31,8 @@ type ExtendedServerConfig struct {
 	RunningInDocker            bool   `json:"running_in_docker"`
 	LogOutputFormat            string `json:"log_output_format"`
 	DisableEmbeddedMusicBrainz bool   `json:"disable_embedded_music_brainz"`
+	TawnyVersion               string `json:"tawny_version"`
+	TawnyRevision              string `json:"tawny_revision"`
 }
 
 func SetupServerConfig() *ServerConfig {
@@ -53,6 +55,8 @@ func SetupServerConfig() *ServerConfig {
 	disableMusicBrainzEndpoints := ch.GetBooleanOption(sc.ConfigEntry{Key: "DISABLE_MUSICBRAINZ_ENDPOINTS", Description: "Disable MusicBrainz Endpoints", DefaultBool: false})
 	disableEmbeddedMusicBrainz := ch.GetBooleanOption(sc.ConfigEntry{Key: "DISABLE_MUSICBRAINZ_EMBEDDING", Description: "Disable the enrichment with MusicBrainz data", DefaultBool: false})
 	disableSwaggerUI := ch.GetBooleanOption(sc.ConfigEntry{Key: "DISABLE_SWAGGER_UI", Description: "Disable Swagger UI", DefaultBool: false})
+	tawnyVers := ch.GetStringOption(sc.ConfigEntry{Key: "INTERNAL_VERSION", Description: "[internal] TAWNY Version (don't set this yourself)", DefaultString: "unspecified"})
+	tawnyRev := ch.GetStringOption(sc.ConfigEntry{Key: "INTERNAL_REVISION", Description: "[internal] TAWNY Revision (don't set this yourself)", DefaultString: "unspecified"})
 	ch.ParseFlags()
 	return &ServerConfig{
 		ApiPort:      *apiport,
@@ -74,6 +78,8 @@ func SetupServerConfig() *ServerConfig {
 			RunningInDocker:            *runningInDocker,
 			LogOutputFormat:            *logOutputFormat,
 			DisableEmbeddedMusicBrainz: *disableEmbeddedMusicBrainz,
+			TawnyRevision:              *tawnyRev,
+			TawnyVersion:               *tawnyVers,
 		},
 	}
 }
