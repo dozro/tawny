@@ -11,6 +11,7 @@ post:
         type: boolean
     - name: isBase64
       deprecated: true
+      required: false
       description: if the request is base64 encoded
       in: query
       schema:
@@ -47,7 +48,7 @@ get:
   parameters:
     - name: isBase64
       description: if the request is base64 encoded
-      required: true
+      required: false
       deprecated: true
       in: query
       schema:
