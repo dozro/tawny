@@ -188,7 +188,7 @@ func parseUsernameWithoutRet(username string) canUser {
 	isLb := false
 	isLfm := false
 	un := extractUsernameFromCannonical(username)
-	if !isUsernameCannonical(un) {
+	if !isUsernameCannonical(username) {
 		log.Warnf("[compat] username %s is not a cannonical username, interpreting as last.fm username", un)
 		un = username
 		isLfm = true
