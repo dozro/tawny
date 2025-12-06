@@ -1,0 +1,33 @@
+type: object
+description: Information about server Operator
+xml:
+  name: "Operator"
+properties:
+  name:
+    type: string
+    description: The name of the server Operator
+    example: "ACME Corporation"
+    default: "unspecified"
+    xml:
+      name: "Name"
+  contact:
+    type: string
+    description: Contact of the server operator
+    example: 'abuse@example.org'
+    default: "unspecified"
+    xml:
+      name: "Contact"
+  imprint_url:
+    type: string
+    description: link to the imprint of the server operator
+    example: 'https://example.org/imprint'
+    default: "unspecified"
+    xml:
+      name: "ImprintURL"
+  privacy_policy_url:
+    type: string
+    description: link to the privacy policy of the server operator
+    example: 'https://example.org/privacy_policy'
+    default: "unspecified"
+    xml:
+      name: "PrivacyPolicyURL"

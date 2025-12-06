@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	"github.com/dozro/tawny/internal/pkg/api_commons"
 	"github.com/dozro/tawny/internal/pkg/server_config"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -13,6 +14,14 @@ var proxyConfig *server_config.ServerConfig
 func StartServer(config *server_config.ServerConfig) {
 
 	proxyConfig = config
+	api_commons.SetUpUserAgent(api_commons.UserAgentSetupArgs{
+		Version:            proxyConfig.ExtendedServerConfig.TawnyVersion,
+		Repository:         proxyConfig.ExtendedServerConfig.SourceCodeURL,
+		SourceAbuseContact: proxyConfig.ExtendedServerConfig.SourceAbuseContact,
+		OperatorContact:    proxyConfig.ServerOperator.OperatorContact,
+		OperatorName:       proxyConfig.ServerOperator.OperatorName,
+		OperatorImprint:    proxyConfig.ServerOperator.ImprintURL,
+	})
 
 	router := gin.Default()
 	router.Use(gin.Recovery())
@@ -27,6 +36,13 @@ func StartServer(config *server_config.ServerConfig) {
 
 	api := router.Group(config.ApiBasePath)
 	v1 := api.Group("/v1")
+
+	meta := v1.Group("/meta")
+	if !proxyConfig.ExtendedServerConfig.HideSensitiveInformation {
+		meta.GET("serverinfo", serverInfo)
+	} else {
+		meta.GET("serverinfo", disabledEndpointHandler)
+	}
 
 	user := v1.Group("/user")
 	user.Use(disabledEndpointMiddleware())

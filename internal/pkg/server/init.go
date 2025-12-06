@@ -11,16 +11,18 @@ var middlewareHMACEndpointRegex *regexp.Regexp
 var middlewareEmbedEndpointRegex *regexp.Regexp
 var middlewareHMACSignEndpointRegex *regexp.Regexp
 var middlewareMusicBrainzEndpointRegex *regexp.Regexp
+var middlewareServerInfoEndpointRegex *regexp.Regexp
 var supportedImageTypes *regexp.Regexp
 
 func init() {
 	hmacProxyUserInfoRegex = regexp.MustCompile(`^[/_]?user/?$`)
 	hmacProxyUserNowPlayingRegex = regexp.MustCompile(`^[/_]?user[/_]tracks[/_]current/?$`)
-	hmacProxyUserNowPlayingEmbed = regexp.MustCompile(`^^[/_]?user[/_]tracks[/_]current[/_]embed/?$`)
+	hmacProxyUserNowPlayingEmbed = regexp.MustCompile(`^[/_]?user[/_]tracks[/_]current[/_]embed/?$`)
 	hmacProxyUserRecentlyPlayedRegex = regexp.MustCompile(`^[/_]?user[/_]tracks[/_]recent/?$`)
 	middlewareHMACEndpointRegex = regexp.MustCompile(`^/?hmac/`)
 	middlewareEmbedEndpointRegex = regexp.MustCompile(`/embed$`)
 	middlewareHMACSignEndpointRegex = regexp.MustCompile(`^/?hmac/sign`)
 	middlewareMusicBrainzEndpointRegex = regexp.MustCompile(`^/?musicbrainz/`)
+	middlewareServerInfoEndpointRegex = regexp.MustCompile(`^/?meta/serverinfo`)
 	supportedImageTypes = regexp.MustCompile(`image/(png|tiff|jpeg)`)
 }
