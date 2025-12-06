@@ -93,9 +93,9 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{env.IMAGE_NAME}}:${{ env.GIT_LATEST_HASH }}
-            ${{env.IMAGE_NAME}}:latest-dev
-            ${{env.IMAGE_NAME}}:${{ env.GIT_DESCRIBE_VERSION }}
+            ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{ env.GIT_LATEST_HASH }}
+            ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest-dev
+            ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{ env.GIT_DESCRIBE_VERSION }}
           build-args: |
             IMAGE_VERSION=${{ env.GIT_DESCRIBE_VERSION }}
             GIT_REVISION=${{ env.GIT_LATEST_HASH }}
@@ -113,9 +113,9 @@ jobs:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: |
             ${{ steps.meta.outputs.tags }}
-            ${{env.IMAGE_NAME}}:${{ env.GIT_LATEST_HASH }}
-            ${{env.IMAGE_NAME}}:latest-dev
-            ${{env.IMAGE_NAME}}:${{ env.GIT_DESCRIBE_VERSION }}
+            ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{ env.GIT_LATEST_HASH }}
+            ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:latest-dev
+            ${{env.REGISTRY}}/${{env.IMAGE_NAME}}:${{ env.GIT_DESCRIBE_VERSION }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
