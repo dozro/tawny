@@ -78,8 +78,8 @@ func SetupServerConfig() *ServerConfig {
 			RunningInDocker:            *runningInDocker,
 			LogOutputFormat:            *logOutputFormat,
 			DisableEmbeddedMusicBrainz: *disableEmbeddedMusicBrainz,
-			TawnyRevision:              *tawnyRev,
 			TawnyVersion:               *tawnyVers,
+			TawnyRevision:              *tawnyRev,
 		},
 	}
 }
