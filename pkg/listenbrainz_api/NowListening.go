@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (User) GetCurrentTrackLfmCompat(username string) (*lfm_types.UserGetRecentTracks, error) {
+func (User) CurrentTrackLfmCompat(username string) (*lfm_types.UserGetRecentTracks, error) {
 	log.Debugf("getting recent tracks for %s ...", username)
 
 	apiUrl := fmt.Sprintf("%s/1/user/%s/playing-now", baseUrl, username)

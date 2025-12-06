@@ -7,6 +7,12 @@ import (
 
 var userAgent = "Tawny/0.0.3 (Linux; +https://github.com/dozro/tawny; +abuse@itsrye.dev)"
 
+const stringsUa = "User-Agent"
+const stringsAuth = "Authorization"
+const stringsAccepts = "Accept"
+const stringsAcceptsXML = "application/xml"
+const stringsAcceptsJSON = "application/json"
+
 var httpClient = &http.Client{}
 
 func doHttpGetRequestJSONWithAuth(url, auth string) (*http.Response, error) {
@@ -14,20 +20,9 @@ func doHttpGetRequestJSONWithAuth(url, auth string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", userAgent)
-	req.Header.Set("Authorization", auth)
-	req.Header.Set("Accept", "application/json")
-	return httpClient.Do(req)
-}
-
-func doHttpGetRequestXMLWithAuth(url, auth string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("User-Agent", userAgent)
-	req.Header.Set("Authorization", auth)
-	req.Header.Set("Accept", "application/xml")
+	req.Header.Set(stringsUa, userAgent)
+	req.Header.Set(stringsAuth, auth)
+	req.Header.Set(stringsAccepts, stringsAcceptsJSON)
 	return httpClient.Do(req)
 }
 
@@ -57,8 +52,8 @@ func doHttpGetRequest(url string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", userAgent)
-	req.Header.Set("Accept", "application/xml")
+	req.Header.Set(stringsUa, userAgent)
+	req.Header.Set(stringsAccepts, stringsAcceptsXML)
 	return httpClient.Do(req)
 }
 

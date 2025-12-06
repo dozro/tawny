@@ -47,7 +47,7 @@ func recTrackInternals(lt *lfm_types.UserGetRecentTracks, embedMB, embedMBDisabl
 
 func LbGetCurrentTrack(username string, embedMB, embedMBDisabledByServerConfig bool) (*lfm_types.UserGetRecentTracks, error) {
 	log.Debugf("getting recent tracks for %s ...", username)
-	lt, err := listenbrainz_api.User{}.GetCurrentTrackLfmCompat(username)
+	lt, err := listenbrainz_api.User{}.CurrentTrackLfmCompat(username)
 	return recTrackInternals(lt, embedMB, embedMBDisabledByServerConfig, err)
 }
 
