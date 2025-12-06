@@ -17,6 +17,7 @@ type ServerConfig struct {
 	DevelopMode          bool                    `json:"develop_mode"`
 	DisabledEndpoints    ServerDisabledEndpoints `json:"disabled_endpoints"`
 	ExtendedServerConfig ExtendedServerConfig    `json:"extended_server_config"`
+	ServerOperator       ServerOperatorInfo      `json:"server_operator"`
 }
 
 type ServerDisabledEndpoints struct {
@@ -27,12 +28,23 @@ type ServerDisabledEndpoints struct {
 	DisableSwaggerUI              bool `json:"disable_swagger_ui"`
 }
 
+type ServerOperatorInfo struct {
+	OperatorName     string `json:"operator_name"`
+	OperatorContact  string `json:"operator_contact"`
+	PrivacyPolicyURL string `json:"privacy_policy_url"`
+	ImprintURL       string `json:"imprint_url"`
+}
+
 type ExtendedServerConfig struct {
 	RunningInDocker            bool   `json:"running_in_docker"`
 	LogOutputFormat            string `json:"log_output_format"`
 	DisableEmbeddedMusicBrainz bool   `json:"disable_embedded_music_brainz"`
+	DisableGinVersionPublished bool   `json:"disable_gin_version_published"`
+	HideSensitiveInformation   bool   `json:"hide_sensitive_information"`
 	TawnyVersion               string `json:"tawny_version"`
 	TawnyRevision              string `json:"tawny_revision"`
+	SourceCodeURL              string `json:"source_code_url"`
+	SourceAbuseContact         string `json:"source_abuse_contact"`
 }
 
 func SetupServerConfig() *ServerConfig {
@@ -57,6 +69,14 @@ func SetupServerConfig() *ServerConfig {
 	disableSwaggerUI := ch.GetBooleanOption(sc.ConfigEntry{Key: "DISABLE_SWAGGER_UI", Description: "Disable Swagger UI", DefaultBool: false})
 	tawnyVers := ch.GetStringOption(sc.ConfigEntry{Key: "INTERNAL_VERSION", Description: "[internal] TAWNY Version (don't set this yourself)", DefaultString: "unspecified"})
 	tawnyRev := ch.GetStringOption(sc.ConfigEntry{Key: "INTERNAL_REVISION", Description: "[internal] TAWNY Revision (don't set this yourself)", DefaultString: "unspecified"})
+	disableGinVersionPublication := ch.GetBooleanOption(sc.ConfigEntry{Key: "GIN_VERSION_EXPOSE", Description: "do you want to expose the gin version?", DefaultBool: false})
+	dontexposesensitiveinformation := ch.GetBooleanOption(sc.ConfigEntry{Key: "DONT_EXPOSE_SENSITIVE_INFORMATION", Description: "Do you want to hide potentially sensitive information", DefaultBool: false})
+	operator := ch.GetStringOption(sc.ConfigEntry{Key: "OPERATOR", Description: "Operator name, if you wish to publish it", DefaultString: "unspecified"})
+	operatorContact := ch.GetStringOption(sc.ConfigEntry{Key: "OPERATOR_CONTACT", Description: "Operator contact (email, link)", DefaultString: "unspecified"})
+	operatorPrivacyPolicy := ch.GetStringOption(sc.ConfigEntry{Key: "OPERATOR_PRIVACY_POLICY", Description: "A link to your privacy policy (may be required in some jurisdictions)", DefaultString: "unspecified"})
+	operatorImprint := ch.GetStringOption(sc.ConfigEntry{Key: "OPERATOR_IMPRINT", Description: "A link to your imprint (may be required in some jurisdictions, especially Germany)", DefaultString: "unspecified"})
+	sourceCodeURL := ch.GetStringOption(sc.ConfigEntry{Key: "SOURCE_CODE_URL", Description: "Source Code URL, please change if you forked or modified the source", DefaultString: "https://github.com/dozro/tawny"})
+	sourceAbuseContact := ch.GetStringOption(sc.ConfigEntry{Key: "SOURCE_ABUSE_CONTACT", Description: "Abuse contact, please change if you forked or modified the source", DefaultString: "abuse@itsrye.dev"})
 	ch.ParseFlags()
 	return &ServerConfig{
 		ApiPort:      *apiport,
@@ -80,6 +100,16 @@ func SetupServerConfig() *ServerConfig {
 			DisableEmbeddedMusicBrainz: *disableEmbeddedMusicBrainz,
 			TawnyVersion:               *tawnyVers,
 			TawnyRevision:              *tawnyRev,
+			DisableGinVersionPublished: *disableGinVersionPublication,
+			HideSensitiveInformation:   *dontexposesensitiveinformation,
+			SourceCodeURL:              *sourceCodeURL,
+			SourceAbuseContact:         *sourceAbuseContact,
+		},
+		ServerOperator: ServerOperatorInfo{
+			OperatorName:     *operator,
+			OperatorContact:  *operatorContact,
+			PrivacyPolicyURL: *operatorPrivacyPolicy,
+			ImprintURL:       *operatorImprint,
 		},
 	}
 }

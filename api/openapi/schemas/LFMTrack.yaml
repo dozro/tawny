@@ -41,3 +41,14 @@ properties:
     format: int32
     minimum: 0
     maximum: 255
+  compat_mode:
+    type: boolean
+    nullable: true
+    description: if the data is provided in compat mode
+  compat_date:
+    type: string
+    format: date
+  data_source:
+    type: string
+    nullable: true
+

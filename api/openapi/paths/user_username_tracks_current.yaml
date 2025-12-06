@@ -1,5 +1,7 @@
 get:
   summary: get current track
+  security:
+    - defaultApiKey: [ ]
   tags:
     - user
   parameters:

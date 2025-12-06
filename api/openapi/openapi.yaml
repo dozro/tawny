@@ -43,6 +43,8 @@ paths:
     $ref: ./paths/musicbrainz_lookup_artist_by_mbid_mbid_.yaml
   /musicbrainz/lookup/recording/by_mbid/{mbid}:
     $ref: ./paths/musicbrainz_lookup_recording_by_mbid_mbid_.yaml
+  /meta/serverinfo:
+    $ref: ./paths/meta_serverinfo.yaml
 components:
   schemas:
     $ref: ./schemas/_index.yaml
@@ -54,6 +56,11 @@ components:
       description: The Api Key you obtained from lastfm
       type: apiKey
       name: Authorization
+      in: header
+    listenbrainzApiKey:
+      description: The Api Key you obtained from listenbrainz
+      type: apiKey
+      name: ListenBrainz_Key
       in: header
 tags:
   $ref: ./tags/_index.yaml

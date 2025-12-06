@@ -6,6 +6,7 @@ import (
 	"github.com/dozro/tawny/pkg/apiError"
 	"github.com/dozro/tawny/pkg/lfm_api"
 	"github.com/dozro/tawny/pkg/lfm_types"
+	"github.com/dozro/tawny/pkg/listenbrainz_api"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -17,6 +18,10 @@ func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB, embe
 		Limit:    limit,
 		Page:     page,
 	})
+	return recTrackInternals(lt, embedMB, embedMBDisabledByServerConfig, err)
+}
+
+func recTrackInternals(lt *lfm_types.UserGetRecentTracks, embedMB, embedMBDisabledByServerConfig bool, err error) (*lfm_types.UserGetRecentTracks, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -38,6 +43,12 @@ func LfmUserRecentTracks(username, apikey string, limit, page int, embedMB, embe
 		}
 	}
 	return lt, nil
+}
+
+func LbGetCurrentTrack(username string, embedMB, embedMBDisabledByServerConfig bool) (*lfm_types.UserGetRecentTracks, error) {
+	log.Debugf("getting recent tracks for %s ...", username)
+	lt, err := listenbrainz_api.User{}.CurrentTrackLfmCompat(username)
+	return recTrackInternals(lt, embedMB, embedMBDisabledByServerConfig, err)
 }
 
 func LfmUserCurrentTrack(username, apiKey string, embedMB, embedMBDisabledByServerConfig bool) (*lfm_types.UserGetRecentTracks, error) {

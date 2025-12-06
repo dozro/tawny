@@ -9,7 +9,7 @@ import (
 )
 
 func serveSwagger(router *gin.Engine) {
-	if proxyConfig.DevelopMode {
+	if !proxyConfig.ExtendedServerConfig.RunningInDocker {
 		router.StaticFS("/openapi/", http.Dir("./api/openapi"))
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/openapi/openapi.yaml")))
 	} else {
