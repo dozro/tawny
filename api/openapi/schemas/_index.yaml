@@ -74,3 +74,9 @@ LastFMURL:
   $ref: ./LastFMURL.yaml
 HMACSignature:
   $ref: ./HMACSignature.yaml
+ServerInfo:
+  $ref: ./ServerInfo.yaml
+ServerOperator:
+  $ref: ./ServerOperator.yaml
+ServerDisabledEndpoints:
+  $ref: ./ServerDisabledEndpoints.yaml

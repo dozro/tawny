@@ -2,3 +2,5 @@ user:
   $ref: ./user.yaml
 hmac:
   $ref: ./hmac.yaml
+meta:
+  $ref: ./meta.yaml

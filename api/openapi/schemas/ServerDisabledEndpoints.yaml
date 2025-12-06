@@ -1,0 +1,30 @@
+type: object
+description: Which Api Endpoints are currently disabled by server configuration
+xml:
+  name: "DisabledEndpoints"
+properties:
+  disable_hmac_signing_endpoint:
+    type: boolean
+    default: false
+    xml:
+      name: "DisableHMACSigningEndpoint"
+  disable_image_embedded_endpoint:
+    type: boolean
+    default: false
+    xml:
+      name: "DisableImageEmbeddedEndpoints"
+  enable_only_hmac_endpoints:
+    type: boolean
+    default: false
+    xml:
+      name: "EnableOnlyHMACEndpoints"
+  disable_music_brainz_endpoints:
+    type: boolean
+    default: false
+    xml:
+      name: "DisableMusicBrainzEndpoints"
+  disable_swagger_ui:
+    type: boolean
+    default: false
+    xml:
+      name: "DisableSwaggerUI"

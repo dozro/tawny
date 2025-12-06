@@ -1,0 +1,35 @@
+type: object
+description: Information about server
+xml:
+  name: "serverInfoRespType"
+properties:
+  tawny_version:
+    type: string
+    nullable: true
+    example: "v0.0.3-90-g86bbc97"
+    default: "unspecified"
+    xml:
+      name: "TawnyVersion"
+  tawny_revision:
+    type: string
+    nullable: true
+    example: "g86bbc97"
+    default: "unspecified"
+    xml:
+      name: "TawnyRevision"
+  source_repository:
+    type: string
+    nullable: true
+    example: "https://github.com/example/example"
+    xml:
+      name: "SourceRepository"
+  gin_version:
+    type: string
+    nullable: true
+    example: "v1.0.0"
+    xml:
+      name: "GinVersion"
+  operator:
+    $ref: ./ServerOperator.yaml
+  disabled_endpoints:
+    $ref: ./ServerDisabledEndpoints.yaml

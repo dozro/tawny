@@ -43,6 +43,8 @@ paths:
     $ref: ./paths/musicbrainz_lookup_artist_by_mbid_mbid_.yaml
   /musicbrainz/lookup/recording/by_mbid/{mbid}:
     $ref: ./paths/musicbrainz_lookup_recording_by_mbid_mbid_.yaml
+  /meta/serverinfo:
+    $ref: ./paths/meta_serverinfo.yaml
 components:
   schemas:
     $ref: ./schemas/_index.yaml
