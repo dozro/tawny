@@ -25,6 +25,16 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
+        with:
+          fetch-depth: 0
+      - name: Set version variables
+        id: vars
+        run: |
+          echo "GIT_DESCRIBE_VERSION=$(git describe --tags --always --long --match 'v[0-9]*.[0-9]*.[0-9]*')" >> $GITHUB_ENV
+          echo "GIT_LATEST_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
       - name: Prepare
         run: |
           platform=${{ matrix.platform }}
@@ -55,6 +65,9 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.REGISTRY_IMAGE }}
+          build-args: |
+            IMAGE_VERSION=${{ env.GIT_DESCRIBE_VERSION }}
+            GIT_REVISION=${{ env.GIT_LATEST_HASH }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest

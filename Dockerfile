@@ -15,6 +15,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o tawnyfm ./cmd/fm-proxy/main.go
 
 FROM scratch
 
+ARG IMAGE_VERSION=unspecified
+ARG GIT_REVISION=unspecified
+
 LABEL org.opencontainers.image.source="https://github.com/dozro/tawny"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
@@ -23,6 +26,8 @@ EXPOSE 8080
 ENV TAWNY_RELEASE_MODE=true
 ENV TAWNY_DEVELOP_MODE=false
 ENV TAWNY_RUNNING_IN_DOCKER=true
+ENV TAWNY_INTERNAL_VERSION=$IMAGE_VERSION
+ENV TAWNY_INTERNAL_REVISION=$GIT_REVISION
 
 WORKDIR /app
 COPY ./assets /app/assets
