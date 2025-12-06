@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 GIT_DESCRIBE_VERSION="$(git describe --tags --always --long --match 'v[0-9]*.[0-9]*.[0-9]*')"
 GIT_LATEST_HASH="$(git rev-parse --short HEAD)"
