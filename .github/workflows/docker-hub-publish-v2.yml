@@ -25,6 +25,10 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
+        with:
+          fetch-depth: 0
       - name: Set version variables
         id: vars
         run: |
