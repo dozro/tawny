@@ -15,6 +15,8 @@ import (
 func lfmUserInfo(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
+	un := parseUsernameWithoutRet(username)
+	username = un.username
 	log.Infof("getUserInfo: %s, %s", username, security.MaskAPIKey(apikey))
 	if apikeyUndefined(apikey, c) {
 		return
@@ -76,6 +78,8 @@ func lfmUserRecentTracks(c *gin.Context) {
 func lfmUserCurrentTrack(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	username := c.Param("username")
+	un := parseUsernameWithoutRet(username)
+	username = un.username
 	embedMusicBrainz := c.Query("fetch_musicbrainz")
 	embedMusicBrainzB := false
 	if embedMusicBrainz == "true" {
@@ -87,17 +91,27 @@ func lfmUserCurrentTrack(c *gin.Context) {
 	if apikeyUndefined(apikey, c) {
 		return
 	}
-	ct, err := client.LfmUserCurrentTrack(username, apikey, embedMusicBrainzB, proxyConfig.ExtendedServerConfig.DisableEmbeddedMusicBrainz)
-	if handleError(err, c) {
-		return
+	if un.Lb {
+		ct, err := client.LbGetCurrentTrack(username, embedMusicBrainzB, proxyConfig.ExtendedServerConfig.DisableEmbeddedMusicBrainz)
+		if handleError(err, c) {
+			return
+		}
+		render(c, 200, ct)
+	} else {
+		ct, err := client.LfmUserCurrentTrack(username, apikey, embedMusicBrainzB, proxyConfig.ExtendedServerConfig.DisableEmbeddedMusicBrainz)
+		if handleError(err, c) {
+			return
+		}
+		render(c, 200, ct)
 	}
-	c.JSON(200, ct)
 }
 
 func lfmUserCurrentTrackEmbed(c *gin.Context) {
 	apikey := c.Request.Header.Get("Authorization")
 	accepts := c.Request.Header.Get("Accept")
 	username := c.Param("username")
+	un := parseUsernameWithoutRet(username)
+	username = un.username
 	if !checkIfAcceptImage(c) {
 		return
 	}

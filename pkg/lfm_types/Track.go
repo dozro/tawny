@@ -23,6 +23,9 @@ type LFMTrack struct {
 	Image             string                      `xml:"image" json:"image"`
 	Artist            LFMArtist                   `xml:"artist" json:"artist"`
 	Streamable        int8                        `xml:"streamable" json:"streamable"`
+	DataSource        string                      `json:"data_source"`
+	CompatMode        bool                        `xml:"compat_mode" json:"compat_mode"`
+	CompatDate        string                      `xml:"compat_date" json:"compat_date"`
 }
 
 type LFMArtist struct {

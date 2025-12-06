@@ -20,6 +20,17 @@ func doHttpGetRequestJSONWithAuth(url, auth string) (*http.Response, error) {
 	return httpClient.Do(req)
 }
 
+func doHttpGetRequestXMLWithAuth(url, auth string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("Authorization", auth)
+	req.Header.Set("Accept", "application/xml")
+	return httpClient.Do(req)
+}
+
 type UserAgentSetupArgs struct {
 	Version            string
 	Repository         string

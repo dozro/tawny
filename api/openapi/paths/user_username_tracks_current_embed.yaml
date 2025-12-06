@@ -1,5 +1,7 @@
 get:
   summary: Get the current track as an embedded image
+  security:
+    - defaultApiKey: [ ]
   description: >-
     Returns the current track for a user as an image. Equivalent to calling
     recent tracks with limit of 1.

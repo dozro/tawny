@@ -12,6 +12,7 @@ var middlewareEmbedEndpointRegex *regexp.Regexp
 var middlewareHMACSignEndpointRegex *regexp.Regexp
 var middlewareMusicBrainzEndpointRegex *regexp.Regexp
 var middlewareServerInfoEndpointRegex *regexp.Regexp
+var canonicalUsernameRegexp *regexp.Regexp
 var supportedImageTypes *regexp.Regexp
 
 func init() {
@@ -25,4 +26,5 @@ func init() {
 	middlewareMusicBrainzEndpointRegex = regexp.MustCompile(`^/?musicbrainz/`)
 	middlewareServerInfoEndpointRegex = regexp.MustCompile(`^/?meta/serverinfo`)
 	supportedImageTypes = regexp.MustCompile(`image/(png|tiff|jpeg)`)
+	canonicalUsernameRegexp = regexp.MustCompile(`^(@?([a-z0-9][a-z0-9_.-]*))@([a-z0-9](xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]?\.(xn--)?([a-z0-9-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$)`)
 }

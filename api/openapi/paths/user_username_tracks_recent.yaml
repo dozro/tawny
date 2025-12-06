@@ -1,5 +1,7 @@
 get:
   summary: Get a user's recent tracks
+  security:
+    - defaultApiKey: [ ]
   description: Retrieve the most recently played tracks for a given Last.fm user.
   tags:
     - user

@@ -57,5 +57,10 @@ components:
       type: apiKey
       name: Authorization
       in: header
+    listenbrainzApiKey:
+      description: The Api Key you obtained from listenbrainz
+      type: apiKey
+      name: ListenBrainz_Key
+      in: header
 tags:
   $ref: ./tags/_index.yaml
