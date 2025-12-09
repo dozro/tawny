@@ -49,8 +49,12 @@ func (n NowListeningWrapperInner) ConvertToLfm() (*lfm_types.UserGetRecentTracks
 		},
 		Streamable: 0,
 		DataSource: "listenbrainz.org",
-		CompatMode: true,
-		CompatDate: "2025-12-06",
+		Compat: lfm_types.LFMTrackCompat{
+			CompatDate:         "2025-12-09",
+			CompatMode:         true,
+			CompatRating:       "partial",
+			CompatSourceFormat: "ListenBrainz",
+		},
 	}
 	var tracks []lfm_types.LFMTrack
 	tracks = append(tracks, lfmTrack)

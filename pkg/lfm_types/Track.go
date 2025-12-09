@@ -12,7 +12,7 @@ type LFMTrack struct {
 	Name              string                      `xml:"name" json:"name"`
 	Album             string                      `xml:"album" json:"album"`
 	Rank              int                         `xml:"rank,attr,omitempty" json:"rank,omitempty"`
-	NowPlaying        bool                        `xml:"now_playing,attr,omitempty" json:"now_playing,omitempty"`
+	NowPlaying        bool                        `xml:"now_playing,attr,omitempty" json:"now_playing"`
 	Playcount         int                         `xml:"playcount,omitempty" json:"playcount,omitempty"`
 	Mbid              string                      `xml:"mbid" json:"mbid"`
 	ArtistMusicBrainz musicbrainz_types.Artist    `xml:"artist_music_brainz,omitempty" json:"artist_music_brainz,omitempty"`
@@ -24,8 +24,15 @@ type LFMTrack struct {
 	Artist            LFMArtist                   `xml:"artist" json:"artist"`
 	Streamable        int8                        `xml:"streamable" json:"streamable"`
 	DataSource        string                      `json:"data_source"`
-	CompatMode        bool                        `xml:"compat_mode" json:"compat_mode"`
-	CompatDate        string                      `xml:"compat_date" json:"compat_date"`
+	Compat            LFMTrackCompat              `xml:"compat,omitempty" json:"compat,omitempty"`
+}
+
+type LFMTrackCompat struct {
+	CompatMode         bool   `xml:"CompatMode" json:"compat_mode"`
+	CompatDate         string `xml:"CompatDate" json:"compat_date"`
+	CompatRating       string `xml:"CompatRating" json:"compat_rating"`
+	CompatSourceFormat string `xml:"CompatSourceFormat" json:"compat_source_format"`
+	Source             string `xml:"Source" json:"source"`
 }
 
 type LFMArtist struct {
