@@ -56,6 +56,12 @@ func MusicBrainzCacheArtistExists(mbid string) bool {
 	return false
 }
 
+func MusicBrainzCacheErrorRemove(mbid string) {
+	if useLocalInMemoryCaching {
+		musicBrainzErrorCacheInMemory.Delete(mbid)
+	}
+}
+
 func MusicBrainzCacheRecordingGet(mbid string) (interface{}, bool, string) {
 	if useLocalInMemoryCaching {
 		d, e := musicBrainzRecordingCacheInMemory.Get(mbid)
@@ -70,6 +76,18 @@ func MusicBrainzCacheArtistGet(mbid string) (interface{}, bool, string) {
 		return d, e, "local"
 	}
 	return nil, false, "none"
+}
+
+func MusicBrainzCacheArtistRemove(mbid string) {
+	if useLocalInMemoryCaching {
+		musicBrainzArtistCacheInMemory.Delete(mbid)
+	}
+}
+
+func MusicBrainzCacheRecordingRemove(mbid string) {
+	if useLocalInMemoryCaching {
+		musicBrainzRecordingCacheInMemory.Delete(mbid)
+	}
 }
 
 func MusicBrainzCacheArtistAdd(mbid string, artist musicbrainz_types.Artist) {
