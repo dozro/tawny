@@ -29,7 +29,7 @@ func setupForMusicBrainz() {
 
 func LoadFromFS(basePath string) {
 	log.Info("loading cache from fs")
-	if musicBrainzArtistCacheInMemory.LoadFile(fmt.Sprintf("%s/musicBrainzArtist.cache", basePath)) != nil || musicBrainzRecordingCacheInMemory.LoadFile(fmt.Sprintf("%s/musicBrainzArtist.cache", basePath)) != nil {
+	if musicBrainzArtistCacheInMemory.LoadFile(fmt.Sprintf("%s/musicBrainzArtist.cache", basePath)) != nil || musicBrainzRecordingCacheInMemory.LoadFile(fmt.Sprintf("%s/musicBrainzRecording.cache", basePath)) != nil {
 		log.Warn("error loading cache from fs")
 	}
 
