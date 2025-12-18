@@ -2,6 +2,7 @@ package lfm_types
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dozro/tawny/pkg/apiError"
 	"github.com/dozro/tawny/pkg/musicbrainz_api"
@@ -52,9 +53,29 @@ func (u *LFMTrack) EmbedMusicBrainz() {
 	ma, err := musicbrainz_api.ArtistLookupByMbid(u.Artist.Mbid, false)
 	if err == nil {
 		u.ArtistMusicBrainz = *ma
+	} else {
+		u.ArtistMusicBrainz = musicbrainz_types.Artist{}
+		u.ArtistMusicBrainz.ApiError = apiError.ApiError{
+			HttpCode:          500,
+			InternalErrorCode: apiError.MusicBrainzApiError,
+			InternalErrorMsg:  apiError.MusicBrainzApiError.String(),
+			Message:           err.Error(),
+			Success:           false,
+			Date:              time.Now().String(),
+		}
 	}
 	ta, err := musicbrainz_api.RecordingLookupByMbid(u.Mbid, false)
 	if err == nil {
 		u.TrackMusicBrainz = *ta
+	} else {
+		u.TrackMusicBrainz = musicbrainz_types.Recording{}
+		u.TrackMusicBrainz.ApiError = apiError.ApiError{
+			HttpCode:          500,
+			InternalErrorCode: apiError.MusicBrainzApiError,
+			InternalErrorMsg:  apiError.MusicBrainzApiError.String(),
+			Message:           err.Error(),
+			Success:           false,
+			Date:              time.Now().String(),
+		}
 	}
 }
