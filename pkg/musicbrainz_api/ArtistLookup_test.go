@@ -9,18 +9,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const ExampleMBID = "f59c5520-5f46-4d2c-b2c4-822eabf53419"
+const exampleMBID = "f59c5520-5f46-4d2c-b2c4-822eabf53419"
+const exampleArtistName = "Linkin Park"
+const malformedArtistErrMsg = "malformed artist lookup"
+const skipMsg = "Requires API mocking setup"
 
-func TestArtistLookupByMbid_InvalidMbid(t *testing.T) {
+func TestArtistLookupByMbidInvalidMbid(t *testing.T) {
 	result, err := ArtistLookupByMbid("invalid-mbid", false)
 
 	assert.Nil(t, result)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "malformed artist lookup")
+	assert.Contains(t, err.Error(), malformedArtistErrMsg)
 }
 
-func TestArtistLookupByMbid_CachedError(t *testing.T) {
-	mbid := ExampleMBID
+func TestArtistLookupByMbidCachedError(t *testing.T) {
+	mbid := exampleMBID
 	cachedErr := fmt.Errorf("test cached error")
 
 	caching.MusicBrainzCacheErrorAdd(mbid, cachedErr)
@@ -33,9 +36,9 @@ func TestArtistLookupByMbid_CachedError(t *testing.T) {
 	assert.Equal(t, cachedErr, err)
 }
 
-func TestArtistLookupByMbid_CachedArtist(t *testing.T) {
-	mbid := ExampleMBID
-	cachedArtist := musicbrainz_types.Artist{Name: "Test Artist"}
+func TestArtistLookupByMbidCachedArtist(t *testing.T) {
+	mbid := exampleMBID
+	cachedArtist := musicbrainz_types.Artist{Name: exampleArtistName, ID: exampleMBID}
 
 	caching.MusicBrainzCacheArtistAdd(mbid, cachedArtist)
 	defer caching.MusicBrainzCacheArtistRemove(mbid)
@@ -44,22 +47,22 @@ func TestArtistLookupByMbid_CachedArtist(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, "Linkin Park", result.Name)
+	assert.Equal(t, exampleArtistName, result.Name)
 	//assert.True(t, result.MetaInformation.CachingInformation.CacheHit)
 }
 
-func TestArtistLookupByMbid_WithAliases(t *testing.T) {
+func TestArtistLookupByMbidWithAliases(t *testing.T) {
 	// This test would require mocking the API call
 	// You may need to adjust based on your mocking strategy
-	t.Skip("Requires API mocking setup")
+	t.Skip(skipMsg)
 }
 
-func TestArtistLookupByMbid_ApiError(t *testing.T) {
+func TestArtistLookupByMbidApiError(t *testing.T) {
 	// This test would require mocking the API call to return an error
-	t.Skip("Requires API mocking setup")
+	t.Skip(skipMsg)
 }
 
-func TestArtistLookupByMbid_SuccessfulLookup(t *testing.T) {
+func TestArtistLookupByMbidSuccessfulLookup(t *testing.T) {
 	// This test would require mocking the API call to return valid data
-	t.Skip("Requires API mocking setup")
+	t.Skip(skipMsg)
 }

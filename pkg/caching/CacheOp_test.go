@@ -12,6 +12,13 @@ import (
 const ExampleArtistMBID = "f59c5520-5f46-4d2c-b2c4-822eabf53419"
 const ExampleRecMBID = "0815f294-becd-4544-bad0-5d43b7426cce"
 
+const expectedNil = "Expected data to not be nil"
+const expectedErrNotBeNil = "Expected error to not be nil"
+const expectedFound = "Expected data to be found in cache"
+const localSourceName = "local"
+const expectedLocalSource = "Expected source to be 'local'"
+const expectedArtistToExist = "Expected artist to exist after adding"
+
 func setupTestCache() {
 	useLocalInMemoryCaching = true
 	musicBrainzRecordingCacheInMemory = cache.New(5*time.Minute, 10*time.Minute)
@@ -32,11 +39,11 @@ func TestMusicBrainzCacheRecordingAddAndGet(t *testing.T) {
 	if !found {
 		t.Error("Expected recording to be found in cache")
 	}
-	if source != "local" {
+	if source != localSourceName {
 		t.Errorf("Expected source to be 'local', got '%s'", source)
 	}
 	if data == nil {
-		t.Error("Expected data to not be nil")
+		t.Error(expectedNil)
 	}
 }
 
@@ -87,11 +94,11 @@ func TestMusicBrainzCacheArtistAddAndGet(t *testing.T) {
 	if !found {
 		t.Error("Expected artist to be found in cache")
 	}
-	if source != "local" {
-		t.Errorf("Expected source to be 'local', got '%s'", source)
+	if source != localSourceName {
+		t.Errorf("[ARTIST] Expected source to be 'local' in resp, got '%s'", source)
 	}
 	if data == nil {
-		t.Error("Expected data to not be nil")
+		t.Error(expectedNil)
 	}
 }
 
@@ -109,7 +116,7 @@ func TestMusicBrainzCacheArtistExists(t *testing.T) {
 	time.Sleep(10 * time.Millisecond)
 
 	if !MusicBrainzCacheArtistExists(mbid) {
-		t.Error("Expected artist to exist after adding")
+		t.Error(expectedArtistToExist)
 	}
 }
 
@@ -140,13 +147,13 @@ func TestMusicBrainzCacheErrorAddAndGet(t *testing.T) {
 
 	err, found, source := MusicBrainzCacheErrorGet(mbid)
 	if !found {
-		t.Error("Expected error to be found in cache")
+		t.Error(expectedFound)
 	}
-	if source != "local" {
-		t.Errorf("Expected source to be 'local', got '%s'", source)
+	if source != localSourceName {
+		t.Error(expectedLocalSource)
 	}
 	if err == nil {
-		t.Error("Expected error to not be nil")
+		t.Error(expectedErrNotBeNil)
 	}
 	if err.Error() != testError.Error() {
 		t.Errorf("Expected error '%s', got '%s'", testError.Error(), err.Error())
