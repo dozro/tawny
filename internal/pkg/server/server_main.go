@@ -5,6 +5,7 @@ import (
 
 	"github.com/dozro/tawny/internal/pkg/api_commons"
 	"github.com/dozro/tawny/internal/pkg/server_config"
+	"github.com/dozro/tawny/pkg/caching"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -22,6 +23,9 @@ func StartServer(config *server_config.ServerConfig) {
 		OperatorName:       proxyConfig.ServerOperator.OperatorName,
 		OperatorImprint:    proxyConfig.ServerOperator.ImprintURL,
 	})
+
+	go caching.SetupLocalCache(proxyConfig.CachingConfig.LocalCachePath)
+	go setupScheduler()
 
 	router := gin.Default()
 	router.Use(gin.Recovery())
