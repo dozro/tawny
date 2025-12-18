@@ -40,6 +40,7 @@ func ArtistLookupByMbid(mbid string, includeAliases bool) (*musicbrainz_types.Ar
 		caching.MusicBrainzCacheErrorAdd(mbid, err)
 		return nil, err
 	}
+	data.Artist.MetaInformation = common_types.CreateMetaInformation(false, false)
 	caching.MusicBrainzCacheArtistAdd(mbid, data.Artist)
 	return &data.Artist, nil
 }
