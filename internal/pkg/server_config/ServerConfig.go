@@ -15,7 +15,7 @@ type ServerConfig struct {
 	DebugMode            bool                    `json:"debug_mode"`
 	ReleaseMode          bool                    `json:"release_mode"`
 	DevelopMode          bool                    `json:"develop_mode"`
-	CachingConfig        CachingConfig           `json:"redis_config"`
+	CachingConfig        CachingConfig           `json:"caching_config"`
 	DisabledEndpoints    ServerDisabledEndpoints `json:"disabled_endpoints"`
 	ExtendedServerConfig ExtendedServerConfig    `json:"extended_server_config"`
 	ServerOperator       ServerOperatorInfo      `json:"server_operator"`
