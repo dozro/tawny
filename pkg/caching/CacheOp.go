@@ -31,7 +31,7 @@ func MusicBrainzCacheErrorExists(mbid string) bool {
 
 func MusicBrainzCacheErrorGet(mbid string) (error, bool, string) {
 	if useLocalInMemoryCaching {
-		d, e := musicBrainzRecordingCacheInMemory.Get(mbid)
+		d, e := musicBrainzErrorCacheInMemory.Get(mbid)
 		if d == nil {
 			return nil, false, "local"
 		}
